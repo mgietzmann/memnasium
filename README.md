@@ -1,2 +1,2 @@
 # memnasium
-A Gym for my Memory
+A Gym for My Memory
