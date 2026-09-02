@@ -1,6 +1,6 @@
 # Kin screen
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -72,6 +72,10 @@ A header carrying the day's state, and the board beneath it.
 | board in progress | anchors left, with **Submit** / **Move on** below |
 | board ended       | the filled-in board, and **Next**                  |
 
+**Generate is never offered while a board is open**, whatever the anchor count says. A set with an
+open board is not spent, and drawing over it would discard a board the player is in the middle of —
+the opposite of the promise that closing the app costs nothing.
+
 Finishing a board returns the player to the between-groups state with the count updated, so the loop
 is pick a size → play → pick a size. When no anchors are left the screen says the day is done.
 
@@ -89,7 +93,8 @@ is pick a size → play → pick a size. When no anchors are left the screen say
                    (resumes as it was)
 ```
 
-- A draw is made once and **carries over** until it is spent; it is not redrawn on a later day.
+- A draw is made once and **carries over** until it is spent; it is not redrawn on a later day. A
+  set with an open board is never spent, however many anchors are left.
 - **Move on** ends a board as a give-up. **Closing the app** ends nothing — the board is persisted
   and resumes untouched.
 - Whether the day reads *done for today* or *not generated* depends on when the set was drawn; the

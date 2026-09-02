@@ -1,6 +1,6 @@
 # Navigation
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -37,6 +37,9 @@ Does **not** cover any game's own screen (see [Kin.md](Kin.md)), entering fish (
 - **Chose to let each game report its own state.** Play tables are per-game (see
   [../data/Kin.md](../data/Kin.md)), so there is no shared query and the list is a row of answers,
   not one.
+- **Chose to let an open board outrank the anchor count.** A set whose anchors are all dealt is not
+  finished if a board is still being played, and treating it as finished is what lets a new draw
+  discard it.
 
 ## Design
 
@@ -69,18 +72,25 @@ One card per game, each showing whatever state that game reports.
 └──────────────────────────┘  └──────────────────────────┘
 ```
 
-| Set's `generated_on` | Anchors left | Shown             |
-| -------------------- | ------------ | ----------------- |
-| no set at all        | —            | `not generated`   |
-| today                | `n`          | `0 / n anchors`   |
-| today                | some         | `k / n anchors`   |
-| today                | none         | `done for today`  |
-| before today         | some         | `k / n anchors`   |
-| before today         | none         | `not generated`   |
+| Set's `generated_on` | Anchors left | Open board | Shown              |
+| -------------------- | ------------ | ---------- | ------------------ |
+| no set at all        | —            | —          | `not generated`    |
+| any                  | any          | **yes**    | `board in progress` |
+| today                | `n`          | no         | `0 / n anchors`    |
+| today                | some         | no         | `k / n anchors`    |
+| today                | none         | no         | `done for today`   |
+| before today         | some         | no         | `k / n anchors`    |
+| before today         | none         | no         | `not generated`    |
 
-A set outlives the day it was drawn on, so the date it was drawn is what separates *finished today*
-from *never started*. A set left unfinished is picked up where it was, with no new draw — that is
-carry-over. A set finished on an earlier day is spent, and the next generate replaces it.
+**An open board outranks everything else.** A board persists and resumes (see [Kin.md](Kin.md)), so
+while one is open the set is not spent no matter how the anchors count — every anchor can be dealt
+and the last board still be half-played. Without this row a card reads `not generated` over a live
+board and invites a draw that would throw it away.
+
+Otherwise: a set outlives the day it was drawn on, so the date it was drawn is what separates
+*finished today* from *never started*. A set left unfinished is picked up where it was, with no new
+draw — that is carry-over. A set finished on an earlier day, with no board open, is **spent**, and
+the next generate replaces it.
 
 Progress is counted in **anchors resolved**, not edges — it is the unit the player chooses in and
 the only one they can feel.

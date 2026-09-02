@@ -1,6 +1,6 @@
 # Code Standard
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 

@@ -1,6 +1,6 @@
 # Kin API
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -42,6 +42,9 @@ read and write (see [../data/Kin.md](../data/Kin.md)), or entering fish (see [Fi
   is no cross-game query; the games list asks each game for its own state.
 - **Chose to keep images out of this API.** An image is knowledge, not play, so the board carries
   `img_id` and the bytes come from [Fish.md](Fish.md).
+- **Chose to send `labels` alongside `citations`.** The pool is what the player may pick from; a
+  prefilled slot still has to print a source that is not in it. One is a choice list, the other a
+  lookup — folding them together would put un-pickable chips in the pool.
 - **Chose never to return the right answer while a board is live.** A wrong slot comes back
   `"wrong"` and nothing else. **Move on** ends the board and returns it with every value showing,
   because a player who has given up has to be told what it was — failing and learning nothing is the
@@ -82,6 +85,10 @@ on a day whose previous set still has anchors left it returns that one rather th
 one. A new set is drawn only when there is no set at all, or the one there is was spent on an
 earlier day — and drawing it drops the old set and its boards.
 
+A set is **spent** only when its anchors are all dealt *and* no board is open. A board that is still
+being played holds the set open however the anchor count reads, so this endpoint returns the
+existing set rather than drawing over a board the player is in the middle of.
+
 ### Dealing a board
 
 ```json
@@ -91,10 +98,13 @@ POST /api/kin/board          { "size": 3 }
 ```json
 { "board_id": 7,
   "level": "species",
+  "ended": false,
+  "scored": false,
   "clades":    [ {"name": "Artificialus claudus", "common_name": "spotted claudfish"},
                  {"name": "Artificialus opus",    "common_name": null} ],
   "citations": [ {"src": 17, "label": "Brown, 2014"},
                  {"src": 22, "label": "Okafor, 2021"} ],
+  "labels":    { "17": "Brown, 2014", "22": "Okafor, 2021", "31": "Miller, 2019" },
   "cards": [
     { "kind": "image", "img_id": "8f21…",
       "clade": {"slot": "ci-41", "state": "locked", "value": "Artificialus opus"},
@@ -112,6 +122,21 @@ POST /api/kin/board          { "size": 3 }
 - A slot is `due` (blank, the player fills it) or `locked` (shown filled, not editable). `value` is
   a clade name on a clade slot and a `src` on a source slot.
 - `size` is a maximum. A short group comes back short, per [../games/Kin.md](../games/Kin.md).
+- `ended` and `scored` are on every board body, not only the one **Move on** returns. On a live
+  board they are `false`.
+
+**`citations` is the pool; `labels` is how a `src` is read.** A slot's `value` is a `src` — a number
+— and a *prefilled* source slot shows its true value, which may be a source no due slot uses and so
+is not in the pool. `labels` carries every source shown anywhere on the board, keyed by `src`, so a
+locked slot can render `Brown, 2014`.
+
+```
+citations  →  the chips the player may choose from — due sources only
+labels     →  how to print any src the board shows — a superset
+```
+
+`labels` gives nothing away: every entry beyond the pool belongs to a locked slot, whose value is
+already on screen. It must never be drawn as chips.
 
 A **slot handle** is its edge's kind and id — `ci-41`, `cc-7`, `is-19`, `cs-88` for the four kinds in
 [../data/Kin.md](../data/Kin.md). Derived, never stored, and identical across requests and restarts,
@@ -160,7 +185,7 @@ The response is the **completed board** — the same body as `POST /api/kin/boar
 
 ```json
 { "board_id": 7, "level": "species", "ended": true, "scored": false,
-  "clades": [...], "citations": [...],
+  "clades": [...], "citations": [...], "labels": {...},
   "cards": [ { "kind": "character", "text": "three dorsal spines",
                "clade": {"slot": "cc-7", "state": "locked", "value": "Artificialus claudus"},
                "src":   {"slot": "cs-88", "state": "locked", "value": 17} } ] }

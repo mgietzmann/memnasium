@@ -1,6 +1,6 @@
 # Fish API
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 

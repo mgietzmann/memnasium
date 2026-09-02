@@ -1,6 +1,6 @@
 # Kin
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
