@@ -39,7 +39,7 @@ Does **not** cover linting, types or docstrings ([Code.md](Code.md)), the tools
 - **Chose never to mock the database.** SQLite is a file, so a real one costs nothing — and the
   hardest logic in this project is the queries, which a mock would not exercise at all.
 - **Chose property tests for the tree algorithms**, because hand-written examples always miss the
-  rank-skip cases, which are exactly where distance goes wrong.
+  level-skip cases, which are exactly where distance goes wrong.
 - **Chose endpoint tests over unit tests.** The app is small enough that one call exercises route,
   validation, query and schema together, and that is the seam that actually breaks.
 - **Chose no coverage target.** A percentage rewards testing getters. Every Decision with observable

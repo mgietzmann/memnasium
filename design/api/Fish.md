@@ -70,7 +70,7 @@ GET /api/fish/clades?q=artific&level=genus
 ```
 
 Matches scientific and common name. `level` is optional and is what the walk uses when it is asking
-for one particular rank.
+for one particular level.
 
 ```json
 GET /api/fish/sources?q=brown
@@ -90,7 +90,7 @@ GET /api/fish/clades/Artificialus%20claudus
 ```
 
 `ancestors` runs narrowest to broadest and is what fills the form's read-only chain. `404` means the
-clade is new, and the form asks for the next rank up. Scientific names are percent-encoded in the
+clade is new, and the form asks for the next level up. Scientific names are percent-encoded in the
 path.
 
 ### Entering a character
@@ -140,7 +140,7 @@ new_ancestors[last]   Artificialidae        →  Perciformes         parent
 | some            | `null`   | the chain only; its top is a root |
 
 Two things the server checks rather than trusts: every step goes to a **strictly broader** level —
-ranks may be skipped but never repeat or invert — and `parent` already exists. A `parent` that does
+levels may be skipped but never repeat or invert — and `parent` already exists. A `parent` that does
 not means the client stopped walking early.
 
 ### Entering an image

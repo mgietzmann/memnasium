@@ -34,6 +34,7 @@ Kin's front door — the rest of it:
 | screen | [app/Kin.md](../app/Kin.md)        | what the player sees        |
 | wire   | [api/Kin.md](../api/Kin.md)        | what the client calls       |
 | tables | [data/Kin.md](../data/Kin.md)      | what gets written down      |
+| how    | [algorithms/Kin.md](../algorithms/Kin.md) | the draw, distance, grouping |
 
 Does **not** cover the knowledge being drilled (see [data/Fish.md](../data/Fish.md)) or any other
 game.
@@ -48,9 +49,9 @@ nearness the point: the group is the confusion set.
 
 - **Chose nearest-relative groups over random groups** because a random group is answerable by
   elimination and teaches nothing about discrimination.
-- **Chose distance as plain path length in the parent tree** over "shared rank" because
-  [Fish.md](../data/Fish.md) allows rank skips, which produce odd distances that a shared-rank rule
-  cannot express.
+- **Chose distance as plain path length in the parent tree** over "shared level" because
+  [Fish.md](../data/Fish.md) allows level skips, which produce odd distances that a shared-level
+  rule cannot express.
 - **Chose one group per level** over mixed-level groups because "which of these is it" is only a
   question when the candidates are comparable.
 - **Chose all-at-once submission** over per-edge feedback because per-edge feedback turns the board
@@ -147,6 +148,16 @@ The board carries three species, their due images and characters, and the source
 
 ### Known limits
 
+Neither palette is padded — both hold only what the group actually contains — so both can get small
+enough to answer by elimination. Accepted, and recorded so it is not mistaken for an oversight.
+
 - **The citation pool can be trivial.** It holds only the sources behind due `src` edges, so if
   every due card cites the same paper the pool is one chip and the source half is a giveaway.
-  Accepted; the fix is pulling distractor citations from outside the group.
+- **A small group is answerable by elimination.** The clade palette holds the group's anchors and
+  nothing else, so a group of one has a single chip and every clade slot on that board is free; a
+  group of two is a coin flip. Asking for a small group is the player's own choice — but a group can
+  also be *involuntarily* short, when a level has only one or two anchors left, and then the free
+  answer is not chosen.
+
+The fix for both is the same and was declined: pad each palette with plausible extras from outside
+the group — nearest same-level clades, other sources — keeping the group itself at real anchors.

@@ -43,8 +43,8 @@ read (see [../data/Kin.md](../data/Kin.md)), or the endpoints that run them (see
   older than about a month would ever be drilled.
 - **Chose no cap on the set** because the draw is self-limiting: every correct answer lengthens that
   edge's interval, so a corpus's daily load decays as it is learned.
-- **Chose distance as path length through the parent tree**, not shared rank, because ranks may be
-  skipped (see [../data/Fish.md](../data/Fish.md)) and skips make shared-rank rules wrong.
+- **Chose distance as path length through the parent tree**, not shared level, because levels may be
+  skipped (see [../data/Fish.md](../data/Fish.md)) and skips make shared-level rules wrong.
 - **Chose random tie-breaking** over any deterministic order, so repeated days at the same distance
   do not produce the same group every time.
 - **Chose to sort unreachable clades last** rather than excluding them, so a short group is still
@@ -88,14 +88,17 @@ between a genus and a species brings only the edge to the anchor, not the other 
 
 An edge belongs to a clade by:
 
-| Edge kind        | Its clade                             |
-| ---------------- | ------------------------------------- |
-| `clade_image`     | the `name` in the row                 |
-| `clade_character` | the `name` in the row                 |
-| `image_src`       | the clade of the image's `clade_image` edge |
-| `character_src`   | the clade of the character's `clade_character` edge |
+| Edge kind         | Its clades                                          |
+| ----------------- | --------------------------------------------------- |
+| `clade_image`     | the `name` in the row — exactly one                  |
+| `clade_character` | the `name` in the row — exactly one                  |
+| `image_src`       | every clade its image is edged to — one **or more**  |
+| `character_src`   | the clade its character is edged to — exactly one    |
 
-The last two are why `anchor` is stored on those set tables — recovering it later would be a join.
+An image may illustrate a genus and a species (see [../data/Fish.md](../data/Fish.md)), so a drawn
+`image_src` edge makes anchors of both and its card appears on both their boards. It is still one
+edge — answered once, scored once — because its state lives on the set row, not the board (see
+[../data/Kin.md](../data/Kin.md)). Characters are never shared, so `character_src` always has one.
 
 ### Load over time
 
@@ -124,8 +127,10 @@ accumulate — so treat it as a floor.
 
 Two properties follow, both intended:
 
-- **A missed edge returns every day.** A failure sets `Δt = 0`, so `p = 1` until it is answered
-  correctly. A handful of genuinely confusable clades becomes a daily floor.
+- **A missed edge returns in the very next set.** A failure sets `Δt = 0`, so `p = 1` until it is
+  answered correctly. It cannot come back the same day — its anchor is already spent, and the set is
+  not redrawn until it is spent — so a handful of genuinely confusable clades is a floor under
+  every draw rather than a daily one.
 - **Entry is bursty.** New edges start at `Δt = 0`, so a heavy reading session makes the next draw
   large. It clears within a week or two as those edges are answered.
 
@@ -155,8 +160,8 @@ Skips make odd distances normal. Only the ordering matters, never the absolute n
 Given a requested size *n* and the set's undealt anchors:
 
 ```
-1.  A     := a uniformly random undealt anchor
-2.  L     := A's level
+1.  A     := a uniformly random row of kin_set_anchors with board_id null
+2.  L     := A.level
 3.  peers := the other undealt anchors whose level is L
 4.  sort peers by d(A, ·) ascending, undefined last, ties shuffled
 5.  group := A + the first n−1 of peers

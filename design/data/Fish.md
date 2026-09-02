@@ -32,6 +32,7 @@ is the knowledge side's front door — the rest of it:
 | ------ | ---------------------------------- | ------------------------------ |
 | screen | [app/Fish.md](../app/Fish.md)      | how knowledge is entered        |
 | wire   | [api/Fish.md](../api/Fish.md)      | what the client calls           |
+| how    | [algorithms/Fish.md](../algorithms/Fish.md) | what search actually matches |
 
 Does **not** cover physical representation (file format, database engine, migrations), which is
 settled once the games make their access patterns clear. Does **not** cover the games themselves,
@@ -56,11 +57,17 @@ what to hide, not a new schema.
   composite key and collides whenever two clades share a characteristic.
 - **Practice state lives on edge tables only.** Games test relationships; a node on its own has
   nothing to get wrong.
-- **`level` is an enum, not free text.** Games ask for a rank by name, so the set of ranks has to be
-  closed and comparable.
-- **The parent chain may skip ranks.** Real taxonomy has gaps — a species whose genus is unknown
-  sits directly under a family — so adjacency is not enforced; only strict rank ordering is.
+- **`level` is an enum, not free text.** Games ask for a level by name, so the set of levels has to
+  be closed and comparable.
+- **The parent chain may skip levels.** Real taxonomy has gaps — a species whose genus is unknown
+  sits directly under a family — so adjacency is not enforced; only strict level ordering is.
 - **Images are nodes, reusable across clades.** One plate often illustrates a genus and a species.
+- **Chose one source per image and per character** — where it was first seen. Several citations for
+  one claim would need a card with several source slots and an answer that is a set rather than a
+  value. Worth knowing this forecloses recording a second paper that reports the same character.
+- **Characters are never shared.** A character describes one clade, so it is edged to exactly one —
+  which is the other half of why it gets a surrogate id, and what keeps a `character_src` edge
+  unambiguous about whose it is.
 - **Chose WebP as the only stored image format**, so nothing records a content type and every image
   is served the same way. Uploads are converted, so what the player pastes in does not matter. See
   [Stack.md](../Stack.md).
@@ -99,7 +106,7 @@ Entered by hand from the sources being read.
 | `characters` | `char_id` (PK), `text`, `created`               |
 | `sources`    | `src` (PK, generated), `author`, `year`, `title`, `created` |
 
-- `clades.name` is the scientific name at any rank — `Artificialus claudus` (species) and
+- `clades.name` is the scientific name at any level — `Artificialus claudus` (species) and
   `Artificialus` (genus) are both rows.
 - `sources.author` is the primary author's last name.
 - `images.img` is the image itself, always WebP. It lives on disk rather than in the database, named
@@ -115,6 +122,12 @@ is the pair of node keys.
 | `clade_parent_edges`     | `name`, `parent` → `clades`                 | placement in the tree      |
 | `clade_image_edges`      | `name` → `clades`, `img_id` → `images`      | this pictures that clade   |
 | `clade_character_edges`  | `name` → `clades`, `char_id` → `characters` | this clade is told by that |
+
+`char_id` appears in at most one `clade_character_edges` row — a character belongs to one clade. An
+`img_id` may appear in several, which is what makes an image shareable.
+
+`img_id` and `char_id` each appear in at most one **source** edge: a fact has one source, the place
+it was first seen. A card therefore has exactly one citation slot.
 | `image_src_edges`        | `img_id` → `images`, `src` → `sources`      | where the image came from  |
 | `character_src_edges`    | `char_id` → `characters`, `src` → `sources` | where the claim came from  |
 
@@ -136,7 +149,7 @@ Rules:
 - `clade_parent_edges.parent` must sit at a **strictly broader** level than `name`.
 - Adjacency is not required — `species` may sit directly under `family`.
 - A clade has at most one parent. A clade with no parent row is a root.
-- Adding a rank is a schema change, deliberately: the set stays small or the games get vague.
+- Adding a level is a schema change, deliberately: the set stays small or the games get vague.
 
 ### Naming
 

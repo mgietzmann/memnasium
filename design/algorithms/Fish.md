@@ -56,7 +56,7 @@ stemming, no fuzzy distance, no transposition tolerance.
 ### Matching clades
 
 ```
-GET /api/fish/clades?q=<query>&level=<rank>
+GET /api/fish/clades?q=<query>&level=<level>
 ```
 
 A clade matches when the normalised query is:
@@ -70,7 +70,7 @@ A clade matches when the normalised query is:
 Matching a word of the scientific name is what lets a species be found by its specific epithet
 without typing the genus.
 
-`level`, when given, restricts results to that rank — the walk asking *is there a genus called
+`level`, when given, restricts results to that level — the walk asking *is there a genus called
 this*.
 
 ### Ranking

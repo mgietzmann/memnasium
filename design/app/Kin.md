@@ -45,6 +45,9 @@ calls it makes ([../api/Kin.md](../api/Kin.md)); or getting here
 - **Chose to consume nothing** — citations and clades stay selectable after use — so the board
   cannot be solved by elimination.
 - **Chose to confirm Move on**, because taking it on an unsubmitted board fails every edge at once.
+- **Chose to show the answers after Move on** rather than returning straight to the group picker. A
+  player who gave up has already paid for the miss; sending them away without the answer means they
+  learned nothing from it.
 
 ## Design
 
@@ -67,6 +70,7 @@ A header carrying the day's state, and the board beneath it.
 | not generated     | **Generate today's set**                         |
 | between groups    | group size picker, then **Start**                |
 | board in progress | anchors left, with **Submit** / **Move on** below |
+| board ended       | the filled-in board, and **Next**                  |
 
 Finishing a board returns the player to the between-groups state with the count updated, so the loop
 is pick a size → play → pick a size. When no anchors are left the screen says the day is done.
@@ -80,8 +84,8 @@ is pick a size → play → pick a size. When no anchors are left the screen say
                                       pick size        all locked
                                            ▼            or Move on
                                     ┌──────────────┐         │
-                        ┌───────────│    board     │─────────┘
-                    close app       └──────────────┘
+                        ┌───────────│    board     │──►[ answers ]
+                    close app       └──────────────┘   Next
                    (resumes as it was)
 ```
 
@@ -152,6 +156,20 @@ Every blank must be filled before **Submit** enables — there is no partial sub
 correct slots **lock** and incorrect ones clear for the player to fill again. This repeats until the
 board is fully locked, or the player takes **Move on**, which is always available and confirms
 first.
+
+**Move on** fills the board in rather than clearing it away: every remaining slot locks and shows
+what it should have been, and the player reads it before continuing.
+
+```
+   confirm            the answers            back to the picker
+ ┌───────────┐      ┌─────────────┐         ┌──────────────┐
+ │ Give up   │─────►│ board, all  │────────►│between groups│
+ │ this board│      │ slots locked│  Next   └──────────────┘
+ └───────────┘      └─────────────┘
+```
+
+A finished board reaches the same state — every slot locked — so the two endings look alike on
+screen and differ only in what was scored.
 
 How the three slot states look is [../standards/Style.md](../standards/Style.md). What a submission
 does to the counters is [../games/Kin.md](../games/Kin.md).

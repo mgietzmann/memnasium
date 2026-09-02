@@ -80,10 +80,16 @@ which links down to its own layers.
 ### The code
 
 ```
-api/       FastAPI — mirrors api/*.md
-app/       Vite + React + TypeScript — mirrors app/*.md
-data/      memnasium.sql (committed), memnasium.db (ignored), images/*.webp
-design/    these documents
+api/                    FastAPI — mirrors design/api/*.md
+app/                    Vite + React + TypeScript — mirrors design/app/*.md
+  package-lock.json     committed
+data/
+  memnasium.sql         the dump — committed
+  memnasium.db          the live database — gitignored
+  images/               WebP, named by img_id — committed
+design/                 these documents
+uv.lock                 committed
+Makefile
 ```
 
 A payload is defined once, as a Pydantic model, and the client's types are generated from it — see
@@ -114,8 +120,8 @@ Coined terms are defined here once and used identically everywhere. No synonyms.
 
 | Term          | Means                                                                   |
 | ------------- | ----------------------------------------------------------------------- |
-| **clade**     | a named group at any rank — a species, a genus, a family                 |
-| **level**     | a clade's rank, from a fixed enum: class … species                       |
+| **clade**     | a named group at any level — a species, a genus, a family                |
+| **level**     | how broad a clade is, from a fixed enum: class … species. What taxonomy calls a rank; this project only ever says *level* |
 | **character** | one distinguishing feature of a clade, written as text                   |
 | **image**     | a picture of a clade                                                     |
 | **source**    | a publication something was read in                                      |
@@ -130,7 +136,9 @@ Coined terms are defined here once and used identically everywhere. No synonyms.
 | ------------- | ----------------------------------------------------------------------- |
 | **game**      | one way of hiding part of the graph and asking for it back               |
 | **session**   | a day on which a set was generated                                       |
-| **set**       | the edges drawn for one session, carried over until spent                |
+| **set**       | the edges drawn for one session                                          |
+| **spent**     | a set whose anchors have all been dealt and played                       |
+| **carry-over** | a set outliving the day it was drawn: it is played to the end before another is drawn |
 | **due**       | an edge drawn to be answered, rather than shown filled in                |
 | **prefill**   | a slot shown already filled, because its edge was not drawn              |
 | **anchor**    | a clade with at least one due edge                                       |

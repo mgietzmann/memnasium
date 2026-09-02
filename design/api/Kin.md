@@ -32,17 +32,20 @@ read and write (see [../data/Kin.md](../data/Kin.md)), or entering fish (see [Fi
 
 ## Decisions
 
-- **Chose opaque slot handles over exposing `edge_id`.** Play `edge_id`s are unique only within
-  their own table, so a raw id would have to travel with its kind — the schema leaking onto the
-  wire. A handle unique to the board keeps the client from ever learning there are four tables.
+- **Chose derived slot handles over exposing `edge_id`.** Play `edge_id`s are unique only within
+  their own table, so a raw id would have to travel with its kind. A handle built from both is
+  stable without being stored, which it has to be — the client gets it from one request and sends it
+  back on another, across an app restart.
 - **Chose to send the whole board on submit** rather than saving slots as they are clicked, because
   a slot only becomes an answer at submission — see [../data/Kin.md](../data/Kin.md).
 - **Chose per-game state over a shared games endpoint.** Play tables are `kin_`-prefixed, so there
   is no cross-game query; the games list asks each game for its own state.
 - **Chose to keep images out of this API.** An image is knowledge, not play, so the board carries
   `img_id` and the bytes come from [Fish.md](Fish.md).
-- **Chose never to return the right answer.** A wrong slot comes back `"wrong"` and nothing else;
-  the only way to see the answer is to get it right or to take **Move on**.
+- **Chose never to return the right answer while a board is live.** A wrong slot comes back
+  `"wrong"` and nothing else. **Move on** ends the board and returns it with every value showing,
+  because a player who has given up has to be told what it was — failing and learning nothing is the
+  worst outcome a memory gym can produce.
 
 ## Design
 
@@ -65,7 +68,7 @@ GET /api/kin/state
 ```
 
 `generated_on` is null when no set exists. Together with `anchors_left` it is everything the games
-card needs — an exhausted set drawn today reads *done for today*, the same set read tomorrow reads
+card needs — a spent set drawn today reads *done for today*, the same set read tomorrow reads
 *not generated*. The full table is in [../app/Navigation.md](../app/Navigation.md).
 
 ### Generating a set
@@ -76,7 +79,7 @@ POST /api/kin/set   →  200, the same body as GET /api/kin/state
 
 Idempotent, and it honours carry-over: called twice in a day it returns the existing set, and called
 on a day whose previous set still has anchors left it returns that one rather than drawing a new
-one. A new set is drawn only when there is no set at all, or the one there is was exhausted on an
+one. A new set is drawn only when there is no set at all, or the one there is was spent on an
 earlier day — and drawing it drops the old set and its boards.
 
 ### Dealing a board
@@ -94,11 +97,11 @@ POST /api/kin/board          { "size": 3 }
                  {"src": 22, "label": "Okafor, 2021"} ],
   "cards": [
     { "kind": "image", "img_id": "8f21…",
-      "clade": {"slot": "a1", "state": "locked", "value": "Artificialus opus"},
-      "src":   {"slot": "a2", "state": "due",    "value": null} },
+      "clade": {"slot": "ci-41", "state": "locked", "value": "Artificialus opus"},
+      "src":   {"slot": "is-19", "state": "due",    "value": null} },
     { "kind": "character", "text": "three dorsal spines",
-      "clade": {"slot": "a3", "state": "due",    "value": null},
-      "src":   {"slot": "a4", "state": "locked", "value": 17} }
+      "clade": {"slot": "cc-7",  "state": "due",    "value": null},
+      "src":   {"slot": "cs-88", "state": "locked", "value": 17} }
   ] }
 ```
 
@@ -109,6 +112,14 @@ POST /api/kin/board          { "size": 3 }
 - A slot is `due` (blank, the player fills it) or `locked` (shown filled, not editable). `value` is
   a clade name on a clade slot and a `src` on a source slot.
 - `size` is a maximum. A short group comes back short, per [../games/Kin.md](../games/Kin.md).
+
+A **slot handle** is its edge's kind and id — `ci-41`, `cc-7`, `is-19`, `cs-88` for the four kinds in
+[../data/Kin.md](../data/Kin.md). Derived, never stored, and identical across requests and restarts,
+so a resumed board hands back the same handles. The client learns nothing from it but which slot it
+is talking about.
+
+A shared image's `src` slot carries the same handle on every board it appears on, because it is the
+same edge. Answering it on one board locks it on the other.
 
 `GET /api/kin/board` returns the same body for the board already open, which is how a board resumes
 after the app is closed. `404` when there is none.
@@ -131,16 +142,36 @@ client rather than the way the rule is enforced.
 
 `scored` is true only on the first submission, the one that moves
 `sessions_since_last_failed`. Later submissions re-lock and report, and change no counters.
-`complete` true means every slot is locked and the board is finished.
+`complete` true means every slot is locked and the board is finished — the same state `ended`
+records in [../data/Kin.md](../data/Kin.md).
 
 ### Moving on
 
 ```
-POST /api/kin/board/move-on   →  { "complete": true, "scored": true }
+POST /api/kin/board/move-on
 ```
 
-Ends the board as a give-up: everything not already locked scores as a miss and the anchors are
-spent. The client confirms before calling this — it can fail a whole board in one tap.
+Ends the board as a give-up: everything not already locked scores as a miss, every slot is locked,
+and the anchors are spent. The client confirms before calling this — it can fail a whole board in
+one tap.
+
+The response is the **completed board** — the same body as `POST /api/kin/board`, with every slot
+`locked` and carrying its true value:
+
+```json
+{ "board_id": 7, "level": "species", "ended": true, "scored": false,
+  "clades": [...], "citations": [...],
+  "cards": [ { "kind": "character", "text": "three dorsal spines",
+               "clade": {"slot": "cc-7", "state": "locked", "value": "Artificialus claudus"},
+               "src":   {"slot": "cs-88", "state": "locked", "value": 17} } ] }
+```
+
+So giving up teaches the answer. The screen shows it before moving on (see
+[../app/Kin.md](../app/Kin.md)).
+
+`scored` is true only when this was the board's **first** submission — `first_submitted` was null.
+Give up after having submitted once and the counters were already moved by that submission; move-on
+locks the rest and changes nothing, so it reports `false`.
 
 ### Errors
 

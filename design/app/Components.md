@@ -30,7 +30,8 @@ Covers the shared elements, their states, and where each one is used.
 
 Does **not** cover colour, type, or spacing (see [../standards/Style.md](../standards/Style.md)), or
 the screens themselves — [Navigation.md](Navigation.md), [Kin.md](Kin.md), [Fish.md](Fish.md).
-Framework-agnostic: no stack has been chosen.
+Components are described by state and behaviour, not by implementation; they are built in React (see
+[../Stack.md](../Stack.md)) but nothing here depends on that.
 
 ## Decisions
 

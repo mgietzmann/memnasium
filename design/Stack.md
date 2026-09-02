@@ -24,11 +24,12 @@ What memnasium is built out of, and how it is run.
 
 ## Scope
 
-Covers the technology choices, the repository layout, and the commands.
+Covers the technology choices and why each was made, how images are stored, and what git holds.
 
-Does **not** cover what is built — see the front doors at [games/Kin.md](games/Kin.md) and
-[data/Fish.md](data/Fish.md) — or code and test conventions, which are `standards/Code.md` and
-`standards/Tests.md`.
+Does **not** cover the repository tree or the commands — both are [Project.md](Project.md) — what is
+built (the front doors are [games/Kin.md](games/Kin.md) and [data/Fish.md](data/Fish.md)), or code
+and test conventions ([standards/Code.md](standards/Code.md),
+[standards/Tests.md](standards/Tests.md)).
 
 ## Decisions
 
@@ -88,18 +89,8 @@ node      brings npm
 
 ### Repository layout
 
-```
-api/                FastAPI application
-app/                Vite + React + TypeScript
-data/
-  memnasium.sql     the dump — committed
-  memnasium.db      the live database — gitignored
-  images/           WebP files, named by img_id — committed
-design/             these documents
-uv.lock             committed
-app/package-lock.json   committed
-Makefile
-```
+The tree is in [Project.md](Project.md), which is the one reference for it. What matters here is
+which parts of it are committed — see [Backup](#backup).
 
 ### Running it
 

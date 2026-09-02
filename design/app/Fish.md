@@ -39,7 +39,7 @@ Does **not** cover the data model (see [Fish.md](../data/Fish.md)), navigation t
   leave every genus and family board empty.
 - **Chose to walk the tree upward only as far as needed.** The walk stops at the first ancestor
   already in the database, so entering a second species in a known genus asks nothing extra.
-- **Chose to let the walk skip ranks**, matching [Fish.md](../data/Fish.md) — the entry form is where the
+- **Chose to let the walk skip levels**, matching [Fish.md](../data/Fish.md) — the entry form is where the
   gaps in real taxonomy actually arrive.
 - **Chose sticky fields with a cleared payload** after submit, because the slow part of entry is the
   clade and the source, and they are exactly what a run of entries has in common.
@@ -84,7 +84,7 @@ depends on whether it matched:
 | matches a clade   | common name and the whole ancestor chain fill in, read-only       |
 | no match          | offers **create**; the player picks a level and the walk begins   |
 
-The **walk** asks for the parent one rank at a time, broadest-narrowest order per
+The **walk** asks for the parent one level at a time, broadest-narrowest order per
 [Fish.md](../data/Fish.md), starting just above the new clade's level:
 
 ```
@@ -94,8 +94,8 @@ new: Artificialus claudus (species)
   └─ everything above Artificialidae is already known
 ```
 
-- Any rank may be **skipped**, which produces a parent edge that jumps a level.
-- The walk stops at the first rank whose answer already exists — that clade's own ancestors are
+- Any level may be **skipped**, which produces a parent edge that jumps one.
+- The walk stops at the first level whose answer already exists — that clade's own ancestors are
   already recorded, so there is nothing left to ask.
 - A skipped-to-root walk (no ancestor known, none supplied) leaves the new clade a root.
 

@@ -120,7 +120,7 @@ mono   ui-monospace, Menlo, Monaco, "Cascadia Mono", Consolas, monospace
 | scientific names       | *italic*, `text`                   |
 | common names           | roman, `muted`                     |
 | citations              | roman, `muted`, `author, year`     |
-| rank labels, counts    | `muted`, small caps or uppercase   |
+| level labels, counts   | `muted`, small caps or uppercase   |
 | character text         | roman, `text`                      |
 
 Scientific names are italic everywhere they appear — board, entry form, games list. That is the
