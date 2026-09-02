@@ -1,0 +1,1136 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "memnasium",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/fish/clades": {
+      "get": {
+        "tags": [
+          "fish"
+        ],
+        "summary": "Get Clades",
+        "description": "Search clades by scientific and common name, optionally at one level.",
+        "operationId": "get_clades_api_fish_clades_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Level"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Level"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CladeResult"
+                  },
+                  "title": "Response Get Clades Api Fish Clades Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fish/clades/{name}": {
+      "get": {
+        "tags": [
+          "fish"
+        ],
+        "summary": "Get Clade",
+        "description": "One clade and its ancestors. A `404` is the walk's signal that the clade is new.",
+        "operationId": "get_clade_api_fish_clades__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CladeDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fish/sources": {
+      "get": {
+        "tags": [
+          "fish"
+        ],
+        "summary": "Get Sources",
+        "description": "Search sources by author prefix, year, or a substring of the title.",
+        "operationId": "get_sources_api_fish_sources_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SourceResult"
+                  },
+                  "title": "Response Get Sources Api Fish Sources Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fish/characters": {
+      "post": {
+        "tags": [
+          "fish"
+        ],
+        "summary": "Post Character",
+        "description": "Enter a character: one transaction writing the clade chain, the source, and both edges.\n\nThe response is what the next submission should send, which is how the sticky form stops\ncreating and starts referring.",
+        "operationId": "post_character_api_fish_characters_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CharacterEntry"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterCreated"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fish/images": {
+      "post": {
+        "tags": [
+          "fish"
+        ],
+        "summary": "Post Image",
+        "description": "Enter an image: the same body as a character, with the file in place of the text.\n\nAny common format is accepted; the server scales it and stores WebP.",
+        "operationId": "post_image_api_fish_images_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_image_api_fish_images_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCreated"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fish/images/{img_id}": {
+      "get": {
+        "tags": [
+          "fish"
+        ],
+        "summary": "Get Image",
+        "description": "Serve a stored image. This is what a Kin board's image cards point at.",
+        "operationId": "get_image_api_fish_images__img_id__get",
+        "parameters": [
+          {
+            "name": "img_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Img Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kin/state": {
+      "get": {
+        "tags": [
+          "kin"
+        ],
+        "summary": "Get State",
+        "description": "What the games-list card shows.",
+        "operationId": "get_state_api_kin_state_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KinState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kin/set": {
+      "post": {
+        "tags": [
+          "kin"
+        ],
+        "summary": "Post Set",
+        "description": "Generate the day's draw. Idempotent, and it honours carry-over.",
+        "operationId": "post_set_api_kin_set_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KinState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kin/board": {
+      "get": {
+        "tags": [
+          "kin"
+        ],
+        "summary": "Get Board",
+        "description": "The open board, which is how a board resumes after the app is closed.",
+        "operationId": "get_board_api_kin_board_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Board"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "kin"
+        ],
+        "summary": "Post Board",
+        "description": "Deal a group. `size` is a maximum; a short group comes back short.",
+        "operationId": "post_board_api_kin_board_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DealRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Board"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kin/board/submit": {
+      "post": {
+        "tags": [
+          "kin"
+        ],
+        "summary": "Post Submit",
+        "description": "Answer the board. Correct slots lock; incorrect ones clear for another try.",
+        "operationId": "post_submit_api_kin_board_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kin/board/move-on": {
+      "post": {
+        "tags": [
+          "kin"
+        ],
+        "summary": "Post Move On",
+        "description": "Give the board up, and return it filled in \u2014 so giving up teaches the answer.",
+        "operationId": "post_move_on_api_kin_board_move_on_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Board"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ancestor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "level"
+        ],
+        "title": "Ancestor",
+        "description": "One step of a clade's parent chain."
+      },
+      "Board": {
+        "properties": {
+          "board_id": {
+            "type": "integer",
+            "title": "Board Id"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "ended": {
+            "type": "boolean",
+            "title": "Ended"
+          },
+          "scored": {
+            "type": "boolean",
+            "title": "Scored"
+          },
+          "clades": {
+            "items": {
+              "$ref": "#/components/schemas/PaletteClade"
+            },
+            "type": "array",
+            "title": "Clades"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            },
+            "type": "array",
+            "title": "Cards"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Labels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "level",
+          "ended",
+          "scored",
+          "clades",
+          "citations",
+          "cards",
+          "labels"
+        ],
+        "title": "Board",
+        "description": "One round: a group, its cards, and the two palettes.\n\nEvery card of every anchor comes down, prefilled where the edge was not drawn \u2014 most of a\nboard is `locked`."
+      },
+      "Body_post_image_api_fish_images_post": {
+        "properties": {
+          "json": {
+            "type": "string",
+            "title": "Json"
+          },
+          "image": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Image"
+          }
+        },
+        "type": "object",
+        "required": [
+          "json",
+          "image"
+        ],
+        "title": "Body_post_image_api_fish_images_post"
+      },
+      "Card": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "image",
+              "character"
+            ],
+            "title": "Kind"
+          },
+          "img_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Img Id"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "clade": {
+            "$ref": "#/components/schemas/Slot"
+          },
+          "src": {
+            "$ref": "#/components/schemas/Slot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "clade",
+          "src"
+        ],
+        "title": "Card",
+        "description": "One image or one character, with a clade slot above it and a source slot below."
+      },
+      "CharacterCreated": {
+        "properties": {
+          "clade": {
+            "type": "string",
+            "title": "Clade"
+          },
+          "source": {
+            "type": "integer",
+            "title": "Source"
+          },
+          "char_id": {
+            "type": "integer",
+            "title": "Char Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clade",
+          "source",
+          "char_id"
+        ],
+        "title": "CharacterCreated",
+        "description": "What the next submission should send, which is how the sticky form stops creating."
+      },
+      "CharacterEntry": {
+        "properties": {
+          "clade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/NewClade"
+              }
+            ],
+            "title": "Clade"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "$ref": "#/components/schemas/NewSource"
+              }
+            ],
+            "title": "Source"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clade",
+          "source",
+          "text"
+        ],
+        "title": "CharacterEntry",
+        "description": "One character, its clade and its source.\n\n`clade` and `source` are a reference-or-object union: a bare name or id means *reuse*, an\nobject means *create*. The client already did the lookups, so it says which it meant."
+      },
+      "Citation": {
+        "properties": {
+          "src": {
+            "type": "integer",
+            "title": "Src"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "src",
+          "label"
+        ],
+        "title": "Citation",
+        "description": "A chip in the citation pool, holding only the sources behind due `src` slots."
+      },
+      "CladeDetail": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "common_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Common Name"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Level"
+          },
+          "ancestors": {
+            "items": {
+              "$ref": "#/components/schemas/Ancestor"
+            },
+            "type": "array",
+            "title": "Ancestors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "common_name",
+          "level",
+          "ancestors"
+        ],
+        "title": "CladeDetail",
+        "description": "One clade and its ancestors, narrowest to broadest.\n\nThis is what the entry form's walk reads: a `404` instead means the clade is new."
+      },
+      "CladeResult": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "common_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Common Name"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "common_name",
+          "level"
+        ],
+        "title": "CladeResult",
+        "description": "A clade as a search result."
+      },
+      "DealRequest": {
+        "properties": {
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "size"
+        ],
+        "title": "DealRequest",
+        "description": "`size` is a maximum. A short group comes back short."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImageCreated": {
+        "properties": {
+          "clade": {
+            "type": "string",
+            "title": "Clade"
+          },
+          "source": {
+            "type": "integer",
+            "title": "Source"
+          },
+          "img_id": {
+            "type": "string",
+            "title": "Img Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clade",
+          "source",
+          "img_id"
+        ],
+        "title": "ImageCreated",
+        "description": "What the next submission should send, which is how the sticky form stops creating."
+      },
+      "KinState": {
+        "properties": {
+          "generated_on": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated On"
+          },
+          "anchors_total": {
+            "type": "integer",
+            "title": "Anchors Total"
+          },
+          "anchors_left": {
+            "type": "integer",
+            "title": "Anchors Left"
+          },
+          "open_board": {
+            "type": "boolean",
+            "title": "Open Board"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_on",
+          "anchors_total",
+          "anchors_left",
+          "open_board"
+        ],
+        "title": "KinState",
+        "description": "What the games-list card shows.\n\n`generated_on` is null when no set exists. Together with `anchors_left` it is everything the\ncard needs: a spent set drawn today reads *done for today*, the same set read tomorrow reads\n*not generated*."
+      },
+      "Level": {
+        "type": "string",
+        "enum": [
+          "class",
+          "order",
+          "suborder",
+          "family",
+          "subfamily",
+          "genus",
+          "species"
+        ],
+        "title": "Level",
+        "description": "How broad a clade is, from broadest to narrowest.\n\nAdding a member is a schema change, deliberately: the set stays small or the games get vague."
+      },
+      "NewAncestor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "level"
+        ],
+        "title": "NewAncestor",
+        "description": "A clade the walk found missing, to be created with the entry."
+      },
+      "NewClade": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "common_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Common Name"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Level"
+          },
+          "new_ancestors": {
+            "items": {
+              "$ref": "#/components/schemas/NewAncestor"
+            },
+            "type": "array",
+            "title": "New Ancestors"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "level"
+        ],
+        "title": "NewClade",
+        "description": "A clade to create, with the chain of ancestors that must be created above it.\n\n`new_ancestors` runs narrowest to broadest and `parent` names the existing clade the top of\nit hangs from. A `parent` of null makes the top of the chain a root."
+      },
+      "NewSource": {
+        "properties": {
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author",
+          "year",
+          "title"
+        ],
+        "title": "NewSource",
+        "description": "A source to create. Its `src` is assigned by the database."
+      },
+      "PaletteClade": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "common_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Common Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "common_name"
+        ],
+        "title": "PaletteClade",
+        "description": "A chip in the clade palette: the group's anchors, and nothing else."
+      },
+      "Slot": {
+        "properties": {
+          "slot": {
+            "type": "string",
+            "title": "Slot"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "due",
+              "locked"
+            ],
+            "title": "State"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slot",
+          "state",
+          "value"
+        ],
+        "title": "Slot",
+        "description": "One blank on a card.\n\n`due` is blank and the player fills it; `locked` is shown filled and is not editable.\n`value` is a clade name on a clade slot and a `src` on a source slot, and is null while the\nslot is live \u2014 the right answer is never returned to a board still being played."
+      },
+      "SourceResult": {
+        "properties": {
+          "src": {
+            "type": "integer",
+            "title": "Src"
+          },
+          "author": {
+            "type": "string",
+            "title": "Author"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "src",
+          "author",
+          "year",
+          "title",
+          "label"
+        ],
+        "title": "SourceResult",
+        "description": "A source as a search result, carrying the citation a chip displays."
+      },
+      "SubmitRequest": {
+        "properties": {
+          "slots": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slots"
+        ],
+        "title": "SubmitRequest",
+        "description": "Every due slot at once \u2014 a slot only becomes an answer at submission."
+      },
+      "SubmitResponse": {
+        "properties": {
+          "results": {
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "correct",
+                "wrong"
+              ]
+            },
+            "type": "object",
+            "title": "Results"
+          },
+          "complete": {
+            "type": "boolean",
+            "title": "Complete"
+          },
+          "scored": {
+            "type": "boolean",
+            "title": "Scored"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "complete",
+          "scored"
+        ],
+        "title": "SubmitResponse",
+        "description": "What one submission did.\n\n`scored` is true only on the first submission, the one that moves\n`sessions_since_last_failed`. `complete` true means every slot is locked and the board is\nfinished."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

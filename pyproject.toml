@@ -1,0 +1,51 @@
+[project]
+name = "memnasium"
+version = "0.1.0"
+description = "A gym for my memory."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pillow>=11.0",
+    "python-multipart>=0.0.12",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "hypothesis>=6.115",
+    "httpx2>=0.1",
+    "ruff>=0.7",
+    "mypy>=1.13",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "D", "ANN", "E722", "RUF"]
+# RUF001-003: the design docs use ─ and − in prose, and the code quotes them.
+ignore = ["D203", "D213", "ANN401", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D100", "D101", "D102", "D103", "D104"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["api", "tests"]
+warn_unreachable = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]

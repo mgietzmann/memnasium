@@ -1,0 +1,360 @@
+/* Layout. Depth comes from surface / raised, one step at a time — no shadows, no gradients.
+   Every gap is a multiple of the 8px base unit (design/standards/Style.md). */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--u2);
+  padding: var(--u2) var(--u3);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.link {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--accent);
+  font: inherit;
+}
+
+.app-main {
+  flex: 1;
+  padding: var(--u3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--u);
+  flex-wrap: wrap;
+}
+
+.row-end {
+  justify-content: flex-end;
+  margin-top: var(--u3);
+}
+
+/* ── home and the games list ─────────────────────────────────────────────── */
+
+.home,
+.games {
+  display: flex;
+  gap: var(--u2);
+  flex-wrap: wrap;
+}
+
+.home-card,
+.game-card {
+  flex: 1 1 260px;
+  text-align: left;
+  padding: var(--u3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.home-card p,
+.game-card p {
+  margin: var(--u) 0 0;
+}
+
+/* ── components ──────────────────────────────────────────────────────────── */
+
+.chip {
+  display: inline-block;
+  padding: var(--u) var(--u2);
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Selected is a doubled border, not a hue — it survives greyscale. */
+.chip-selected {
+  border: 2px solid var(--accent);
+  padding: calc(var(--u) - 1px) calc(var(--u2) - 1px);
+}
+
+.button {
+  padding: var(--u) var(--u2);
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: var(--raised);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.button-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.button:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: default;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--u);
+  width: 100%;
+  min-height: 34px;
+  padding: var(--u) var(--u2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+}
+
+/* empty — dashed outline, page ground, no text */
+.slot-empty {
+  border: 1px dashed var(--outline);
+  background: var(--bg);
+}
+
+/* filled — solid line border, raised fill */
+.slot-filled {
+  border: 1px solid var(--line);
+  background: var(--raised);
+}
+
+/* locked — solid accent border, raised fill, and a check glyph */
+.slot-locked {
+  border: 2px solid var(--accent);
+  background: var(--raised);
+  padding: calc(var(--u) - 1px) calc(var(--u2) - 1px);
+  cursor: default;
+}
+
+.slot-check {
+  color: var(--accent);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--u);
+  margin: var(--u2) 0;
+}
+
+.tab {
+  padding: var(--u) var(--u2);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.tab-active {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.input {
+  padding: var(--u) var(--u2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: inherit;
+  min-width: 0;
+  flex: 1 1 180px;
+}
+
+.input-inline {
+  flex: 0 0 auto;
+  min-width: 96px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--u);
+  margin-bottom: var(--u2);
+  position: relative;
+}
+
+.field-picked {
+  display: flex;
+  align-items: baseline;
+  gap: var(--u2);
+  flex-wrap: wrap;
+}
+
+.known {
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.result {
+  padding: var(--u) var(--u2);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  cursor: pointer;
+}
+
+.result:last-child {
+  border-bottom: 0;
+}
+
+.result-create {
+  color: var(--accent);
+}
+
+.modal-ground {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--u3);
+  max-width: 420px;
+}
+
+/* ── the entry form ──────────────────────────────────────────────────────── */
+
+.entry {
+  max-width: 760px;
+}
+
+.band {
+  padding: var(--u2) 0;
+  border-top: 1px solid var(--line);
+}
+
+.chain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--u);
+}
+
+.chain-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--u2);
+}
+
+.walk-step {
+  margin-top: var(--u2);
+  padding-left: var(--u2);
+  border-left: 2px solid var(--line);
+}
+
+/* ── the Kin board ───────────────────────────────────────────────────────── */
+
+.kin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--u2);
+  padding-bottom: var(--u2);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.kin-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--u2);
+  flex-wrap: wrap;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+  gap: var(--u3);
+  margin-top: var(--u3);
+  align-items: start;
+}
+
+.palette,
+.pool {
+  display: flex;
+  flex-direction: column;
+  gap: var(--u);
+  position: sticky;
+  top: var(--u2);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--u2);
+}
+
+.board-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--u);
+  padding: var(--u2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* The photo is the largest thing on screen and nothing competes with it for saturation. */
+.board-payload img {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius);
+}
+
+.board-payload p {
+  margin: var(--u) 0;
+}
+
+@media (width <= 900px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+
+  .palette,
+  .pool {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

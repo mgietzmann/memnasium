@@ -1,6 +1,6 @@
 # Fish algorithms
 
-**Status:** under implementation
+**Status:** implemented
 
 ## Table of Contents
 
