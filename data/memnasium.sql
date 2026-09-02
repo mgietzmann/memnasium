@@ -8,16 +8,29 @@ CREATE TABLE clades (
                               'subfamily', 'genus', 'species')),
     created     TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;
+INSERT INTO clades VALUES('Clupeidae',NULL,'family','2026-09-02 14:22:17');
+INSERT INTO clades VALUES('Clupeoidei',NULL,'suborder','2026-09-02 14:22:17');
+INSERT INTO clades VALUES('Clupeiformes',NULL,'order','2026-09-02 14:22:17');
+INSERT INTO clades VALUES('Actinopterygii',NULL,'class','2026-09-02 14:22:17');
+INSERT INTO clades VALUES('Clupea pallasii','Pacific herring','species','2026-09-02 14:28:16');
+INSERT INTO clades VALUES('Clupea',NULL,'genus','2026-09-02 14:28:16');
 CREATE TABLE images (
     img_id  TEXT PRIMARY KEY,
     img     TEXT NOT NULL,  -- the file under data/images, always WebP
     created TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;
+INSERT INTO images VALUES('72f8cdf71da649cdb34c87c19087da4b','72f8cdf71da649cdb34c87c19087da4b.webp','2026-09-02 14:26:15');
+INSERT INTO images VALUES('a6074cdbec3b4dda9a39c68d95f1620b','a6074cdbec3b4dda9a39c68d95f1620b.webp','2026-09-02 14:29:06');
 CREATE TABLE characters (
     char_id INTEGER PRIMARY KEY,
     text    TEXT NOT NULL,
     created TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;
+INSERT INTO characters VALUES(1,'Scutes present along the belly','2026-09-02 14:22:17');
+INSERT INTO characters VALUES(2,'Maxillae not extending posteriorly past eyes','2026-09-02 14:23:04');
+INSERT INTO characters VALUES(3,'No lateral black spots','2026-09-02 14:28:16');
+INSERT INTO characters VALUES(4,'No striations on the operculum','2026-09-02 14:28:45');
+INSERT INTO characters VALUES(5,'No enlarged scales on the base of the caudal fin','2026-09-02 14:28:59');
 CREATE TABLE sources (
     src     INTEGER PRIMARY KEY,
     author  TEXT NOT NULL,
@@ -25,6 +38,7 @@ CREATE TABLE sources (
     title   TEXT NOT NULL,
     created TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;
+INSERT INTO sources VALUES(1,'Mecklenburg',2002,'Fishes of Alaska','2026-09-02 14:22:17');
 CREATE TABLE clade_parent_edges (
     name                       TEXT NOT NULL REFERENCES clades(name),
     parent                     TEXT NOT NULL REFERENCES clades(name),
@@ -32,6 +46,11 @@ CREATE TABLE clade_parent_edges (
     created                    TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (name, parent)
 ) STRICT;
+INSERT INTO clade_parent_edges VALUES('Clupeidae','Clupeoidei',0,'2026-09-02 14:22:17');
+INSERT INTO clade_parent_edges VALUES('Clupeoidei','Clupeiformes',0,'2026-09-02 14:22:17');
+INSERT INTO clade_parent_edges VALUES('Clupeiformes','Actinopterygii',0,'2026-09-02 14:22:17');
+INSERT INTO clade_parent_edges VALUES('Clupea pallasii','Clupea',0,'2026-09-02 14:28:16');
+INSERT INTO clade_parent_edges VALUES('Clupea','Clupeidae',0,'2026-09-02 14:28:16');
 CREATE TABLE clade_image_edges (
     name                       TEXT NOT NULL REFERENCES clades(name),
     img_id                     TEXT NOT NULL REFERENCES images(img_id),
@@ -39,6 +58,8 @@ CREATE TABLE clade_image_edges (
     created                    TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (name, img_id)
 ) STRICT;
+INSERT INTO clade_image_edges VALUES('Clupeidae','72f8cdf71da649cdb34c87c19087da4b',0,'2026-09-02 14:26:15');
+INSERT INTO clade_image_edges VALUES('Clupea pallasii','a6074cdbec3b4dda9a39c68d95f1620b',0,'2026-09-02 14:29:06');
 CREATE TABLE clade_character_edges (
     name                       TEXT NOT NULL REFERENCES clades(name),
     char_id                    INTEGER NOT NULL REFERENCES characters(char_id),
@@ -46,6 +67,11 @@ CREATE TABLE clade_character_edges (
     created                    TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (name, char_id)
 ) STRICT;
+INSERT INTO clade_character_edges VALUES('Clupeidae',1,0,'2026-09-02 14:22:17');
+INSERT INTO clade_character_edges VALUES('Clupeidae',2,0,'2026-09-02 14:23:04');
+INSERT INTO clade_character_edges VALUES('Clupea pallasii',3,0,'2026-09-02 14:28:16');
+INSERT INTO clade_character_edges VALUES('Clupea pallasii',4,0,'2026-09-02 14:28:45');
+INSERT INTO clade_character_edges VALUES('Clupea pallasii',5,0,'2026-09-02 14:28:59');
 CREATE TABLE image_src_edges (
     img_id                     TEXT NOT NULL REFERENCES images(img_id),
     src                        INTEGER NOT NULL REFERENCES sources(src),
@@ -53,6 +79,8 @@ CREATE TABLE image_src_edges (
     created                    TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (img_id, src)
 ) STRICT;
+INSERT INTO image_src_edges VALUES('72f8cdf71da649cdb34c87c19087da4b',1,0,'2026-09-02 14:26:15');
+INSERT INTO image_src_edges VALUES('a6074cdbec3b4dda9a39c68d95f1620b',1,0,'2026-09-02 14:29:06');
 CREATE TABLE character_src_edges (
     char_id                    INTEGER NOT NULL REFERENCES characters(char_id),
     src                        INTEGER NOT NULL REFERENCES sources(src),
@@ -60,6 +88,11 @@ CREATE TABLE character_src_edges (
     created                    TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (char_id, src)
 ) STRICT;
+INSERT INTO character_src_edges VALUES(1,1,0,'2026-09-02 14:22:17');
+INSERT INTO character_src_edges VALUES(2,1,0,'2026-09-02 14:23:04');
+INSERT INTO character_src_edges VALUES(3,1,0,'2026-09-02 14:28:16');
+INSERT INTO character_src_edges VALUES(4,1,0,'2026-09-02 14:28:45');
+INSERT INTO character_src_edges VALUES(5,1,0,'2026-09-02 14:28:59');
 CREATE TABLE kin_sets (
     set_id       INTEGER PRIMARY KEY,
     generated_on TEXT NOT NULL  -- the date the draw was made, YYYY-MM-DD
