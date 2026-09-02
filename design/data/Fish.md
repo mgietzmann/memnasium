@@ -1,10 +1,10 @@
-# Data
+# Fish
 
 **Status:** drafted
 
 ## Table of Contents
 
-- [Data](#data)
+- [Fish](#fish)
   - [Table of Contents](#table-of-contents)
   - [Purpose](#purpose)
   - [Scope](#scope)
@@ -20,16 +20,23 @@
 
 ## Purpose
 
-Defines the data memnasium stores for the fish identification games: what a fact is, how facts
+Defines the knowledge memnasium stores for the fish identification games: what a fact is, how facts
 connect, and where the per-fact practice state lives.
 
 ## Scope
 
-Covers the logical data model — tables, columns, keys, and the rules that hold between them.
+Covers the logical data model — tables, columns, keys, and the rules that hold between them. This
+is the knowledge side's front door — the rest of it:
+
+| Layer  | Doc                                | Answers                        |
+| ------ | ---------------------------------- | ------------------------------ |
+| screen | [app/Fish.md](../app/Fish.md)      | how knowledge is entered        |
+| wire   | [api/Fish.md](../api/Fish.md)      | what the client calls           |
 
 Does **not** cover physical representation (file format, database engine, migrations), which is
-settled once the games make their access patterns clear. Does **not** cover the games themselves or
-the scheduling algorithm that reads `sessions_since_last_failed`.
+settled once the games make their access patterns clear. Does **not** cover the games themselves,
+the scheduling algorithm that reads `sessions_since_last_failed`, or the tables a game keeps while
+it is being played (see [Kin.md](Kin.md) for Kin's).
 
 ## Background
 
@@ -54,6 +61,9 @@ what to hide, not a new schema.
 - **The parent chain may skip ranks.** Real taxonomy has gaps — a species whose genus is unknown
   sits directly under a family — so adjacency is not enforced; only strict rank ordering is.
 - **Images are nodes, reusable across clades.** One plate often illustrates a genus and a species.
+- **Chose WebP as the only stored image format**, so nothing records a content type and every image
+  is served the same way. Uploads are converted, so what the player pastes in does not matter. See
+  [Stack.md](../Stack.md).
 - **Every fact carries a source.** The point of the gym is to recall the citation with the fact, so
   images and characters both edge to `sources`.
 
@@ -92,7 +102,8 @@ Entered by hand from the sources being read.
 - `clades.name` is the scientific name at any rank — `Artificialus claudus` (species) and
   `Artificialus` (genus) are both rows.
 - `sources.author` is the primary author's last name.
-- `images.img` is the image itself; how it is stored is a representation question, out of scope here.
+- `images.img` is the image itself, always WebP. It lives on disk rather than in the database, named
+  by `img_id` — see [Stack.md](../Stack.md).
 
 ### Edge tables
 
@@ -110,7 +121,7 @@ is the pair of node keys.
 `sessions_since_last_failed` counts consecutive **sessions** in which the edge was recalled on the
 first attempt, and resets to zero on a miss. Retries within a session do not move it. It is the
 input to scheduling, which decays how often an edge is shown as the count climbs (see
-[games/Kin.md](games/Kin.md)).
+[games/Kin.md](../games/Kin.md)).
 
 ### Levels
 

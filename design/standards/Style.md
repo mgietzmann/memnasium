@@ -25,7 +25,7 @@ the type and spacing everything is built from.
 
 Covers colour, typography, spacing, and how interface state is encoded.
 
-Does **not** cover what any screen contains — see [app/Games.md](../app/Games.md), [app/Entry.md](../app/Entry.md), and
+Does **not** cover what any screen contains — see [app/Kin.md](../app/Kin.md), [app/Fish.md](../app/Fish.md), and
 [games/Kin.md](../games/Kin.md).
 
 ## Decisions
@@ -91,7 +91,7 @@ never be the only thing carrying it.
 
 ### Board states
 
-The three states of a slot in Kin, each separated by border and fill before any colour is applied:
+The three states of a slot in [Kin](../app/Kin.md), each separated by border and fill before any colour is applied:
 
 ```
    empty              filled                locked

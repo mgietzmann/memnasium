@@ -1,10 +1,10 @@
-# Entry
+# Fish entry
 
 **Status:** drafted
 
 ## Table of Contents
 
-- [Entry](#entry)
+- [Fish entry](#fish-entry)
   - [Table of Contents](#table-of-contents)
   - [Purpose](#purpose)
   - [Scope](#scope)
@@ -29,17 +29,17 @@ characters for one fish costs barely more than entering one.
 Covers the data entry screen: its fields, how a clade is resolved or created, and what a submission
 writes.
 
-Does **not** cover the data model (see [Data.md](../Data.md)), navigation to this screen (see
+Does **not** cover the data model (see [Fish.md](../data/Fish.md)), navigation to this screen (see
 [Navigation.md](Navigation.md)), or any game.
 
 ## Decisions
 
-- **Chose a clade field over a species field.** [Data.md](../Data.md) hangs characters and images off
+- **Chose a clade field over a species field.** [Fish.md](../data/Fish.md) hangs characters and images off
   any clade, and [Kin](../games/Kin.md) builds boards at any level — a species-only form would
   leave every genus and family board empty.
 - **Chose to walk the tree upward only as far as needed.** The walk stops at the first ancestor
   already in the database, so entering a second species in a known genus asks nothing extra.
-- **Chose to let the walk skip ranks**, matching [Data.md](../Data.md) — the entry form is where the
+- **Chose to let the walk skip ranks**, matching [Fish.md](../data/Fish.md) — the entry form is where the
   gaps in real taxonomy actually arrive.
 - **Chose sticky fields with a cleared payload** after submit, because the slow part of entry is the
   clade and the source, and they are exactly what a run of entries has in common.
@@ -85,7 +85,7 @@ depends on whether it matched:
 | no match          | offers **create**; the player picks a level and the walk begins   |
 
 The **walk** asks for the parent one rank at a time, broadest-narrowest order per
-[Data.md](../Data.md), starting just above the new clade's level:
+[Fish.md](../data/Fish.md), starting just above the new clade's level:
 
 ```
 new: Artificialus claudus (species)

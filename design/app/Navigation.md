@@ -12,6 +12,7 @@
   - [Design](#design)
     - [Map](#map)
     - [Home](#home)
+    - [Games](#games)
 
 ## Purpose
 
@@ -20,10 +21,10 @@ the doc that says so.
 
 ## Scope
 
-Covers the top-level map and the home screen.
+Covers the top-level map, the home screen, and the games list.
 
-Does **not** cover the games list or a game screen (see [Games.md](Games.md)), data entry (see
-[Entry.md](Entry.md)), or how anything looks (see [standards/Style.md](../standards/Style.md)).
+Does **not** cover any game's own screen (see [Kin.md](Kin.md)), entering fish (see
+[Fish.md](Fish.md)), or how anything looks (see [../standards/Style.md](../standards/Style.md)).
 
 ## Decisions
 
@@ -31,14 +32,19 @@ Does **not** cover the games list or a game screen (see [Games.md](Games.md)), d
   do and persistent chrome would be chrome around nothing.
 - **Chose to land on home rather than on today's game**, so opening the app to add a note does not
   route through the games list.
+- **Chose a card per game showing that game's own state** over a plain list, because the only thing
+  worth knowing at a glance is whether today's work is done.
+- **Chose to let each game report its own state.** Play tables are per-game (see
+  [../data/Kin.md](../data/Kin.md)), so there is no shared query and the list is a row of answers,
+  not one.
 
 ## Design
 
 ### Map
 
 ```
-Home ──┬──► Games ──► Game screen ──► board
-       └──► Entry
+Home ──┬──► Games ──► a game's screen
+       └──► Fish entry
 ```
 
 ### Home
@@ -51,3 +57,30 @@ Two cards, nothing else.
 │  play today's sets  │  │  add what you read  │
 └─────────────────────┘  └─────────────────────┘
 ```
+
+### Games
+
+One card per game, each showing whatever state that game reports.
+
+```
+┌──────────────────────────┐  ┌──────────────────────────┐
+│ Kin                      │  │ <next game>              │
+│ 5 / 12 anchors           │  │ not generated            │
+└──────────────────────────┘  └──────────────────────────┘
+```
+
+| Set's `generated_on` | Anchors left | Shown             |
+| -------------------- | ------------ | ----------------- |
+| no set at all        | —            | `not generated`   |
+| today                | `n`          | `0 / n anchors`   |
+| today                | some         | `k / n anchors`   |
+| today                | none         | `done for today`  |
+| before today         | some         | `k / n anchors`   |
+| before today         | none         | `not generated`   |
+
+A set outlives the day it was drawn on, so the date it was drawn is what separates *finished today*
+from *never started*. A set left unfinished is picked up where it was, with no new draw — that is
+carry-over. A set finished on an earlier day is spent, and the next generate replaces it.
+
+Progress is counted in **anchors resolved**, not edges — it is the unit the player chooses in and
+the only one they can feel.

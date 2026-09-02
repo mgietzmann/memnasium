@@ -67,5 +67,12 @@ used identically everywhere — no synonyms.
 
 ## Stack
 
-Not chosen yet. When it is, this section gets the real build/test/lint commands and the design-doc
-gate applies to that choice too.
+FastAPI + SQLite + Vite/React/TypeScript, run in the browser off one local process.
+
+```
+make run
+```
+
+Every other command is in [design/Project.md](design/Project.md); why the stack is what it is, and
+the storage and backup rules, are in [design/Stack.md](design/Stack.md). `data/memnasium.db` is
+never committed — git holds the SQL dump and the WebP images instead.

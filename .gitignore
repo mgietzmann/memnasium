@@ -1,0 +1,6 @@
+data/memnasium.db
+node_modules/
+__pycache__/
+.venv/
+app/dist/
+.DS_Store
