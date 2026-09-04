@@ -1,6 +1,6 @@
 # API
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -73,12 +73,12 @@ App only. None of these is an MCP tool.
 | Route | Does |
 |---|---|
 | `GET /home` | the three backlog counts and today's draw status |
-| `POST /draw` | build today's draw. Idempotent — reports the day's numbers if it exists |
-| `GET /draw` | due pairs, boards, roll pairs remaining today |
-| `GET /draw/boards?n=` | the next *n* boards: a group, its due pairs, and its context pairs with answers and sources |
-| `GET /draw/roll?n=` | *n* due roll pairs |
+| `POST /draw` | build today's draw. Idempotent on the `draw_day` marker — a date that already has one is reported, never redrawn |
+| `GET /draw` | the **current** draw — the one most recently built — or `null` if none has ever been built |
+| `GET /draw/boards?n=` | the next *n* boards of the current draw: a group, its due pairs, and its context pairs with answers and sources |
+| `GET /draw/roll?n=` | *n* due roll pairs of the current draw |
 | `POST /grade` | a board's typed answers → verdicts. The only Claude call; writes nothing |
-| `POST /confirm` | the transaction in [flows/Drilling.md](../flows/Drilling.md#writes) |
+| `POST /confirm` | the transaction in [flows/Drilling.md](../flows/Drilling.md#writes), against the current draw's day |
 
 `GET /home` returns:
 
@@ -91,7 +91,19 @@ App only. None of these is an MCP tool.
 }
 ```
 
-`draw` is `null` before the day's draw is built.
+```json
+{ "day": "2026-09-03", "drawn": 118, "due": 34, "boards": 6, "roll": 4 }
+```
+
+`draw` is the **current** draw — the latest `draw_day` — and is `null` only when
+none has ever been built. A morning worked to the end returns `drawn` with zeros
+beside it, not `null`, or the app would read a finished day as an unbuilt one and
+offer to draw it again.
+
+`day` may be earlier than today, and that is not an error: it means the current
+draw was built before midnight, or several days ago and never replaced. `confirm`
+writes against that day, so a board answered at 00:01 commits normally. `POST
+/draw` is what ends a draw, not the clock. See [Data.md](../Data.md#the-draw).
 
 ### Entry and lookup
 
@@ -191,5 +203,5 @@ are rules rather than accidents:
 | a roll placement for a note that has a group placement | [Data.md](../Data.md#decisions) |
 | a second placement of a note into the same group | `UNIQUE (note_id, group_id)` — on `POST` **and** on a `PATCH` move into a group the note is already in |
 | retiring the last live pair of a placement | it would leave a placement that reads as pairless and re-enter the wordsmithing queue forever |
-| `POST /confirm` for a board whose pairs are no longer in today's draw | it was already confirmed |
+| `POST /confirm` for a board whose pairs are no longer in the current draw | it was already confirmed, or a newer draw has since replaced it |
 | a grade response that fails validation twice | [Claude.md](../Claude.md#enforcing-the-contract) |

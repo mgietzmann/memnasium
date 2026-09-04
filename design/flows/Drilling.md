@@ -1,6 +1,6 @@
 # Drilling
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -46,6 +46,14 @@ the screen's layout (see [app/Drilling.md](../app/Drilling.md)), the wording of 
   changes nothing.
 - **The draw is built by a button, not on open.** Seeing "14 boards · 118 due"
   before starting is worth the click.
+- **The clock never ends a board.** A board started before midnight and answered
+  after it is the same board: the current draw is the one most recently built, not
+  the one matching today's date. See [Data.md](../Data.md#the-draw).
+- **Built once a day, and the day remembers it.** Drilling consumes draw rows, so
+  a morning worked to the end empties them — and if "built" meant "has rows", the
+  button would come back and draw the same day again, drilling pairs twice. A
+  `draw_day` marker records that the day was built. See
+  [Data.md](../Data.md#the-draw).
 - **`N` is a pacing commitment, not a batch.** Asking for three boards gives three
   boards in sequence, each with its own submit, grade and confirm. One board per
   Claude call; a confirm never spans groups.
@@ -73,7 +81,7 @@ the screen's layout (see [app/Drilling.md](../app/Drilling.md)), the wording of 
 ### The flow
 
 ```
-build the draw ──▶ "14 boards · 118 due · 22 on the roll"
+build the draw ──▶ "118 drawn · 34 due · 6 boards · 4 on the roll"
                         │
             ┌───────────┴───────────┐
       do N boards              do N from the roll
@@ -83,17 +91,28 @@ build the draw ──▶ "14 boards · 118 due · 22 on the roll"
 
 ### Building the draw
 
-A button, once a day. Every `recall_pair` flips its own coin at
+A button, once a day. Every live `recall_pair` flips its own coin at
 `p = e^(-α · sessions_correct)` — see [Data.md](../Data.md#background) — and each
-winner gets a `draw` row for today. There is no cap; the draw is however big it
-comes out.
+winner gets a `draw` row for today, alongside a `draw_day` marker recording the
+date and the size of the draw. There is no cap; the draw is however big it comes
+out.
 
-Idempotent: if today already has draw rows, the button reports the day's numbers
-rather than drawing again. Building today's draw first deletes any rows left from
-earlier days — an undrilled pair had no session, its counter is untouched, and it
-has already flipped again today on equal terms.
+Idempotent on the marker: once today has been built the button is gone for the
+rest of the day, whether or not any of it is left. Building first deletes the rows
+of every earlier draw — an undrilled pair had no session, its counter is untouched,
+and it has already flipped again on equal terms.
+
+Until that next build, the previous draw is still **the current draw** and is
+still workable. That is what makes a sitting survive midnight, and it is why a
+morning after several days away shows the remains of the last draw with the Build
+button beside it.
 
 ### The fork
+
+Once the day is built, this is where every board and batch is started from, and
+where the morning ends. When the last pair has been confirmed the numbers read
+zero and the fork says so — `118 drawn · none left` — rather than offering to
+build again.
 
 The draw splits by placement. Drawn pairs whose placement has a group become
 **boards**, one per group; drawn pairs on the roll are loose. The user picks a
@@ -160,8 +179,10 @@ tomorrow's build.
 ### Stopping early
 
 Stopping is walking away. Pairs still holding `draw` rows were never sessions:
-their `sessions_correct` is untouched, no miss is recorded, and tomorrow's build
+their `sessions_correct` is untouched, no miss is recorded, and the next build
 sweeps the rows and flips them again at exactly the same odds.
+
+Nothing expires at midnight. What ends a draw is the next one being built.
 
 ### Writes
 

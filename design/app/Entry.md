@@ -1,6 +1,6 @@
 # Entry (screen)
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -88,6 +88,8 @@ all — as it is typed, so what will appear on a board is known before saving.
 ### Entered today
 
 The notes saved since the screen was opened, newest first, with their id and the opening of
-their statement. `✎` edits one in place; `✕` deletes it. Both are present only while
-`placed` is false on the note — `GET /notes` reports it, so the controls go away
-the moment [grouping](../flows/Grouping.md) has run rather than only on reload.
+their statement. `✎` edits one in place; `✕` deletes it. Both are present only while `placed` is false on the note, which `GET /notes`
+reports. The list holds what this screen has saved, and a note is read once when
+it is saved, so in practice the controls are there for everything on it — the flag
+is what stops a note that has since been
+[grouped](../flows/Grouping.md) offering them after a reload.

@@ -1,6 +1,6 @@
 # Drilling (screens)
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -37,6 +37,11 @@ Does **not** cover the loop's rules, grading, or what gets written (see
   independently.
 - **One screen, three states.** Answering, graded, confirmed. A board does not
   navigate anywhere to show its results.
+- **The Build button appears only when today has no draw of its own.** Not "only
+  while pairs remain" — a morning worked to the end must not offer to draw itself
+  again — and not "only today", because the screen keeps serving the current draw
+  after midnight so a sitting is never ended by the clock. See
+  [Data.md](../Data.md#the-draw).
 - **`N` sticks.** The same number gets typed every morning; the last one used is
   remembered per mode.
 - **A roll batch is the board screen minus the context column.** Not a second
@@ -46,25 +51,28 @@ Does **not** cover the loop's rules, grading, or what gets written (see
 
 ### Drill home
 
-Before the draw is built, this screen is one button.
+Before any draw has ever been built, this screen is one button. Afterwards it
+shows the current draw, and offers Build only when that draw is not today's.
 
 ```
 ┌────────────────────────────────────────────────────────────┐
 │  ← Home                                            Drill   │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│    Today's draw — 3 Sep                                    │
+│    The draw — 3 Sep · 118 drawn                            │
 │                                                            │
-│      118  due pairs                                        │
-│       14  boards            [ 3 ]  [  Work boards  ]       │
-│       22  on the roll       [ 10 ] [  Work the roll  ]     │
+│       34  due pairs                                        │
+│        6  boards            [ 3 ]  [  Work boards  ]       │
+│        4  on the roll       [ 10 ] [  Work the roll  ]     │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
 ```
 
-The three numbers fall as the morning is worked. `[ 3 ]` and `[ 10 ]` hold the
-last values used. A mode with nothing left in it has its row and control
-disabled.
+The three numbers fall as the morning is worked; `drawn` does not. `[ 3 ]` and
+`[ 10 ]` hold the last values used. A mode with nothing left in it has its row and
+control disabled, and a draw worked to the end leaves the screen reading
+`118 drawn · none left` with no way to draw again until tomorrow. A draw whose
+date is not today keeps its `[ Build today's draw ]` button, which replaces it.
 
 ### A board
 

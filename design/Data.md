@@ -1,6 +1,6 @@
 # Data
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -105,6 +105,21 @@ A new pair sits at 0, so `p = 1` and its first appearance is guaranteed.
   times" is worth having and costs a few kilobytes.
 - **A contested grade writes nothing.** Contesting means the miss was never a
   miss, so there is no row and no correction to reconcile later.
+- **`draw_day` says whether the day's draw was built; the `draw` rows cannot.**
+  Drilling deletes draw rows, so an empty table means either "not built yet" or
+  "built and finished", and inferring idempotence from it lets a worked-out day be
+  drawn again — drilling the same pair twice in a morning and inflating its
+  counter. The marker states the fact instead of guessing at it.
+- **The current draw is the latest one built, not today's.** A board started at
+  23:58 and answered at 00:01 must not die of the calendar. The date decides only
+  whether the Build button is offered; every read and every write works against
+  the most recently built draw, which stays current until the next one replaces
+  it.
+- **One clock: a miss is dated by its draw, not by the wall.** Confirming a
+  Tuesday board on Wednesday records Tuesday, because that is the draw it belonged
+  to. Two clocks would need reconciling and buy nothing.
+- **The marker carries `drawn`.** Without it a finished morning reads as nothing
+  but zeros. One integer, written once, and Home can say `118 drawn · 34 left`.
 - **Undrilled draw rows are swept, not carried.** They were never sessions, so
   nothing is owed to them; the pair flips again tomorrow at the same `p`.
 
@@ -156,6 +171,13 @@ CREATE TABLE recall_pair (
     answer           TEXT NOT NULL,
     sessions_correct INTEGER NOT NULL DEFAULT 0,
     retired          INTEGER NOT NULL DEFAULT 0    -- 0/1; no longer drilled or shown
+);
+
+-- One row per day the draw was built. The rows in `draw` are consumed by
+-- drilling, so they cannot answer "was today's draw built?".
+CREATE TABLE draw_day (
+    day   TEXT PRIMARY KEY,      -- ISO date
+    drawn INTEGER NOT NULL       -- how many pairs came out, for the day's record
 );
 
 -- Today's due pairs. One row per pair that flipped heads; deleted when drilled.
@@ -229,16 +251,31 @@ rather than recall.
 ### The draw
 
 Once a day, every pair that is not retired flips
-`p = e^(-α · sessions_correct)` and the winners get a `draw` row. There is no cap:
-the draw is however big it comes out.
+`p = e^(-α · sessions_correct)` and the winners get a `draw` row, alongside one
+`draw_day` row recording the date and how many came out. There is no cap: the
+draw is however big it comes out.
+
+Building is idempotent on the **marker**, not on the rows: a date that already has
+a `draw_day` row is reported, never redrawn, however many of its pairs have since
+been drilled away.
+
+**The current draw** is the `draw_day` with the greatest `day` — the one most
+recently built. It is what the fork, the boards, the roll and `confirm` all work
+against, and it stays current until another is built. Only the Build button reads
+the calendar, and only to ask whether *today* has a marker yet.
 
 A pair written *after* the day's draw was built is not in it, and waits until
 tomorrow. At `sessions_correct = 0` it will certainly be drawn then.
 
 Drilling a pair deletes its `draw` row and updates `sessions_correct`. Remaining
-today is `COUNT(*) WHERE day = today`. Rows left over when the next day's draw is
-built are deleted — an undrilled pair had no session, so its counter is untouched
-and it simply flips again.
+today is `COUNT(*) WHERE day = today`, and reaches zero on a morning worked to the
+end — the marker is what keeps that from reading as "never built".
+
+Building the next draw deletes the rows of every earlier one. Until that happens
+the old draw is simply still current, and working it is legitimate — an evening
+that runs past midnight finishes its board, and a morning after three days away
+shows what was left of the last one, with the Build button beside it. An undrilled
+pair had no session, so its counter is untouched and it simply flips again.
 
 The pairs drawn are grouped by their placement's group to form the boards the app
 serves; a drawn pair with a null group is drilled on its own.
@@ -263,7 +300,7 @@ and counts as correct.
 | Move a placement (split, or off the roll) | `INSERT groups` if new; `UPDATE placement SET group_id, pairs_stale = 1`; `DELETE groups` if a group was emptied. Pairs follow with `sessions_correct` intact |
 | Rewrite stale pairs | `UPDATE recall_pair SET question, answer`; `UPDATE placement SET pairs_stale = 0` |
 | Drop or absorb a pair | `UPDATE recall_pair SET retired = 1`; `DELETE draw` for it. Its `miss` rows are untouched |
-| Build the day's draw | `DELETE draw WHERE day < today`; `INSERT draw` per pair that flipped heads |
+| Build the day's draw | `DELETE draw WHERE day < today`; if there is no `draw_day` for today: `INSERT draw` per pair that flipped heads, then `INSERT draw_day (today, count)` |
 | Drill a pair, correct | `UPDATE recall_pair SET sessions_correct = sessions_correct + 1`; `DELETE draw` row |
 | Drill a pair, missed | `UPDATE recall_pair SET sessions_correct = 0`; `INSERT miss (user_answer, user_source)`; `DELETE draw` row |
 | Contest a grade | as correct: `sessions_correct + 1`, `DELETE draw` row, no `miss` row |

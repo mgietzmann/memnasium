@@ -1,6 +1,6 @@
 # Home
 
-**Status:** drafted
+**Status:** under implementation
 
 ## Table of Contents
 
@@ -58,10 +58,14 @@ the skills that drain them (see [../flows/](../flows)).
 └────────────────────────────────────────────────────────────┘
 ```
 
-Once today's draw is built, the top line reads its numbers instead — `118 due ·
-14 boards · 22 on the roll` — and `[ Build ]` is gone. Building is the same
-action as on [Drilling.md](Drilling.md#drill-home); it is offered here because it
-is the first thing done in a morning.
+The top line reads the **current** draw — the one most recently built — and
+`[ Build ]` is offered only when today has no draw of its own yet. So a built day
+reads `118 drawn · 34 due · 6 boards · 4 on the roll`, a finished one reads
+`118 drawn · none left` rather than "not built yet", and a draw carried over from
+last night or from three days ago is shown as what it is, with its date and the
+Build button beside it — see [Data.md](../Data.md#the-draw). Building is the same action as on
+[Drilling.md](Drilling.md#drill-home); it is offered here because it is the first
+thing done in a morning.
 
 ### The counts
 
