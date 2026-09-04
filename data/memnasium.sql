@@ -9,6 +9,7 @@ CREATE TABLE draw_day (
     drawn    INTEGER NOT NULL,   -- how many pairs came out, for the day's record
     expected REAL NOT NULL       -- how many were expected to, computed at build
 );
+INSERT INTO "draw_day" VALUES('2026-09-04',5,3.948787087978882226e+00);
 CREATE TABLE groups (
     id          INTEGER PRIMARY KEY,
     name        TEXT NOT NULL,
@@ -245,7 +246,7 @@ INSERT INTO "recall_pair" VALUES(1,1,'Juvenile western Alaskan Chinook enter Kus
 INSERT INTO "recall_pair" VALUES(2,1,'Juvenile western Alaskan Chinook reach what average FL by end of August, first summer at sea?','190–220 mm',8,0);
 INSERT INTO "recall_pair" VALUES(3,1,'Juvenile Chinook hold what depth on the eastern Bering Sea shelf their first summer?','Shallow water, <50 m',8,0);
 INSERT INTO "recall_pair" VALUES(4,2,'Yukon River Chinook become piscivorous at what length in what water?','85–90 mm, in freshwater',4,0);
-INSERT INTO "recall_pair" VALUES(5,2,'Fish make up what share of juvenile Chinook diet in the Yukon delta during seaward migration?','~90%',4,0);
+INSERT INTO "recall_pair" VALUES(5,2,'Fish make up what share of juvenile Chinook diet in the Yukon delta during seaward migration?','~90%',5,0);
 INSERT INTO "recall_pair" VALUES(6,2,'Yukon River Chinook eat what through their first summer of marine residency?','Predominantly fish — piscivory holds from June on',4,0);
 INSERT INTO "recall_pair" VALUES(7,3,'Juvenile Chinook growth in the northern Bering Sea peaks when?','Mid-July',12,0);
 INSERT INTO "recall_pair" VALUES(8,4,'Bioenergetic models flag what as a significant effect on juvenile Chinook growth rates?','Temperature',12,0);
@@ -255,7 +256,7 @@ INSERT INTO "recall_pair" VALUES(11,5,'SEAK Chinook smolts leave at what size?',
 INSERT INTO "recall_pair" VALUES(12,5,'Ocean-age-0 SEAK Chinook average what size by late June, inshore vs strait?','136 mm / 28 g inshore; 171 mm / 56 g strait',10,0);
 INSERT INTO "recall_pair" VALUES(13,5,'Ocean-age-0 SEAK Chinook average what size by September, inshore vs Icy Strait?','210 mm / 114 g inshore; 269 mm / 282 g Icy Strait',10,0);
 INSERT INTO "recall_pair" VALUES(14,6,'British Columbia Chinook become primarily piscivorous at what size?','50–100 g, or 160–200 mm',3,0);
-INSERT INTO "recall_pair" VALUES(15,7,'Puget Sound Chinook begin piscivory at what length, inshore vs offshore?','70 mm inshore, 130 mm offshore',0,0);
+INSERT INTO "recall_pair" VALUES(15,7,'Puget Sound Chinook begin piscivory at what length, inshore vs offshore?','70 mm inshore, 130 mm offshore',1,0);
 INSERT INTO "recall_pair" VALUES(16,8,'California Current juvenile Chinook diet changes how as they move offshore?','Invertebrates first, then piscivory — juvenile rockfish and anchovy',9,0);
 INSERT INTO "recall_pair" VALUES(17,9,'Juvenile Chinook feed primarily on what four fish species in the northern Bering Sea?','Capelin, Arctic sand lance, Pacific herring, rainbow smelt',10,0);
 INSERT INTO "recall_pair" VALUES(18,9,'Juvenile Chinook''s fish prey sit in what northern Bering Sea habitat?','Shallow/nearshore',10,0);
@@ -270,10 +271,10 @@ INSERT INTO "recall_pair" VALUES(26,14,'Chinook in estuaries with the smallest w
 INSERT INTO "recall_pair" VALUES(27,15,'Regional diet differences in juvenile Chinook along the CCS come from what?','Variability in the forage base and environmental conditions',10,0);
 INSERT INTO "recall_pair" VALUES(28,16,'Russian Chinook diets differ how across juvenile, immature, and mature?','They don''t — all eat fish, squid (mainly Gonatidae), and euphausiids',12,0);
 INSERT INTO "recall_pair" VALUES(29,17,'Russian Chinook of all life stages eat what three things?','Fish, squid (mainly Gonatidae), euphausiids',12,0);
-INSERT INTO "recall_pair" VALUES(30,18,'Larger Asian Chinook come up in bottom/near-bottom trawls eating mostly what?','Adult squid Berryteuthis magister',7,0);
+INSERT INTO "recall_pair" VALUES(30,18,'Larger Asian Chinook come up in bottom/near-bottom trawls eating mostly what?','Adult squid Berryteuthis magister',8,0);
 INSERT INTO "recall_pair" VALUES(31,19,'Immature Chinook on the eastern Bering Sea shelf and basin forage predominantly on what?','Fish and squid',12,0);
 INSERT INTO "recall_pair" VALUES(32,19,'Beyond fish and squid, what prey matters to Chinook in the Bering Sea basin?','Euphausiids',12,0);
-INSERT INTO "recall_pair" VALUES(33,20,'The largest component of the Chinook winter diet is what?','Squid',5,0);
+INSERT INTO "recall_pair" VALUES(33,20,'The largest component of the Chinook winter diet is what?','Squid',6,0);
 INSERT INTO "recall_pair" VALUES(34,20,'Berryteuthis magister and Gonatopsis borealis together make up what share of winter stomach content weight?','74–82%',5,0);
 INSERT INTO "recall_pair" VALUES(35,21,'Chinook in SEAK coastal habitats take what three primary prey species?','Capelin, sand lance, Pacific herring',5,0);
 INSERT INTO "recall_pair" VALUES(36,21,'Fish make up what share of immature Chinook stomach contents by weight in SEAK marine waters?','65%',5,0);
@@ -321,7 +322,7 @@ INSERT INTO "recall_pair" VALUES(77,47,'Yukon River Chinook pass what dam on the
 INSERT INTO "recall_pair" VALUES(78,48,'Western Alaska Chinook start their up-river spawning migration when?','Shortly after river ice break-up, typically late May, peaking in June',12,0);
 INSERT INTO "recall_pair" VALUES(79,48,'Run timing in the Nushagak and Kuskokwim compares how to the Yukon?','Slightly earlier',12,0);
 INSERT INTO "recall_pair" VALUES(80,48,'Yukon River Chinook entry is stock structured how?','Upper-drainage stocks arrive earlier than lower-drainage stocks',12,0);
-INSERT INTO "recall_pair" VALUES(81,49,'Chinook migration rates in the Kuskokwim and Nushagak compare how to the Yukon?','Generally slower',4,0);
+INSERT INTO "recall_pair" VALUES(81,49,'Chinook migration rates in the Kuskokwim and Nushagak compare how to the Yukon?','Generally slower',5,0);
 INSERT INTO "recall_pair" VALUES(82,49,'Typical Chinook migration rate in the Kuskokwim River?','19–25 km/day',4,0);
 INSERT INTO "recall_pair" VALUES(83,49,'Typical Chinook migration rate in the Nushagak River?','11–15 km/day',4,0);
 INSERT INTO "recall_pair" VALUES(84,50,'Western Alaska Chinook typically mature at what ages?','1.2, 1.3, 1.4',12,0);
