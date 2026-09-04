@@ -100,7 +100,7 @@ for them.
 
 ### The MCP server
 
-The [ten tools](api/API.md#the-mcp-tools) are mounted on the same FastAPI app,
+The [eleven tools](api/API.md#the-mcp-tools) are mounted on the same FastAPI app,
 over HTTP, and call the same store module the routes do. `.mcp.json` in the repo
 points a Claude Code session at them, so opening a session in this repo has the
 tools without any setup.

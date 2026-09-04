@@ -87,9 +87,13 @@ all — as it is typed, so what will appear on a board is known before saving.
 
 ### Entered today
 
-The notes saved since the screen was opened, newest first, with their id and the opening of
-their statement. `✎` edits one in place; `✕` deletes it. Both are present only while `placed` is false on the note, which `GET /notes`
-reports. The list holds what this screen has saved, and a note is read once when
-it is saved, so in practice the controls are there for everything on it — the flag
-is what stops a note that has since been
-[grouped](../flows/Grouping.md) offering them after a reload.
+The notes saved since the screen was opened, newest first, with their id and the
+opening of their statement. `✎` edits one in place; `✕` deletes it.
+
+The list is this screen's own memory: leaving and coming back empties it. So in
+practice every note on it is unplaced and carries both controls — a note is
+grouped in a [Claude Code session](../flows/Grouping.md), long after the screen
+that entered it was closed. The controls are still gated on the note's `placed`
+flag rather than assumed, and the store refuses the edit regardless
+([flows/Entry.md](../flows/Entry.md#correcting-a-mistake)); the screen is the
+convenience, not the rule.

@@ -120,7 +120,7 @@ doc and everywhere else links to it.
 ```
 api/                    FastAPI — the routes, the store, the MCP tools
   store.py                every invariant, under both front doors
-  mcp.py                  the ten tools, mounted on the same app
+  mcp.py                  the eleven tools, mounted on the same app
   claude.py               the grade call (Claude.md)
   schema.sql              the DDL (Data.md)
 app/                    Vite + React + TypeScript — mirrors design/app/*.md
