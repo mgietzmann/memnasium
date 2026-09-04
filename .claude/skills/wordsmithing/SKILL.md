@@ -20,6 +20,10 @@ unclear.
    | the group's other notes | whether this fact is genuinely distinct |
    | the group's existing pairs | what is already asked, and what could be eliminated |
 
+   A full queue can exceed the tool result limit and land in a file instead.
+   Read it by group with `jq` rather than dumping the whole thing — one group per
+   pass is the working unit anyway.
+
 2. Propose pairs, one pass of notes at a time.
 3. The user strikes or corrects what is wrong. Everything else is written.
 4. `write_pairs` — the placement's **whole set** in one call. It clears the stale
@@ -32,6 +36,13 @@ unclear.
   list — asking for one of three would be a different, easier question.
 - **Specific enough to be unambiguous in its group.** "At what length?" is broken
   on a board of five length thresholds.
+- **Self-contained.** Pairs drill in isolation and in random order. No question
+  may borrow its subject from a sibling — "and by September?" is broken. Name
+  the region, the stage, the river, every time.
+- **Subject first.** Bury the interrogative rather than opening on it. Not "At
+  what length do Yukon River Chinook transition to piscivory?" — "Yukon River
+  Chinook become piscivorous at what length?" Shorter, and the thing being
+  recalled leads.
 - **Not answerable by elimination.** Sibling answers are visible on the board. A
   question solvable by reading them tests reading, not recall.
 - **Short.** One line of question, one line of answer, wherever the fact allows. A
