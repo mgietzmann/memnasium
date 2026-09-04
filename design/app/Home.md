@@ -1,6 +1,6 @@
 # Home
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -29,6 +29,13 @@ the skills that drain them (see [../flows/](../flows)).
 
 ## Decisions
 
+- **The expectation is shown with a `~`, always.** The draw is a coin flip per
+  pair, so its size is a random variable and its mean is not a count. A bare
+  number beside `118 drawn` would read as a promise the maths never made. See
+  [Data.md](../Data.md#the-expectation).
+- **After a build the expectation shown is the stored one, not a fresh sum.**
+  `118 drawn · ~87 expected` is a claim about one draw; recomputing live would
+  slide all morning as pairs are confirmed and stop being about that draw at all.
 - **Home exists for the counts.** Grouping and wordsmithing happen in a Claude
   Code session, so their backlogs are invisible from the app. This is the only place
   the user would ever learn that six placements have sat pairless for a month.
@@ -46,7 +53,10 @@ the skills that drain them (see [../flows/](../flows)).
 │  memnasium                                                 │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│   Today's draw          not built yet    [ Build ]         │
+│   The draw    2 Sep · 118 drawn · ~87 expected · 34 due     │
+│               6 boards · 4 on the roll        [ Build ]    │
+│                                                            │
+│   1,204 pairs                                              │
 │                                                            │
 │   ── waiting on you ──────────────────────────────────     │
 │   14  notes not yet grouped                                │
@@ -58,14 +68,34 @@ the skills that drain them (see [../flows/](../flows)).
 └────────────────────────────────────────────────────────────┘
 ```
 
-The top line reads the **current** draw — the one most recently built — and
-`[ Build ]` is offered only when today has no draw of its own yet. So a built day
-reads `118 drawn · 34 due · 6 boards · 4 on the roll`, a finished one reads
-`118 drawn · none left` rather than "not built yet", and a draw carried over from
-last night or from three days ago is shown as what it is, with its date and the
-Build button beside it — see [Data.md](../Data.md#the-draw). Building is the same action as on
-[Drilling.md](Drilling.md#drill-home); it is offered here because it is the first
-thing done in a morning.
+`1,204 pairs` is the live corpus — every non-retired pair, across groups and the
+roll — and is always on screen. It is the only line here that says how big the
+thing being practised actually is.
+
+The draw line reads the **current** draw — the one most recently built — and
+`[ Build ]` is offered only when today has no draw of its own yet. The sketch
+above is a draw carried over from yesterday, which is the one state where every
+part of the line is on screen at once. The rest:
+
+| State | Reads | `[ Build ]` |
+|---|---|---|
+| never built | `not built yet · ~87 expected` | yes |
+| today's, in progress | `3 Sep · 118 drawn · ~87 expected · 34 due · 6 boards · 4 on the roll` | no |
+| today's, finished | `3 Sep · 118 drawn · ~87 expected · none left` | no |
+| carried over | as the sketch, with its own date | yes |
+
+A finished day still reads `drawn` and `expected` rather than "not built yet", so
+the button never comes back and draws the same day twice — see
+[Data.md](../Data.md#the-draw).
+
+Before any draw exists the expectation is summed live: what a build now would
+come out at. Afterwards it is the value frozen on that draw, so it sits beside
+`drawn` as a like-for-like — that pairing is the whole reason it is stored. Both
+arrive from `GET /home`; neither is computed in the app — see
+[api/API.md](../api/API.md#the-drill-loop).
+
+Building is the same action as on [Drilling.md](Drilling.md#drill-home); it is
+offered here because it is the first thing done in a morning.
 
 ### The counts
 

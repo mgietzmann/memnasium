@@ -1,6 +1,6 @@
 # API
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -46,7 +46,9 @@ payload field-by-field detail, which is generated from the models — see
 - **Grading and confirming are separate routes.** Contest sits between them, so
   grading must write nothing. See
   [flows/Drilling.md](../flows/Drilling.md#contest-and-confirm).
-- **`GET /home` is coarse.** It is a dashboard; one call beats three.
+- **`GET /home` is coarse.** It is a dashboard; one call beats three. The corpus
+  size and the [expectation](../Data.md#the-expectation) ride along with the
+  backlog counts rather than earning a route of their own.
 - **A pair set is written whole.** One route expresses first write, reword, split
   and combine, so the inheritance rule lives in the API and not in three callers.
   See [Writing a pair set](#writing-a-pair-set).
@@ -72,7 +74,7 @@ App only. None of these is an MCP tool.
 
 | Route | Does |
 |---|---|
-| `GET /home` | the three backlog counts and today's draw status |
+| `GET /home` | the three backlog counts, the corpus size and expectation, and today's draw status |
 | `POST /draw` | build today's draw. Idempotent on the `draw_day` marker — a date that already has one is reported, never redrawn |
 | `GET /draw` | the **current** draw — the one most recently built — or `null` if none has ever been built |
 | `GET /draw/boards?n=` | the next *n* boards of the current draw: a group, its due pairs, and its context pairs with answers and sources |
@@ -87,13 +89,21 @@ App only. None of these is an MCP tool.
   "ungrouped_notes": 14,
   "placements_without_pairs": 6,
   "placements_stale": 3,
-  "draw": { "day": "2026-09-03", "due": 118, "boards": 14, "roll": 22 }
+  "pairs": 1204,
+  "expected": 87.4,
+  "draw": { "day": "2026-09-03", "drawn": 118, "expected": 87.4, "due": 34, "boards": 6, "roll": 4 }
 }
 ```
 
-```json
-{ "day": "2026-09-03", "drawn": 118, "due": 34, "boards": 6, "roll": 4 }
-```
+`pairs` is every **live** pair — not retired, across groups and the roll. It is
+the size of the corpus and is always present.
+
+`expected` appears at the **top level only when no draw has ever been built**, and
+is then the live sum over those pairs — what a build right now would come out at.
+Once a marker exists the top-level field is `null` and the number that matters is
+`draw.expected`, frozen at that draw's build. Two fields rather than one because
+they are two different claims; the maths behind both is
+[Data.md](../Data.md#the-expectation).
 
 `draw` is the **current** draw — the latest `draw_day` — and is `null` only when
 none has ever been built. A morning worked to the end returns `drawn` with zeros

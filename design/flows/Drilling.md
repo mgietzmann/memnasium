@@ -1,6 +1,6 @@
 # Drilling
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -46,6 +46,10 @@ the screen's layout (see [app/Drilling.md](../app/Drilling.md)), the wording of 
   changes nothing.
 - **The draw is built by a button, not on open.** Seeing "14 boards · 118 due"
   before starting is worth the click.
+- **The size of the draw is predicted before it is built, and remembered after.**
+  How big a morning is going to be is the one thing worth knowing before
+  committing to it, and how big it turned out against that prediction is worth
+  knowing after. See [Data.md](../Data.md#the-expectation).
 - **The clock never ends a board.** A board started before midnight and answered
   after it is the same board: the current draw is the one most recently built, not
   the one matching today's date. See [Data.md](../Data.md#the-draw).
@@ -81,12 +85,14 @@ the screen's layout (see [app/Drilling.md](../app/Drilling.md)), the wording of 
 ### The flow
 
 ```
-build the draw ──▶ "118 drawn · 34 due · 6 boards · 4 on the roll"
-                        │
-            ┌───────────┴───────────┐
-      do N boards              do N from the roll
-            │                       │
-            └──── submit ─▶ grade ─▶ contest ─▶ confirm ────▶ back to the fork
+"1,204 pairs · ~87 expected" ──▶ build the draw
+                                       │
+        "118 drawn · ~87 expected · 34 due · 6 boards · 4 on the roll"
+                                       │
+                            ┌──────────┴──────────┐
+                      do N boards           do N from the roll
+                            │                     │
+                            └── submit ─▶ grade ─▶ contest ─▶ confirm ──▶ the fork
 ```
 
 ### Building the draw
@@ -94,8 +100,9 @@ build the draw ──▶ "118 drawn · 34 due · 6 boards · 4 on the roll"
 A button, once a day. Every live `recall_pair` flips its own coin at
 `p = e^(-α · sessions_correct)` — see [Data.md](../Data.md#background) — and each
 winner gets a `draw` row for today, alongside a `draw_day` marker recording the
-date and the size of the draw. There is no cap; the draw is however big it comes
-out.
+date, the size of the draw, and the size it was
+[expected](../Data.md#the-expectation) to be. There is no cap; the draw is
+however big it comes out.
 
 Idempotent on the marker: once today has been built the button is gone for the
 rest of the day, whether or not any of it is left. Building first deletes the rows
@@ -111,8 +118,8 @@ button beside it.
 
 Once the day is built, this is where every board and batch is started from, and
 where the morning ends. When the last pair has been confirmed the numbers read
-zero and the fork says so — `118 drawn · none left` — rather than offering to
-build again.
+zero and the fork says so — `118 drawn · ~87 expected · none left` — rather than
+offering to build again.
 
 The draw splits by placement. Drawn pairs whose placement has a group become
 **boards**, one per group; drawn pairs on the roll are loose. The user picks a
@@ -188,6 +195,6 @@ Nothing expires at midnight. What ends a draw is the next one being built.
 
 | Action | Writes |
 |---|---|
-| Build the draw | `DELETE draw WHERE day < today`; `INSERT draw` per pair that flipped heads |
+| Build the draw | `DELETE draw WHERE day < today`; `INSERT draw` per pair that flipped heads; `INSERT draw_day (day, drawn, expected)` |
 | Submit, grade, contest | nothing |
 | Confirm a board or roll batch | one transaction: for each **correct or contested** pair `UPDATE recall_pair SET sessions_correct = sessions_correct + 1`; for each **missed** pair `UPDATE recall_pair SET sessions_correct = 0` and `INSERT miss (recall_pair_id, day, user_answer, user_source)`; `DELETE draw` for every pair on the board |

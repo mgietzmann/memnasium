@@ -1,6 +1,6 @@
 # Drilling (screens)
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -42,6 +42,10 @@ Does **not** cover the loop's rules, grading, or what gets written (see
   again — and not "only today", because the screen keeps serving the current draw
   after midnight so a sitting is never ended by the clock. See
   [Data.md](../Data.md#the-draw).
+- **The pre-build screen is not blank.** Before any draw has ever been built the
+  fork used to be one button with nothing to weigh it against; it now carries the
+  corpus size and the [expectation](../Data.md#the-expectation), which is the
+  number that says whether this morning is a ten-minute one or an hour.
 - **`N` sticks.** The same number gets typed every morning; the last one used is
   remembered per mode.
 - **A roll batch is the board screen minus the context column.** Not a second
@@ -51,27 +55,50 @@ Does **not** cover the loop's rules, grading, or what gets written (see
 
 ### Drill home
 
-Before any draw has ever been built, this screen is one button. Afterwards it
-shows the current draw, and offers Build only when that draw is not today's.
+Before any draw has ever been built, this screen is the corpus, the expectation
+and a button. Afterwards it shows the current draw, and offers Build only when
+that draw is not today's.
 
 ```
 ┌────────────────────────────────────────────────────────────┐
 │  ← Home                                            Drill   │
 ├────────────────────────────────────────────────────────────┤
+│                                                            │      never built
+│    1,204 pairs · ~87 expected                              │
 │                                                            │
-│    The draw — 3 Sep · 118 drawn                            │
+│                 [  Build today's draw  ]                   │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│  ← Home                                            Drill   │
+├────────────────────────────────────────────────────────────┤
+│                                                            │      built
+│    The draw — 3 Sep · 118 drawn · ~87 expected              │
 │                                                            │
 │       34  due pairs                                        │
 │        6  boards            [ 3 ]  [  Work boards  ]       │
 │        4  on the roll       [ 10 ] [  Work the roll  ]     │
 │                                                            │
+│    1,204 pairs                                             │
+│                                                            │
 └────────────────────────────────────────────────────────────┘
 ```
 
-The three numbers fall as the morning is worked; `drawn` does not. `[ 3 ]` and
-`[ 10 ]` hold the last values used. A mode with nothing left in it has its row and
-control disabled, and a draw worked to the end leaves the screen reading
-`118 drawn · none left` with no way to draw again until tomorrow. A draw whose
+`drawn` and `~87 expected` sit together because they are the same draw's
+prediction and outcome — the expectation is the one frozen at that build, not a
+fresh sum, so the comparison holds all morning. The pre-build screen has no
+marker to read and sums it live instead. See
+[Data.md](../Data.md#the-expectation).
+
+`1,204 pairs` is the live corpus, across groups and the roll, and does not move
+during a morning.
+
+The three numbers fall as the morning is worked; `drawn` and `expected` do not.
+`[ 3 ]` and `[ 10 ]` hold the last values used. A mode with nothing left in it has
+its row and control disabled, and a draw worked to the end leaves the screen
+reading `118 drawn · ~87 expected · none left` with no way to draw again until
+tomorrow. A draw whose
 date is not today keeps its `[ Build today's draw ]` button, which replaces it.
 
 ### A board

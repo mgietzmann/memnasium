@@ -1,6 +1,6 @@
 # Data
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -16,6 +16,7 @@
     - [Groups, placements, and the roll](#groups-placements-and-the-roll)
     - [Recall pairs](#recall-pairs)
     - [The draw](#the-draw)
+    - [The expectation](#the-expectation)
     - [Misses](#misses)
     - [Lifecycle](#lifecycle)
 
@@ -120,6 +121,15 @@ A new pair sits at 0, so `p = 1` and its first appearance is guaranteed.
   to. Two clocks would need reconciling and buy nothing.
 - **The marker carries `drawn`.** Without it a finished morning reads as nothing
   but zeros. One integer, written once, and Home can say `118 drawn · 34 left`.
+- **The marker carries `expected` too, frozen at build time.** The expectation is
+  a sum over live pairs, and drilling changes those pairs all morning — so
+  recomputing it beside `drawn` would compare two different moments and quietly
+  lie. Stored once, `118 drawn · ~87 expected` is one sentence about one draw.
+  See [The expectation](#the-expectation).
+- **The expectation is summed in code, not in SQL.** `SUM(exp(...))` needs
+  SQLite's math functions, which the bundled interpreter does not reliably carry.
+  A histogram of `sessions_correct` is ten-odd rows and puts the sum next to the
+  `α` it shares with the draw — one definition of the rule.
 - **Undrilled draw rows are swept, not carried.** They were never sessions, so
   nothing is owed to them; the pair flips again tomorrow at the same `p`.
 
@@ -176,8 +186,9 @@ CREATE TABLE recall_pair (
 -- One row per day the draw was built. The rows in `draw` are consumed by
 -- drilling, so they cannot answer "was today's draw built?".
 CREATE TABLE draw_day (
-    day   TEXT PRIMARY KEY,      -- ISO date
-    drawn INTEGER NOT NULL       -- how many pairs came out, for the day's record
+    day      TEXT PRIMARY KEY,   -- ISO date
+    drawn    INTEGER NOT NULL,   -- how many pairs came out, for the day's record
+    expected REAL NOT NULL       -- how many were expected to, computed at build
 );
 
 -- Today's due pairs. One row per pair that flipped heads; deleted when drilled.
@@ -252,8 +263,9 @@ rather than recall.
 
 Once a day, every pair that is not retired flips
 `p = e^(-α · sessions_correct)` and the winners get a `draw` row, alongside one
-`draw_day` row recording the date and how many came out. There is no cap: the
-draw is however big it comes out.
+`draw_day` row recording the date, how many came out, and how many were
+[expected](#the-expectation) to. There is no cap: the draw is however big it
+comes out.
 
 Building is idempotent on the **marker**, not on the rows: a date that already has
 a `draw_day` row is reported, never redrawn, however many of its pairs have since
@@ -280,6 +292,49 @@ pair had no session, so its counter is untouched and it simply flips again.
 The pairs drawn are grouped by their placement's group to form the boards the app
 serves; a drawn pair with a null group is drilled on its own.
 
+### The expectation
+
+The draw is a coin flip per pair, so its size is a random variable. Its mean is
+the sum of the odds:
+
+```
+expected = Σ e^(-α · sessions_correct)   over every live pair,   α = 0.5
+```
+
+**Live** means not retired. Roll pairs count the same as grouped ones — the
+expectation is over the whole corpus, one number.
+
+It is computed from a histogram rather than a per-row sum, because the counter is
+small and heavily repeated:
+
+```sql
+SELECT sessions_correct, COUNT(*) FROM recall_pair WHERE retired = 0
+GROUP BY sessions_correct;
+```
+
+Ten-odd rows, summed in code beside the `α` the draw itself uses. The size of
+the live corpus is the same rows' counts added up, so both numbers cost one
+query.
+
+The number is **frozen on `draw_day.expected` at build time**, because drilling
+moves it: every pair confirmed correct bumps its counter and drops its odds. The
+stored value is what *this* draw was expected to be, so it stays comparable with
+`drawn` for the life of the draw.
+
+Before any draw exists there is no marker to read, so the same sum is computed
+live off the histogram and shown as the prediction for the build about to happen.
+
+| Read | Source | Says |
+|---|---|---|
+| no draw ever built | the histogram, live | what a build now would come out at |
+| the current draw | `draw_day.expected` | what that draw was expected to be |
+
+Both are estimates with real variance around them, so both are shown with a `~`.
+The only exact count is `drawn`.
+
+`expected` is `NOT NULL` with no default and needs no backfill: the committed
+dump holds no `draw_day` rows, so the column arrives on an empty table.
+
 ### Misses
 
 One row per missed drill, kept forever. This is the study record: what was asked,
@@ -300,7 +355,7 @@ and counts as correct.
 | Move a placement (split, or off the roll) | `INSERT groups` if new; `UPDATE placement SET group_id, pairs_stale = 1`; `DELETE groups` if a group was emptied. Pairs follow with `sessions_correct` intact |
 | Rewrite stale pairs | `UPDATE recall_pair SET question, answer`; `UPDATE placement SET pairs_stale = 0` |
 | Drop or absorb a pair | `UPDATE recall_pair SET retired = 1`; `DELETE draw` for it. Its `miss` rows are untouched |
-| Build the day's draw | `DELETE draw WHERE day < today`; if there is no `draw_day` for today: `INSERT draw` per pair that flipped heads, then `INSERT draw_day (today, count)` |
+| Build the day's draw | `DELETE draw WHERE day < today`; if there is no `draw_day` for today: `INSERT draw` per pair that flipped heads, then `INSERT draw_day (today, count, expected)` |
 | Drill a pair, correct | `UPDATE recall_pair SET sessions_correct = sessions_correct + 1`; `DELETE draw` row |
 | Drill a pair, missed | `UPDATE recall_pair SET sessions_correct = 0`; `INSERT miss (user_answer, user_source)`; `DELETE draw` row |
 | Contest a grade | as correct: `sessions_correct + 1`, `DELETE draw` row, no `miss` row |
