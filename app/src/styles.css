@@ -1,0 +1,275 @@
+/* design/standards/Style.md is the specification for everything in this file. */
+
+:root {
+  --bg: #111417;
+  --surface: #191d22;
+  --raised: #22272e;
+  --line: #30363d;
+  --outline: #6e7681;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --danger: #ff7b72;
+
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', Consolas, monospace;
+
+  /* Base unit 8px; every gap and padding is a multiple. */
+  --u: 8px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* No shadows, no gradients. Depth comes from surface / raised, one step at a time. */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: calc(var(--u) * 2);
+  margin-bottom: calc(var(--u) * 2);
+}
+
+.label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+}
+
+.source {
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.screen {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: calc(var(--u) * 3);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--u);
+  margin-bottom: calc(var(--u) * 3);
+}
+
+h1 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--outline);
+  padding: var(--u) calc(var(--u) * 2);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  color: var(--muted);
+  border-color: var(--line);
+  cursor: not-allowed;
+}
+
+button.primary:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+button.link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: 0;
+  text-decoration: underline;
+}
+
+input,
+textarea {
+  font: inherit;
+  width: 100%;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--outline);
+  padding: var(--u);
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--outline);
+  outline-offset: 1px;
+}
+
+textarea {
+  min-height: 220px;
+  font-family: var(--mono);
+  resize: vertical;
+}
+
+/* Home ------------------------------------------------------------------- */
+
+.counts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--u) calc(var(--u) * 2);
+}
+
+.counts .n {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.doors {
+  display: flex;
+  gap: calc(var(--u) * 2);
+  margin-top: calc(var(--u) * 3);
+}
+
+/* Entry ------------------------------------------------------------------ */
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 3);
+}
+
+.results {
+  border: 1px solid var(--line);
+  background: var(--raised);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.results button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.entered li {
+  display: flex;
+  gap: var(--u);
+  align-items: baseline;
+  padding: calc(var(--u) / 2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.entered .id {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.entered .statement {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A board ---------------------------------------------------------------- */
+
+.board {
+  display: grid;
+  /* The split is structural: a rule and 24px, not implied by whitespace. */
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 3);
+  align-items: start;
+}
+
+.board > .due-col {
+  background: var(--bg);
+}
+
+.board > .context-col {
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  padding-left: calc(var(--u) * 3);
+}
+
+.due-col,
+.context-col {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.roll .due-col {
+  grid-column: 1 / -1;
+}
+
+.pair {
+  margin-bottom: calc(var(--u) * 3);
+}
+
+.pair .question {
+  margin-bottom: var(--u);
+}
+
+.pair .box {
+  margin-bottom: var(--u);
+}
+
+.context-pair {
+  margin-bottom: calc(var(--u) * 2);
+}
+
+.context-pair .answer,
+.context-pair .source {
+  color: var(--muted);
+  padding-left: calc(var(--u) * 2);
+}
+
+/* Pair states: the glyph and the rule carry it; colour only agrees. */
+.verdict {
+  padding-left: var(--u);
+  border-left: 3px solid var(--line);
+}
+
+.verdict.correct {
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
+.verdict.missed {
+  border-left-color: var(--danger);
+}
+
+.verdict.missed .truth {
+  color: var(--danger);
+}
+
+.said {
+  color: var(--muted);
+}
+
+.glyph {
+  font-family: var(--mono);
+  margin-right: var(--u);
+}

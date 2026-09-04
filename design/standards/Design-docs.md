@@ -24,7 +24,7 @@ Keep design docs fast to read, consistent across the project, and free of drift.
 
 Covers the structure, ordering, and writing rules for **design documents**.
 
-Does **not** cover code style (see `standards/Code.md`), test conventions (see `standards/Tests.md`), or product/visual style (see `standards/Style.md`).
+Does **not** cover code style (see [Code.md](Code.md)), test conventions (see [Tests.md](Tests.md)), or product/visual style (see [Style.md](Style.md)).
 
 ## Decisions
 
@@ -55,7 +55,7 @@ Every design doc has these sections, in this order:
 - **Single source of truth.** Every fact lives in exactly one doc. Everywhere else links to it. Define a thing once; point to it from then on.
 - **Capture why with what.** Every non-obvious choice gets a line in Decisions. In three months, no one should have to re-litigate a settled choice from scratch.
 - **Show, don't prose.** Prefer an example, a code/SQL snippet, a table, or an ASCII diagram over paragraphs. These read in seconds; prose doesn't.
-- **Shared vocabulary.** Coined terms (*fish-day*, *tag*, *glow*, *bucket*, *the shelf*, *currency*) are defined once in the glossary in `Project.md` and used identically everywhere. No synonyms.
+- **Shared vocabulary.** Coined terms (*the roll*, *placement*, *recall pair*, *board*, *the draw*) are defined once in the glossary in [Project.md](../Project.md#glossary) and used identically everywhere. No synonyms.
 - **Status stays current.** When implementation starts or finishes, update the Status line.
 
 ### Template
@@ -67,11 +67,13 @@ Every design doc has these sections, in this order:
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Scope](#scope)
-- [Background](#background)        <!-- optional -->
-- [Decisions](#decisions)
-- [Design](#design)
+- [<Component Name>](#component-name)
+  - [Table of Contents](#table-of-contents)
+  - [Purpose](#purpose)
+  - [Scope](#scope)
+  - [Background](#background)        <!-- optional -->
+  - [Decisions](#decisions)
+  - [Design](#design)
 
 ## Purpose
 
