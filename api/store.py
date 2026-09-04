@@ -49,6 +49,28 @@ def draw_probability(sessions_correct: int) -> float:
     return math.exp(-ALPHA * sessions_correct)
 
 
+def corpus(conn: sqlite3.Connection) -> tuple[int, float]:
+    """The live corpus: its size, and how big a draw over it is expected to be.
+
+    Both fall out of one histogram of `sessions_correct`. The sum is done here
+    rather than as `SUM(exp(...))` because the bundled SQLite does not reliably
+    carry the math functions, and because this keeps it beside the `alpha` the
+    draw itself uses — see design/Data.md#the-expectation.
+
+    Returns:
+        `(pairs, expected)` over every pair that is not retired, on the roll or
+        in a group. `expected` is a mean, not a count: it is always shown with a
+        `~`.
+    """
+    rows = conn.execute(
+        "SELECT sessions_correct, COUNT(*) AS c FROM recall_pair WHERE retired = 0"
+        " GROUP BY sessions_correct"
+    ).fetchall()
+    pairs = sum(int(r["c"]) for r in rows)
+    expected = sum(int(r["c"]) * draw_probability(int(r["sessions_correct"])) for r in rows)
+    return pairs, expected
+
+
 def today() -> str:
     """Today as an ISO date string."""
     return date.today().isoformat()
@@ -573,7 +595,9 @@ def draw_summary(conn: sqlite3.Connection, day: str | None = None) -> models.Dra
     target = day or current_day(conn)
     if target is None:
         return None
-    marker = conn.execute("SELECT drawn FROM draw_day WHERE day = ?", (target,)).fetchone()
+    marker = conn.execute(
+        "SELECT drawn, expected FROM draw_day WHERE day = ?", (target,)
+    ).fetchone()
     if marker is None:
         return None
     row = conn.execute(
@@ -591,6 +615,7 @@ def draw_summary(conn: sqlite3.Connection, day: str | None = None) -> models.Dra
     return models.DrawSummary(
         day=target,
         drawn=marker["drawn"],
+        expected=marker["expected"],
         due=row["due"],
         boards=row["boards"],
         roll=row["roll"] or 0,
@@ -606,7 +631,8 @@ def build_draw(
 
     Every live pair flips its own coin at `e^(-alpha * sessions_correct)`. There
     is no cap. The rows of every earlier draw are deleted first: an undrilled
-    pair had no session, so nothing is owed to it.
+    pair had no session, so nothing is owed to it. The marker records what the
+    draw was expected to come out at alongside what it did.
 
     Args:
         conn: The connection.
@@ -624,6 +650,9 @@ def build_draw(
         conn.execute("DELETE FROM draw WHERE day < ?", (target,))
         built = conn.execute("SELECT 1 FROM draw_day WHERE day = ?", (target,)).fetchone()
         if built is None:
+            # Frozen before a single coin is flipped: drilling moves every term
+            # in the sum, so a later one would not be about this draw at all.
+            _, expected = corpus(conn)
             drawn = 0
             pairs = conn.execute(
                 "SELECT id, sessions_correct FROM recall_pair WHERE retired = 0"
@@ -635,7 +664,10 @@ def build_draw(
                         (target, pair["id"]),
                     )
                     drawn += 1
-            conn.execute("INSERT INTO draw_day (day, drawn) VALUES (?, ?)", (target, drawn))
+            conn.execute(
+                "INSERT INTO draw_day (day, drawn, expected) VALUES (?, ?, ?)",
+                (target, drawn, expected),
+            )
     summary = draw_summary(conn, target)
     if summary is None:  # pragma: no cover — the marker was written a line ago
         raise StoreError(f"the draw marker for {target} went missing")
@@ -858,7 +890,7 @@ def list_misses(
 
 
 def home(conn: sqlite3.Connection) -> models.Home:
-    """The three backlog counts and the current draw."""
+    """The three backlog counts, the live corpus, and the current draw."""
     ungrouped = int(
         conn.execute(
             "SELECT COUNT(*) AS c FROM note n"
@@ -874,9 +906,15 @@ def home(conn: sqlite3.Connection) -> models.Home:
     stale = int(
         conn.execute("SELECT COUNT(*) AS c FROM placement WHERE pairs_stale = 1").fetchone()["c"]
     )
+    pairs, expected = corpus(conn)
+    draw = draw_summary(conn)
     return models.Home(
         ungrouped_notes=ungrouped,
         placements_without_pairs=pairless,
         placements_stale=stale,
-        draw=draw_summary(conn),
+        pairs=pairs,
+        # Only a prediction of the build about to happen. Once there is a draw
+        # the number that matters is its own, frozen — design/api/API.md.
+        expected=None if draw is not None else expected,
+        draw=draw,
     )

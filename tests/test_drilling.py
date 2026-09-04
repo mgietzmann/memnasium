@@ -57,7 +57,7 @@ def test_a_board_holds_every_pair_of_its_group_exactly_once(
 ) -> None:
     # flows/Drilling.md#a-board — partitioned into due and context
     db.execute("DELETE FROM draw")
-    db.execute("INSERT INTO draw_day (day, drawn) VALUES (?, 1)", (DAY,))
+    db.execute("INSERT INTO draw_day (day, drawn, expected) VALUES (?, 1, 1.0)", (DAY,))
     db.execute("INSERT INTO draw (day, recall_pair_id) VALUES (?, ?)", (DAY, corpus.pair_b))
     (board,) = store.boards(db, 5)
     assert board.group_id == corpus.piscivory
@@ -224,7 +224,9 @@ def test_home_counts_are_the_three_backlogs(db: sqlite3.Connection, corpus: Corp
     assert home.placements_stale == 0
     assert home.draw is None
     draw_all(db, DAY)
-    assert store.home(db).draw == models.DrawSummary(day=DAY, drawn=6, due=6, boards=2, roll=1)
+    assert store.home(db).draw == models.DrawSummary(
+        day=DAY, drawn=6, expected=6.0, due=6, boards=2, roll=1
+    )
 
 
 def test_a_finished_draw_still_reads_as_built(db: sqlite3.Connection, corpus: Corpus) -> None:
@@ -325,3 +327,50 @@ def test_confirming_with_no_draw_is_refused(db: sqlite3.Connection, corpus: Corp
                 )
             ],
         )
+
+
+def test_the_expectation_is_the_sum_of_the_odds(db: sqlite3.Connection, corpus: Corpus) -> None:
+    """Data.md#the-expectation — a mean over every live pair, roll included."""
+    pairs, expected = store.corpus(db)
+    assert (pairs, expected) == (6, 6.0)  # six pairs at zero, each p = 1
+    db.execute("UPDATE recall_pair SET sessions_correct = 2 WHERE id = ?", (corpus.pair_a,))
+    db.execute("UPDATE recall_pair SET sessions_correct = 1 WHERE id = ?", (corpus.pair_f,))
+    pairs, expected = store.corpus(db)
+    assert pairs == 6
+    assert expected == pytest.approx(4 + math.exp(-2 * ALPHA) + math.exp(-ALPHA))
+
+
+def test_a_retired_pair_is_in_neither_the_corpus_nor_the_expectation(
+    db: sqlite3.Connection, corpus: Corpus
+) -> None:
+    # Project.md — every count of pairs is over live pairs only
+    db.execute("UPDATE recall_pair SET retired = 1 WHERE id = ?", (corpus.pair_a,))
+    assert store.corpus(db) == (5, 5.0)
+
+
+def test_the_expectation_is_frozen_on_the_marker(db: sqlite3.Connection, corpus: Corpus) -> None:
+    """Data.md#the-expectation — drilling moves the sum; the stored one holds."""
+    draw_all(db, DAY)
+    assert store.draw_summary(db).expected == 6.0  # type: ignore[union-attr]
+    store.confirm(
+        db,
+        [
+            models.ConfirmResult(
+                recall_pair_id=corpus.pair_a, correct=True, user_answer="a", user_source="b"
+            )
+        ],
+    )
+    # The live sum has moved, and the draw's own number has not.
+    assert store.corpus(db)[1] == pytest.approx(5 + math.exp(-ALPHA))
+    assert store.draw_summary(db).expected == 6.0  # type: ignore[union-attr]
+
+
+def test_home_predicts_only_until_the_first_draw(db: sqlite3.Connection, corpus: Corpus) -> None:
+    """api/API.md#the-drill-loop — two fields, two different claims."""
+    before = store.home(db)
+    assert (before.pairs, before.expected, before.draw) == (6, 6.0, None)
+    draw_all(db, DAY)
+    after = store.home(db)
+    assert after.pairs == 6
+    assert after.expected is None
+    assert after.draw is not None and after.draw.expected == 6.0

@@ -5,8 +5,9 @@ CREATE TABLE draw (
     PRIMARY KEY (day, recall_pair_id)
 );
 CREATE TABLE draw_day (
-    day   TEXT PRIMARY KEY,      -- ISO date
-    drawn INTEGER NOT NULL       -- how many pairs came out, for the day's record
+    day      TEXT PRIMARY KEY,   -- ISO date
+    drawn    INTEGER NOT NULL,   -- how many pairs came out, for the day's record
+    expected REAL NOT NULL       -- how many were expected to, computed at build
 );
 CREATE TABLE groups (
     id          INTEGER PRIMARY KEY,

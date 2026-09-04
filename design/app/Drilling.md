@@ -1,6 +1,6 @@
 # Drilling (screens)
 
-**Status:** changed
+**Status:** implemented
 
 ## Table of Contents
 
@@ -84,6 +84,10 @@ that draw is not today's.
 │                                                            │
 └────────────────────────────────────────────────────────────┘
 ```
+
+Both states are one `GET /home` — the draw, the corpus and the expectation
+arrive together, which is why there is no separate route for the draw
+([api/API.md](../api/API.md#decisions)).
 
 `drawn` and `~87 expected` sit together because they are the same draw's
 prediction and outcome — the expectation is the one frozen at that build, not a

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, type Board as BoardData, type DrawSummary, type DuePair } from '../api/client';
+import { api, type Board as BoardData, type Home, type DuePair } from '../api/client';
 import { shortDay, todayIso } from '../api/day';
+import { expected, pairs } from '../format';
 import { TopBar } from '../App';
 import { Board } from '../components/Board';
 
@@ -17,16 +18,21 @@ type Run = { kind: 'boards'; boards: BoardData[]; at: number } | { kind: 'roll';
 
 /** The two screens of a morning — design/app/Drilling.md. */
 export function Drill({ onHome }: { onHome: () => void }) {
-  const [draw, setDraw] = useState<DrawSummary | null>(null);
+  // `GET /home` rather than `GET /draw`: the fork shows the corpus and the
+  // expectation as well as the draw, and only /home carries them — see
+  // design/api/API.md#the-drill-loop.
+  const [home, setHome] = useState<Home | null>(null);
   const [run, setRun] = useState<Run | null>(null);
   const [nBoards, setNBoards] = useSticky('memnasium.n.boards', 3);
   const [nRoll, setNRoll] = useSticky('memnasium.n.roll', 10);
 
   const load = useCallback(() => {
-    void api.draw().then(setDraw);
+    void api.home().then(setHome);
   }, []);
 
   useEffect(load, [load]);
+
+  const draw = home?.draw ?? null;
 
   if (run) {
     const back = () => {
@@ -74,10 +80,19 @@ export function Drill({ onHome }: { onHome: () => void }) {
       <TopBar title="Drill" onHome={onHome} />
       {!draw ? (
         <div className="panel">
+          {/* Before any draw exists the fork is not blank: this is the number
+              that says whether the morning is ten minutes or an hour. Held back
+              until `home` has actually arrived — `0 pairs · ~0 expected` is a
+              confident lie about the corpus, not a loading state. */}
+          {home && (
+            <div className="muted">
+              {pairs(home.pairs)} · {expected(home.expected ?? 0)}
+            </div>
+          )}
           <button
             className="primary"
             onClick={() => {
-              void api.buildDraw().then(setDraw);
+              void api.buildDraw().then(load);
             }}
           >
             Build today&apos;s draw
@@ -85,8 +100,10 @@ export function Drill({ onHome }: { onHome: () => void }) {
         </div>
       ) : (
         <div className="panel">
+          {/* `drawn` and `expected` are the same draw's outcome and prediction:
+              the expectation is the one frozen at that build, not a fresh sum. */}
           <div className="label">
-            The draw — {shortDay(draw.day)} · {draw.drawn} drawn
+            The draw — {shortDay(draw.day)} · {draw.drawn} drawn · {expected(draw.expected)}
           </div>
           {draw.due === 0 ? (
             <p className="muted">none left</p>
@@ -139,12 +156,14 @@ export function Drill({ onHome }: { onHome: () => void }) {
             <button
               className="primary"
               onClick={() => {
-                void api.buildDraw().then(setDraw);
+                void api.buildDraw().then(load);
               }}
             >
               Build today&apos;s draw
             </button>
           )}
+          {/* The live corpus, which does not move during a morning. */}
+          {home && <div className="muted">{pairs(home.pairs)}</div>}
         </div>
       )}
     </div>

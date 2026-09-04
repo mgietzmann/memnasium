@@ -48,8 +48,9 @@ CREATE TABLE IF NOT EXISTS recall_pair (
 -- One row per date whose draw was built. Drilling deletes draw rows, so the rows
 -- cannot say whether a day was built; this states it.
 CREATE TABLE IF NOT EXISTS draw_day (
-    day   TEXT PRIMARY KEY,      -- ISO date
-    drawn INTEGER NOT NULL       -- how many pairs came out, for the day's record
+    day      TEXT PRIMARY KEY,   -- ISO date
+    drawn    INTEGER NOT NULL,   -- how many pairs came out, for the day's record
+    expected REAL NOT NULL       -- how many were expected to, computed at build
 );
 
 -- Today's due pairs. One row per pair that flipped heads; deleted when drilled.

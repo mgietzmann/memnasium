@@ -50,12 +50,6 @@ def post_draw(conn: Conn) -> models.DrawSummary:
     return store.build_draw(conn)
 
 
-@router.get("/draw")
-def read_draw(conn: Conn) -> models.DrawSummary | None:
-    """The current draw — the one most recently built — or `null` if there is none."""
-    return store.draw_summary(conn)
-
-
 @router.get("/draw/boards")
 def read_boards(conn: Conn, n: Annotated[int, Query(ge=1)] = 1) -> list[models.Board]:
     """The next `n` boards of the current draw."""

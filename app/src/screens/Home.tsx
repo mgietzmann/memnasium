@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type Home as HomeCounts } from '../api/client';
 import { shortDay, todayIso } from '../api/day';
+import { expected, pairs } from '../format';
 import { TopBar, type Screen } from '../App';
 
 /**
@@ -38,6 +39,11 @@ export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
             <>
               <span className="muted">{shortDay(home.draw.day)} · </span>
               {home.draw.drawn} drawn
+              {/*
+                The expectation shown is the one frozen on this draw, never a
+                fresh sum: `118 drawn · ~87 expected` is a claim about one draw.
+              */}
+              <span className="muted"> · {expected(home.draw.expected)}</span>
               {home.draw.due === 0 ? (
                 <span className="muted"> · none left</span>
               ) : (
@@ -48,7 +54,11 @@ export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
               )}
             </>
           ) : (
-            <span className="muted">not built yet</span>
+            <>
+              <span className="muted">not built yet</span>
+              {/* Nothing built yet, so this is a prediction of the build about to happen. */}
+              {home && <span className="muted"> · {expected(home.expected ?? 0)}</span>}
+            </>
           )}
           {(!home?.draw || home.draw.day !== todayIso()) && (
             <>
@@ -59,6 +69,11 @@ export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
             </>
           )}
         </div>
+        {/* The live corpus: the only line here that says how big the thing being
+            practised actually is. It sits in the draw's own panel — see
+            design/app/Home.md#layout — does not move during a morning, and is
+            held back until `home` has arrived rather than reading `0 pairs`. */}
+        {home && <div className="muted">{pairs(home.pairs)}</div>}
       </div>
 
       <div className="panel">

@@ -31,11 +31,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Read Draw
-         * @description The current draw — the one most recently built — or `null` if there is none.
-         */
-        get: operations["read_draw_api_draw_get"];
+        get?: never;
         put?: never;
         /**
          * Post Draw
@@ -407,8 +403,9 @@ export interface components {
          *
          *     `day` may be earlier than today: the current draw is the one most recently
          *     built and stays current until the next one replaces it — see
-         *     design/Data.md#the-draw. `drawn` is how many came out and does not fall;
-         *     the other three do, as the morning is worked.
+         *     design/Data.md#the-draw. `drawn` is how many came out and `expected` is how
+         *     many were expected to, frozen at build time — neither falls; the other three
+         *     do, as the morning is worked.
          */
         DrawSummary: {
             /** Boards */
@@ -419,6 +416,8 @@ export interface components {
             drawn: number;
             /** Due */
             due: number;
+            /** Expected */
+            expected: number;
             /** Roll */
             roll: number;
         };
@@ -502,10 +501,20 @@ export interface components {
         };
         /**
          * Home
-         * @description The three backlog counts and the current draw.
+         * @description The three backlog counts, the live corpus, and the current draw.
+         *
+         *     `pairs` is every live pair and is always present. `expected` is the live sum
+         *     over them — what a build right now would come out at — and is set **only**
+         *     when no draw has ever been built; once there is a marker the number that
+         *     matters is `draw.expected`, frozen at that draw's build. See
+         *     design/api/API.md#the-drill-loop.
          */
         Home: {
             draw?: components["schemas"]["DrawSummary"] | null;
+            /** Expected */
+            expected?: number | null;
+            /** Pairs */
+            pairs: number;
             /** Placements Stale */
             placements_stale: number;
             /** Placements Without Pairs */
@@ -758,26 +767,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_draw_api_draw_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DrawSummary"] | null;
                 };
             };
         };

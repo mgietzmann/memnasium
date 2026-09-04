@@ -1,6 +1,6 @@
 # Home
 
-**Status:** changed
+**Status:** implemented
 
 ## Table of Contents
 
@@ -69,8 +69,12 @@ the skills that drain them (see [../flows/](../flows)).
 ```
 
 `1,204 pairs` is the live corpus — every non-retired pair, across groups and the
-roll — and is always on screen. It is the only line here that says how big the
-thing being practised actually is.
+roll. It sits in the draw's own panel, under the line it gives scale to, and is
+the only thing here that says how big the thing being practised actually is.
+
+Neither it nor the expectation is drawn until `GET /home` has answered: a corpus
+line reading `0 pairs` while the request is in flight, or after it fails, is a
+confident false statement rather than a loading state.
 
 The draw line reads the **current** draw — the one most recently built — and
 `[ Build ]` is offered only when today has no draw of its own yet. The sketch

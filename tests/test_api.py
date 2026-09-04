@@ -33,9 +33,13 @@ def test_home_is_one_call(client: TestClient, corpus: Corpus) -> None:
         "ungrouped_notes",
         "placements_without_pairs",
         "placements_stale",
+        "pairs",
+        "expected",
         "draw",
     }
     assert body["draw"] is None
+    # No draw has ever been built, so the expectation is the live sum
+    assert (body["pairs"], body["expected"]) == (6, 6.0)
 
 
 def test_the_drill_loop_round_trips(

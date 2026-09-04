@@ -54,8 +54,9 @@ const post = <T>(path: string, body?: unknown): Promise<T> =>
 export const api = {
   home: () => request<Home>('/home'),
 
+  // The current draw is read through `/home`, which is the only route
+  // carrying the corpus and the expectation beside it — design/api/API.md.
   buildDraw: () => post<DrawSummary>('/draw'),
-  draw: () => request<DrawSummary | null>('/draw'),
   boards: (n: number) => request<Board[]>(`/draw/boards?n=${n}`),
   roll: (n: number) => request<RollBatch>(`/draw/roll?n=${n}`),
   grade: (answers: Answer[]) => post<{ verdicts: Verdict[] }>('/grade', { answers }),

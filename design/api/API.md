@@ -1,6 +1,6 @@
 # API
 
-**Status:** changed
+**Status:** implemented
 
 ## Table of Contents
 
@@ -49,6 +49,11 @@ payload field-by-field detail, which is generated from the models — see
 - **`GET /home` is coarse.** It is a dashboard; one call beats three. The corpus
   size and the [expectation](../Data.md#the-expectation) ride along with the
   backlog counts rather than earning a route of their own.
+- **The current draw is read only through `GET /home`.** It once had a route of
+  its own, but every screen that wants the draw also wants the corpus and the
+  expectation beside it, so the second route became a second way to ask the same
+  question — the thing [Two readers](#two-readers) exists to avoid. `POST /draw`
+  builds; nothing else reads a draw on its own.
 - **A pair set is written whole.** One route expresses first write, reword, split
   and combine, so the inheritance rule lives in the API and not in three callers.
   See [Writing a pair set](#writing-a-pair-set).
@@ -75,8 +80,7 @@ App only. None of these is an MCP tool.
 | Route | Does |
 |---|---|
 | `GET /home` | the three backlog counts, the corpus size and expectation, and today's draw status |
-| `POST /draw` | build today's draw. Idempotent on the `draw_day` marker — a date that already has one is reported, never redrawn |
-| `GET /draw` | the **current** draw — the one most recently built — or `null` if none has ever been built |
+| `POST /draw` | build today's draw, returning it. Idempotent on the `draw_day` marker — a date that already has one is reported, never redrawn |
 | `GET /draw/boards?n=` | the next *n* boards of the current draw: a group, its due pairs, and its context pairs with answers and sources |
 | `GET /draw/roll?n=` | *n* due roll pairs of the current draw |
 | `POST /grade` | a board's typed answers → verdicts. The only Claude call; writes nothing |
@@ -106,7 +110,9 @@ they are two different claims; the maths behind both is
 [Data.md](../Data.md#the-expectation).
 
 `draw` is the **current** draw — the latest `draw_day` — and is `null` only when
-none has ever been built. A morning worked to the end returns `drawn` with zeros
+none has ever been built. This is the only route that reads it: both
+[Home](../app/Home.md) and [Drill home](../app/Drilling.md#drill-home) fetch
+`/home`. A morning worked to the end returns `drawn` with zeros
 beside it, not `null`, or the app would read a finished day as an unbuilt one and
 offer to draw it again.
 

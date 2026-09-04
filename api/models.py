@@ -171,23 +171,34 @@ class DrawSummary(BaseModel):
 
     `day` may be earlier than today: the current draw is the one most recently
     built and stays current until the next one replaces it — see
-    design/Data.md#the-draw. `drawn` is how many came out and does not fall;
-    the other three do, as the morning is worked.
+    design/Data.md#the-draw. `drawn` is how many came out and `expected` is how
+    many were expected to, frozen at build time — neither falls; the other three
+    do, as the morning is worked.
     """
 
     day: str
     drawn: int
+    expected: float
     due: int
     boards: int
     roll: int
 
 
 class Home(BaseModel):
-    """The three backlog counts and the current draw."""
+    """The three backlog counts, the live corpus, and the current draw.
+
+    `pairs` is every live pair and is always present. `expected` is the live sum
+    over them — what a build right now would come out at — and is set **only**
+    when no draw has ever been built; once there is a marker the number that
+    matters is `draw.expected`, frozen at that draw's build. See
+    design/api/API.md#the-drill-loop.
+    """
 
     ungrouped_notes: int
     placements_without_pairs: int
     placements_stale: int
+    pairs: int
+    expected: float | None = None
     draw: DrawSummary | None = None
 
 
