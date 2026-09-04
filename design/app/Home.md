@@ -1,6 +1,6 @@
 # Home
 
-**Status:** under implementation
+**Status:** implemented
 
 ## Table of Contents
 
