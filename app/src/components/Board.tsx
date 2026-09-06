@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { api, type ContextPair, type DuePair, type Verdict } from '../api/client';
+import { ApiError, api, type ContextPair, type DuePair, type Verdict } from '../api/client';
 import { Tex } from './Tex';
 
 /**
@@ -15,6 +15,7 @@ export function Board({
   due,
   context,
   onConfirmed,
+  onAbandoned,
 }: {
   title: string;
   pairCount: number | null;
@@ -22,12 +23,16 @@ export function Board({
   due: DuePair[];
   context: ContextPair[];
   onConfirmed: () => void;
+  onAbandoned: () => void;
 }) {
   const [typed, setTyped] = useState<Record<number, { answer: string; source: string }>>({});
   const [verdicts, setVerdicts] = useState<Verdict[] | null>(null);
   const [contested, setContested] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // A refused confirm is terminal: the row it would write against is gone, so
+  // there is nothing to retry — design/app/Drilling.md#a-refused-confirm.
+  const [refused, setRefused] = useState(false);
 
   const box = (id: number) => typed[id] ?? { answer: '', source: '' };
 
@@ -74,7 +79,14 @@ export function Board({
         }),
       )
       .then(onConfirmed)
-      .catch((e: Error) => setError(e.message))
+      .catch((e: Error) => {
+        // Only the store's refusal means the draw row is gone. Anything else —
+        // a validation error, a crash — is reported as itself, with Confirm
+        // still there: inventing a reason and removing the only control would
+        // strand a board that has already been typed into.
+        if (e instanceof ApiError && e.code === 'refused') setRefused(true);
+        else setError(e.message);
+      })
       .finally(() => setBusy(false));
   };
 
@@ -147,7 +159,20 @@ export function Board({
 
           {error && <p className="verdict missed">{error}</p>}
 
-          {!verdicts ? (
+          {/* The board stays exactly as it is, verdicts and all, above a line
+              saying nothing was written. Nothing is lost but the typing: the
+              pairs were never sessions, so they flip again in the draw that
+              swept them, at exactly the same odds. */}
+          {refused ? (
+            <>
+              <p className="verdict missed">
+                The draw this board belonged to is gone. Nothing was written.
+              </p>
+              <button className="primary" onClick={onAbandoned}>
+                Back to Drill
+              </button>
+            </>
+          ) : !verdicts ? (
             <button className="primary" disabled={!complete || busy} onClick={submit}>
               Submit
             </button>

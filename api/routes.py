@@ -43,22 +43,19 @@ def read_home(conn: Conn) -> models.Home:
 
 @router.post("/draw")
 def post_draw(conn: Conn) -> models.DrawSummary:
-    """Build today's draw. Idempotent on the `draw_day` marker.
-
-    The only route in the drill loop that reads the calendar.
-    """
+    """Build today's draw. Idempotent on the `draw_day` marker."""
     return store.build_draw(conn)
 
 
 @router.get("/draw/boards")
 def read_boards(conn: Conn, n: Annotated[int, Query(ge=1)] = 1) -> list[models.Board]:
-    """The next `n` boards of the current draw."""
+    """The next `n` boards of today's draw."""
     return store.boards(conn, n)
 
 
 @router.get("/draw/roll")
 def read_roll(conn: Conn, n: Annotated[int, Query(ge=1)] = 1) -> models.RollBatch:
-    """`n` due roll pairs of the current draw."""
+    """`n` due roll pairs of today's draw."""
     return store.roll_batch(conn, n)
 
 
@@ -74,7 +71,11 @@ def post_grade(conn: Conn, caller: Caller, payload: models.GradeRequest) -> mode
 
 @router.post("/confirm", status_code=204)
 def post_confirm(conn: Conn, payload: models.ConfirmRequest) -> None:
-    """Commit a board or roll batch against the current draw, in one transaction."""
+    """Commit a board or roll batch, in one transaction.
+
+    Against the day on each pair's own `draw` row, not the calendar — the one
+    route here that does not read today. See design/api/API.md#the-drill-loop.
+    """
     store.confirm(conn, payload.results)
 
 

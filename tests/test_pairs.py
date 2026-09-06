@@ -83,7 +83,7 @@ def test_a_pair_dropped_from_the_set_is_retired_not_deleted(
 
 
 def test_retiring_a_pair_drops_its_draw_row(db: sqlite3.Connection, corpus: Corpus) -> None:
-    draw_all(db, "2026-09-03")
+    draw_all(db)
     store.write_pairs(
         db,
         corpus.p2,
@@ -118,7 +118,7 @@ def test_a_retired_pair_is_absent_from_every_read(db: sqlite3.Connection, corpus
     detail = store.get_group_detail(db, corpus.piscivory)
     assert corpus.pair_c not in {p.id for p in detail.pairs}
     assert detail.group.pair_count == 2
-    draw_all(db, "2026-09-03")
+    draw_all(db)
     (board,) = [b for b in store.boards(db, 5) if b.group_id == corpus.piscivory]
     seen = {p.id for p in board.due} | {p.id for p in board.context}
     assert corpus.pair_c not in seen

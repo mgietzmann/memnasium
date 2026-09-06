@@ -1,6 +1,6 @@
 # Style Standard
 
-**Status:** changed
+**Status:** implemented
 
 ## Table of Contents
 

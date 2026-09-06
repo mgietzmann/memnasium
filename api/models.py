@@ -167,13 +167,13 @@ class PairWrite(BaseModel):
 
 
 class DrawSummary(BaseModel):
-    """The current draw, as numbers.
+    """Today's draw, as numbers.
 
-    `day` may be earlier than today: the current draw is the one most recently
-    built and stays current until the next one replaces it — see
-    design/Data.md#the-draw. `drawn` is how many came out and `expected` is how
-    many were expected to, frozen at build time — neither falls; the other three
-    do, as the morning is worked.
+    `day` is always today: an earlier draw is never presented as the day's work,
+    so this is the statement of which day these numbers belong to rather than
+    something the app compares against — see design/Data.md#the-draw. `drawn` is
+    how many came out and `expected` is how many were expected to, frozen at
+    build time — neither falls; the other three do, as the morning is worked.
     """
 
     day: str
@@ -185,13 +185,14 @@ class DrawSummary(BaseModel):
 
 
 class Home(BaseModel):
-    """The three backlog counts, the live corpus, and the current draw.
+    """The three backlog counts, the live corpus, and today's draw.
 
     `pairs` is every live pair and is always present. `expected` is the live sum
-    over them — what a build right now would come out at — and is set **only**
-    when no draw has ever been built; once there is a marker the number that
-    matters is `draw.expected`, frozen at that draw's build. See
-    design/api/API.md#the-drill-loop.
+    over them — what a build right now would come out at, moving as pairs are
+    written — and is set **only** while today has no draw; once today's marker
+    exists the number that matters is `draw.expected`, frozen at that build.
+    `draw` is `null` whenever today has no marker, whether none was ever built or
+    the last one was yesterday. See design/api/API.md#the-drill-loop.
     """
 
     ungrouped_notes: int

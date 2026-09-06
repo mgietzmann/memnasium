@@ -1,8 +1,7 @@
 BEGIN TRANSACTION;
 CREATE TABLE draw (
-    day            TEXT NOT NULL,       -- ISO date
-    recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
-    PRIMARY KEY (day, recall_pair_id)
+    recall_pair_id INTEGER PRIMARY KEY REFERENCES recall_pair(id),
+    day            TEXT NOT NULL        -- ISO date
 );
 CREATE TABLE draw_day (
     day      TEXT PRIMARY KEY,   -- ISO date
@@ -899,4 +898,5 @@ INSERT INTO "source" VALUES(7,'Mann',1991,'Dynamics of Marine Ecosystems - Tides
 INSERT INTO "source" VALUES(8,'Mann',1991,'Dynamics of Marine Ecosystems - Ocean Basin Circulation');
 INSERT INTO "source" VALUES(9,'Mann',1991,'Dynamics of Marine Ecosystems - Variability in Ocean Circulation');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
+CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;

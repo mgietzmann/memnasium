@@ -24,14 +24,31 @@ def backup() -> None:
 
 
 def restore() -> None:
-    """Rebuild `data/memnasium.db` from the dump, or from the schema if there is none."""
+    """Rebuild `data/memnasium.db` from the dump, or from the schema if there is none.
+
+    Foreign keys are off for the load. `iterdump` writes the tables in name
+    order, each one's rows straight after its `CREATE`, so `note` is filled
+    before `source` exists and every reference in the dump is forward at the
+    moment it is made. The dump is one consistent database rather than a stream
+    of user writes, so the check that matters is the one after: a violation left
+    behind raises rather than being restored quietly.
+    """
     target = db_path()
     if target.exists():
         return
     conn = connect(target)
     try:
         if DUMP.exists():
+            conn.execute("PRAGMA foreign_keys = OFF")
             conn.executescript(DUMP.read_text())
+            broken = conn.execute("PRAGMA foreign_key_check").fetchall()
+            conn.execute("PRAGMA foreign_keys = ON")
+            if broken:
+                # Leaving the half-built file would make the next `make restore`
+                # a silent no-op, because it returns early on an existing db.
+                conn.close()
+                target.unlink()
+                raise SystemExit(f"the dump has {len(broken)} broken references; not restored")
         create_schema(conn)
     finally:
         conn.close()

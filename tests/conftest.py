@@ -6,6 +6,7 @@ design/standards/Tests.md: never mock the database, always stub Claude.
 import sqlite3
 from collections.abc import Iterator
 from dataclasses import dataclass
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
@@ -145,6 +146,15 @@ def client(db: sqlite3.Connection) -> Iterator[TestClient]:
         app.dependency_overrides.clear()
 
 
-def draw_all(db: sqlite3.Connection, day: str) -> None:
-    """Build a draw for `day` that certainly includes every live pair."""
-    store.build_draw(db, day, rng=lambda: 0.0)
+def draw_all(db: sqlite3.Connection, day: str | None = None) -> None:
+    """Build a draw that certainly includes every live pair. Today's by default.
+
+    The dates are relative to the clock rather than fixed, because everything but
+    `confirm` reads today — see design/Data.md#the-draw.
+    """
+    store.build_draw(db, day or store.today(), rng=lambda: 0.0)
+
+
+def days_ago(n: int) -> str:
+    """An ISO date `n` days before today."""
+    return (date.fromisoformat(store.today()) - timedelta(days=n)).isoformat()
