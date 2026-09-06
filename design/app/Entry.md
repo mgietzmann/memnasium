@@ -1,6 +1,6 @@
 # Entry (screen)
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -44,7 +44,7 @@ Does **not** cover what entry means or what it writes (see
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  ← Home                                            Entry   │
+│  ← Home                                        Entry   ☀  │
 ├────────────────────────────────────────────────────────────┤
 │  Source   Riddell 2018 — Chinook Salmon in SE Alaska  [×]  │
 │           ┌──────────────────────────────────────────┐     │

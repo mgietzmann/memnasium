@@ -1,6 +1,6 @@
 # memnasium
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -179,7 +179,8 @@ Coined terms are defined here once and used identically everywhere. No synonyms.
 | Term | Means |
 |---|---|
 | **live** | said of a pair that is not retired. Every count of pairs — a group's size, the corpus, the expectation — is over live pairs only |
-| **the draw** | the once-a-day coin flip that decides which pairs come up |
+| **the draw** | the once-a-day coin flip that decides which pairs come up. Always today's — see [Data.md](Data.md#the-draw) |
+| **stranded** | said of a draw row left over from an earlier day. Not offered anywhere, still confirmable by a board already on screen, swept by the next build |
 | **the expectation** | the mean size of a draw, `Σ e^(-α · n)` over live pairs. Shown before a build as a prediction, and stored with the draw so it can be read beside what actually came out |
 | **session** | one drill of one pair. A pair not drawn had no session. Nowhere in memnasium does *session* mean anything else — a Claude Code session is always said in full |
 | **`sessions_correct`** | consecutive correct drills of a pair. Sets how likely it is to be drawn |
