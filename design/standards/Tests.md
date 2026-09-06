@@ -136,6 +136,9 @@ Worth generating against rather than enumerating:
 | a pair-set write leaves the placement with exactly the pairs it was given |
 | an inherited count is never higher than the lowest of its predecessors |
 | confirming a board deletes exactly the draw rows for the pairs on it |
+| a [stranded](../Project.md#glossary) draw row is confirmable, is never served as a board or roll pair, and is not counted by `/home` |
+| a miss is dated by its pair's `draw` row, never by the wall clock — confirming a board built yesterday writes yesterday |
+| a pair never holds two `draw` rows, whatever order builds and confirms interleave |
 
 Examples still cover the specific shapes in the docs; properties cover the ones
 nobody thought of.

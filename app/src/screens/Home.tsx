@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type Home as HomeCounts } from '../api/client';
-import { shortDay, todayIso } from '../api/day';
 import { expected, pairs } from '../format';
 import { TopBar, type Screen } from '../App';
 
@@ -32,12 +31,11 @@ export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
         <div className="label">The draw</div>
         <div>
           {/*
-            The current draw is the one most recently built. Build is offered only
-            when today has none of its own — see design/app/Home.md.
+            The line reads today's draw, and carries no date: it is always about
+            today, so saying so would be noise — see design/app/Home.md.
           */}
           {home?.draw ? (
             <>
-              <span className="muted">{shortDay(home.draw.day)} · </span>
               {home.draw.drawn} drawn
               {/*
                 The expectation shown is the one frozen on this draw, never a
@@ -55,12 +53,16 @@ export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
             </>
           ) : (
             <>
+              {/* What a day opens on whether the last draw was yesterday or in
+                  March. Anything left of that draw is stranded: not counted here,
+                  not offered by Drill, and swept by the build. */}
               <span className="muted">not built yet</span>
-              {/* Nothing built yet, so this is a prediction of the build about to happen. */}
+              {/* A prediction of the build about to happen, which moves as notes
+                  are wordsmithed into pairs. */}
               {home && <span className="muted"> · {expected(home.expected ?? 0)}</span>}
             </>
           )}
-          {(!home?.draw || home.draw.day !== todayIso()) && (
+          {!home?.draw && (
             <>
               {' '}
               <button className="primary" onClick={build}>

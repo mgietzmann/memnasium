@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type Board as BoardData, type Home, type DuePair } from '../api/client';
-import { shortDay, todayIso } from '../api/day';
 import { expected, pairs } from '../format';
 import { TopBar } from '../App';
 import { Board } from '../components/Board';
@@ -14,6 +13,12 @@ function useSticky(key: string, fallback: number) {
   return [value, setValue] as const;
 }
 
+/**
+ * A run is one `GET /draw/boards?n=` — all `N` boards arrive together and are
+ * held here, so confirming goes straight to the next without a refetch and a run
+ * is worked to its end whatever happens to the date meanwhile. The turned date
+ * shows up when the run ends and the fork reloads `/home`.
+ */
 type Run = { kind: 'boards'; boards: BoardData[]; at: number } | { kind: 'roll'; due: DuePair[] };
 
 /** The two screens of a morning — design/app/Drilling.md. */
@@ -50,6 +55,7 @@ export function Drill({ onHome }: { onHome: () => void }) {
             due={run.due}
             context={[]}
             onConfirmed={back}
+            onAbandoned={back}
           />
         </div>
       );
@@ -70,6 +76,9 @@ export function Drill({ onHome }: { onHome: () => void }) {
             if (run.at + 1 < run.boards.length) setRun({ ...run, at: run.at + 1 });
             else back();
           }}
+          // A refused confirm has nothing to retry, so the only way on is back
+          // to the fork — design/app/Drilling.md#a-refused-confirm.
+          onAbandoned={back}
         />
       </div>
     );
@@ -80,10 +89,11 @@ export function Drill({ onHome }: { onHome: () => void }) {
       <TopBar title="Drill" onHome={onHome} />
       {!draw ? (
         <div className="panel">
-          {/* Before any draw exists the fork is not blank: this is the number
-              that says whether the morning is ten minutes or an hour. Held back
-              until `home` has actually arrived — `0 pairs · ~0 expected` is a
-              confident lie about the corpus, not a loading state. */}
+          {/* Until today is built the fork is not blank: this is the number that
+              says whether the morning is ten minutes or an hour, and it is worth
+              looking at after a day of wordsmithing. Held back until `home` has
+              actually arrived — `0 pairs · ~0 expected` is a confident lie about
+              the corpus, not a loading state. */}
           {home && (
             <div className="muted">
               {pairs(home.pairs)} · {expected(home.expected ?? 0)}
@@ -102,8 +112,9 @@ export function Drill({ onHome }: { onHome: () => void }) {
         <div className="panel">
           {/* `drawn` and `expected` are the same draw's outcome and prediction:
               the expectation is the one frozen at that build, not a fresh sum. */}
+          {/* No date: the built state is today's by definition. */}
           <div className="label">
-            The draw — {shortDay(draw.day)} · {draw.drawn} drawn · {expected(draw.expected)}
+            The draw — {draw.drawn} drawn · {expected(draw.expected)}
           </div>
           {draw.due === 0 ? (
             <p className="muted">none left</p>
@@ -151,17 +162,8 @@ export function Drill({ onHome }: { onHome: () => void }) {
               </span>
             </div>
           )}
-          {/* A draw whose date is not today keeps its Build button, which replaces it. */}
-          {draw.day !== todayIso() && (
-            <button
-              className="primary"
-              onClick={() => {
-                void api.buildDraw().then(load);
-              }}
-            >
-              Build today&apos;s draw
-            </button>
-          )}
+          {/* No Build button: today has a draw, so there is no way to draw again
+              until tomorrow — design/app/Drilling.md#decisions. */}
           {/* The live corpus, which does not move during a morning. */}
           {home && <div className="muted">{pairs(home.pairs)}</div>}
         </div>

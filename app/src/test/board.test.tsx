@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Board } from '../components/Board';
-import { api } from '../api/client';
+import { ApiError, api } from '../api/client';
 
 vi.mock('better-react-mathjax', () => ({
   MathJax: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
@@ -32,6 +32,7 @@ function board(overrides: Partial<Parameters<typeof Board>[0]> = {}) {
       due={due}
       context={context}
       onConfirmed={vi.fn()}
+      onAbandoned={vi.fn()}
       {...overrides}
     />,
   );
@@ -109,5 +110,66 @@ describe('a board', () => {
       { recall_pair_id: 1, correct: true, user_answer: 'x', user_source: 'y' },
       { recall_pair_id: 2, correct: true, user_answer: 'x', user_source: 'y' },
     ]);
+  });
+
+  it('keeps a refused board on screen, with nothing to retry', async () => {
+    // app/Drilling.md#a-refused-confirm — the row it would write against is gone
+    const user = userEvent.setup();
+    vi.spyOn(api, 'grade').mockResolvedValue({
+      verdicts: [1, 2].map((id) => ({
+        recall_pair_id: id,
+        answer_correct: true,
+        source_correct: true,
+        right_answer: null,
+        right_source: null,
+      })),
+    });
+    vi.spyOn(api, 'confirm').mockRejectedValue(
+      new ApiError(409, 'refused', 'pair 1 has no draw row'),
+    );
+    const onAbandoned = vi.fn();
+    board({ onAbandoned });
+    for (const id of [1, 2]) {
+      await user.type(screen.getByLabelText(`answer for pair ${id}`), 'x');
+      await user.type(screen.getByLabelText(`source for pair ${id}`), 'y');
+    }
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    await user.click(await screen.findByRole('button', { name: 'Confirm' }));
+
+    expect(await screen.findByText(/Nothing was written/)).toBeInTheDocument();
+    // The verdicts are still there, and Confirm is gone — there is no retry.
+    expect(screen.getAllByText('answer').length).toBe(2);
+    expect(screen.queryByRole('button', { name: 'Confirm' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Back to Drill' }));
+    expect(onAbandoned).toHaveBeenCalled();
+  });
+
+  it('reports any other confirm failure as itself, and keeps Confirm', async () => {
+    // Only `refused` means the draw row is gone. A validation error or a crash
+    // must not be dressed up as one, on a board already typed into.
+    const user = userEvent.setup();
+    vi.spyOn(api, 'grade').mockResolvedValue({
+      verdicts: [1, 2].map((id) => ({
+        recall_pair_id: id,
+        answer_correct: true,
+        source_correct: true,
+        right_answer: null,
+        right_source: null,
+      })),
+    });
+    vi.spyOn(api, 'confirm').mockRejectedValue(new ApiError(500, 'error', 'Internal Server Error'));
+    board();
+    for (const id of [1, 2]) {
+      await user.type(screen.getByLabelText(`answer for pair ${id}`), 'x');
+      await user.type(screen.getByLabelText(`source for pair ${id}`), 'y');
+    }
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    await user.click(await screen.findByRole('button', { name: 'Confirm' }));
+
+    expect(await screen.findByText('Internal Server Error')).toBeInTheDocument();
+    expect(screen.queryByText(/Nothing was written/)).not.toBeInTheDocument();
+    // Still retryable — the row it would write against may well still be there.
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeEnabled();
   });
 });

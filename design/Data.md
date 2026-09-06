@@ -111,12 +111,27 @@ A new pair sits at 0, so `p = 1` and its first appearance is guaranteed.
   "built and finished", and inferring idempotence from it lets a worked-out day be
   drawn again — drilling the same pair twice in a morning and inflating its
   counter. The marker states the fact instead of guessing at it.
-- **The current draw is the latest one built, not today's.** A board started at
-  23:58 and answered at 00:01 must not die of the calendar. The date decides only
-  whether the Build button is offered; every read and every write works against
-  the most recently built draw, which stays current until the next one replaces
-  it.
-- **One clock: a miss is dated by its draw, not by the wall.** Confirming a
+- **The draw is today's.** Everything offered — Home's line, the Build button,
+  the boards, the roll — asks whether *today* has a `draw_day`, and an earlier
+  draw is never presented as the day's work. The alternative, carrying the latest
+  draw forward until replaced, meant a morning after an authoring binge opened on
+  yesterday's numbers and a stale expectation.
+- **A board in hand survives midnight; nothing else does.** A board started at
+  23:58 and answered at 00:01 must not die of the calendar, so `confirm` is the
+  one operation that does not ask what day it is. Its rows are
+  [stranded](Project.md#glossary) — no longer offered anywhere, still writable —
+  and that is the whole of what carrying forward ever needed to buy.
+- **`confirm` reads each pair's own `draw` row rather than a "current draw".**
+  The row *is* the answer to which draw the pair belongs to and which day the miss
+  is dated. One lookup replaces a global notion of currency that four other
+  operations then had to agree with.
+- **The `draw` primary key is the pair, not `(day, pair)`.** A pair holding two
+  rows would make that lookup pick one arbitrarily and mis-date the study record
+  with no error raised. Sweeping at build already keeps it to one; the key makes a
+  second impossible, which is the right place for something `confirm`'s
+  correctness rests on. Reads are then `WHERE day = today` over an index rather
+  than a key prefix.
+- **One clock: a miss is dated by its draw row, not by the wall.** Confirming a
   Tuesday board on Wednesday records Tuesday, because that is the draw it belonged
   to. Two clocks would need reconciling and buy nothing.
 - **The marker carries `drawn`.** Without it a finished morning reads as nothing
@@ -191,12 +206,16 @@ CREATE TABLE draw_day (
     expected REAL NOT NULL       -- how many were expected to, computed at build
 );
 
--- Today's due pairs. One row per pair that flipped heads; deleted when drilled.
+-- Due pairs. One row per pair that flipped heads; deleted when drilled.
+-- The pair is the key, not (day, pair): `confirm` looks a pair up by id alone to
+-- learn which draw it belongs to, so a second row would silently mis-date a miss.
 CREATE TABLE draw (
-    day            TEXT NOT NULL,       -- ISO date
-    recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
-    PRIMARY KEY (day, recall_pair_id)
+    recall_pair_id INTEGER PRIMARY KEY REFERENCES recall_pair(id),
+    day            TEXT NOT NULL        -- ISO date
 );
+
+-- Every read but `confirm`'s is "what is due today".
+CREATE INDEX draw_day_idx ON draw (day);
 
 -- One missed drill. Contested grades write nothing.
 CREATE TABLE miss (
@@ -271,10 +290,24 @@ Building is idempotent on the **marker**, not on the rows: a date that already h
 a `draw_day` row is reported, never redrawn, however many of its pairs have since
 been drilled away.
 
-**The current draw** is the `draw_day` with the greatest `day` — the one most
-recently built. It is what the fork, the boards, the roll and `confirm` all work
-against, and it stays current until another is built. Only the Build button reads
-the calendar, and only to ask whether *today* has a marker yet.
+**The day's draw** is the `draw_day` whose `day` is today. It is what Home, the
+fork, the boards and the roll all work against; a day with no marker has no draw,
+however recently the last one was built.
+
+`confirm` is the exception, and the only one. It takes the pairs it is given,
+looks each one's `draw` row up by `recall_pair_id`, and writes against the day it
+finds there:
+
+```
+draw rows for a pair:  at most one, by the primary key
+  ├─ day = today          the normal case
+  └─ day < today          stranded — the run was in hand when the day turned
+```
+
+"At most one" is the schema's, not a procedure's: `recall_pair_id` is the key, so
+the row is an unambiguous answer to *which draw is this pair in* — see
+[Decisions](#decisions). A pair with no row is refused: the board was already
+confirmed, or a build has since swept it.
 
 A pair written *after* the day's draw was built is not in it, and waits until
 tomorrow. At `sessions_correct = 0` it will certainly be drawn then.
@@ -283,11 +316,16 @@ Drilling a pair deletes its `draw` row and updates `sessions_correct`. Remaining
 today is `COUNT(*) WHERE day = today`, and reaches zero on a morning worked to the
 end — the marker is what keeps that from reading as "never built".
 
-Building the next draw deletes the rows of every earlier one. Until that happens
-the old draw is simply still current, and working it is legitimate — an evening
-that runs past midnight finishes its board, and a morning after three days away
-shows what was left of the last one, with the Build button beside it. An undrilled
-pair had no session, so its counter is untouched and it simply flips again.
+**Stranded** rows are what is left of an earlier draw at the moment the date
+changes. They are not counted by Home, not served as boards or roll pairs, and not
+listed anywhere — the only thing they can still do is be confirmed, by a board
+that was already on screen. The next build deletes them. An undrilled pair had no
+session, so its counter is untouched and it simply flips again, at exactly the
+same `p`.
+
+So an evening that runs past midnight finishes its board and writes it against
+the evening's date, and a morning after three days away opens on `not built yet`
+rather than on the remains of a draw it has no memory of starting.
 
 The pairs drawn are grouped by their placement's group to form the boards the app
 serves; a drawn pair with a null group is drilled on its own.
@@ -321,19 +359,31 @@ moves it: every pair confirmed correct bumps its counter and drops its odds. The
 stored value is what *this* draw was expected to be, so it stays comparable with
 `drawn` for the life of the draw.
 
-Before any draw exists there is no marker to read, so the same sum is computed
+Until today has a marker there is nothing to read, so the same sum is computed
 live off the histogram and shown as the prediction for the build about to happen.
+That live number is expected to move — a day of grouping and wordsmithing adds
+pairs at `sessions_correct = 0`, each of which contributes a full `1.0`, and
+seeing tomorrow get bigger is the point of showing it at all.
 
 | Read | Source | Says |
 |---|---|---|
-| no draw ever built | the histogram, live | what a build now would come out at |
-| the current draw | `draw_day.expected` | what that draw was expected to be |
+| today not built | the histogram, live | what a build now would come out at |
+| today's draw | `draw_day.expected` | what that draw was expected to be |
+
+The switch is the build, and it happens once a day. Yesterday's
+`draw_day.expected` is never read again.
 
 Both are estimates with real variance around them, so both are shown with a `~`.
 The only exact count is `drawn`.
 
 `expected` is `NOT NULL` with no default and needs no backfill: the committed
 dump holds no `draw_day` rows, so the column arrives on an empty table.
+
+The `draw` table is rekeyed on `recall_pair_id` rather than migrated. Its rows are
+[stranded](Project.md#glossary) at worst and swept by the next build, the
+committed dump holds none, and any `draw_day` row predating the change is simply
+never read again — the day's draw is today's. Dropping and recreating the table
+is the whole of it.
 
 ### Misses
 
@@ -357,5 +407,5 @@ and counts as correct.
 | Drop or absorb a pair | `UPDATE recall_pair SET retired = 1`; `DELETE draw` for it. Its `miss` rows are untouched |
 | Build the day's draw | `DELETE draw WHERE day < today`; if there is no `draw_day` for today: `INSERT draw` per pair that flipped heads, then `INSERT draw_day (today, count, expected)` |
 | Drill a pair, correct | `UPDATE recall_pair SET sessions_correct = sessions_correct + 1`; `DELETE draw` row |
-| Drill a pair, missed | `UPDATE recall_pair SET sessions_correct = 0`; `INSERT miss (user_answer, user_source)`; `DELETE draw` row |
+| Drill a pair, missed | `UPDATE recall_pair SET sessions_correct = 0`; `INSERT miss (user_answer, user_source)` dated by that pair's `draw.day`; `DELETE draw` row |
 | Contest a grade | as correct: `sessions_correct + 1`, `DELETE draw` row, no `miss` row |

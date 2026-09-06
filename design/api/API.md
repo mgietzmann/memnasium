@@ -49,7 +49,7 @@ payload field-by-field detail, which is generated from the models — see
 - **`GET /home` is coarse.** It is a dashboard; one call beats three. The corpus
   size and the [expectation](../Data.md#the-expectation) ride along with the
   backlog counts rather than earning a route of their own.
-- **The current draw is read only through `GET /home`.** It once had a route of
+- **The draw is read only through `GET /home`.** It once had a route of
   its own, but every screen that wants the draw also wants the corpus and the
   expectation beside it, so the second route became a second way to ask the same
   question — the thing [Two readers](#two-readers) exists to avoid. `POST /draw`
@@ -81,10 +81,14 @@ App only. None of these is an MCP tool.
 |---|---|
 | `GET /home` | the three backlog counts, the corpus size and expectation, and today's draw status |
 | `POST /draw` | build today's draw, returning it. Idempotent on the `draw_day` marker — a date that already has one is reported, never redrawn |
-| `GET /draw/boards?n=` | the next *n* boards of the current draw: a group, its due pairs, and its context pairs with answers and sources |
-| `GET /draw/roll?n=` | *n* due roll pairs of the current draw |
+| `GET /draw/boards?n=` | the next *n* boards of **today's** draw: a group, its due pairs, and its context pairs with answers and sources |
+| `GET /draw/roll?n=` | *n* due roll pairs of **today's** draw |
 | `POST /grade` | a board's typed answers → verdicts. The only Claude call; writes nothing |
-| `POST /confirm` | the transaction in [flows/Drilling.md](../flows/Drilling.md#writes), against the current draw's day |
+| `POST /confirm` | the transaction in [flows/Drilling.md](../flows/Drilling.md#writes), against the day on each pair's own `draw` row |
+
+Every route here reads today except `POST /confirm`, which reads the pairs it is
+given. That asymmetry is the whole of what lets a board survive midnight — see
+[Data.md](../Data.md#the-draw).
 
 `GET /home` returns:
 
@@ -95,31 +99,32 @@ App only. None of these is an MCP tool.
   "placements_stale": 3,
   "pairs": 1204,
   "expected": 87.4,
-  "draw": { "day": "2026-09-03", "drawn": 118, "expected": 87.4, "due": 34, "boards": 6, "roll": 4 }
+  "draw": { "day": "2026-09-05", "drawn": 118, "expected": 87.4, "due": 34, "boards": 6, "roll": 4 }
 }
 ```
 
 `pairs` is every **live** pair — not retired, across groups and the roll. It is
 the size of the corpus and is always present.
 
-`expected` appears at the **top level only when no draw has ever been built**, and
-is then the live sum over those pairs — what a build right now would come out at.
-Once a marker exists the top-level field is `null` and the number that matters is
-`draw.expected`, frozen at that draw's build. Two fields rather than one because
-they are two different claims; the maths behind both is
+`expected` appears at the **top level only while today has no draw**, and is then
+the live sum over those pairs — what a build right now would come out at, moving
+as pairs are written. Once today's marker exists the top-level field is `null` and
+the number that matters is `draw.expected`, frozen at that build. Two fields
+rather than one because they are two different claims; the maths behind both is
 [Data.md](../Data.md#the-expectation).
 
-`draw` is the **current** draw — the latest `draw_day` — and is `null` only when
-none has ever been built. This is the only route that reads it: both
-[Home](../app/Home.md) and [Drill home](../app/Drilling.md#drill-home) fetch
-`/home`. A morning worked to the end returns `drawn` with zeros
-beside it, not `null`, or the app would read a finished day as an unbuilt one and
-offer to draw it again.
+`draw` is **today's** draw, and is `null` whenever today has no `draw_day` —
+whether none was ever built or the last one was yesterday. This is the only route
+that reads it: both [Home](../app/Home.md) and
+[Drill home](../app/Drilling.md#drill-home) fetch `/home`. A morning worked to the
+end returns `drawn` with zeros beside it, not `null`, or the app would read a
+finished day as an unbuilt one and offer to draw it again.
 
-`day` may be earlier than today, and that is not an error: it means the current
-draw was built before midnight, or several days ago and never replaced. `confirm`
-writes against that day, so a board answered at 00:01 commits normally. `POST
-/draw` is what ends a draw, not the clock. See [Data.md](../Data.md#the-draw).
+`day` is therefore always today when present, and is kept in the payload as the
+statement of which day these numbers belong to rather than as something the app
+compares against. Exactly one thing outlives the date: a board already on screen,
+whose pairs still confirm because `confirm` reads their `draw` rows and not the
+calendar. See [Data.md](../Data.md#the-draw).
 
 ### Entry and lookup
 
@@ -219,5 +224,5 @@ are rules rather than accidents:
 | a roll placement for a note that has a group placement | [Data.md](../Data.md#decisions) |
 | a second placement of a note into the same group | `UNIQUE (note_id, group_id)` — on `POST` **and** on a `PATCH` move into a group the note is already in |
 | retiring the last live pair of a placement | it would leave a placement that reads as pairless and re-enter the wordsmithing queue forever |
-| `POST /confirm` for a board whose pairs are no longer in the current draw | it was already confirmed, or a newer draw has since replaced it |
+| `POST /confirm` for a pair with no `draw` row | it was already confirmed, or a build has since swept it. Not being *today's* row is not a refusal — a [stranded](../Project.md#glossary) board commits normally |
 | a grade response that fails validation twice | [Claude.md](../Claude.md#enforcing-the-contract) |

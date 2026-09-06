@@ -3,15 +3,15 @@ import { render, screen } from '@testing-library/react';
 import { Home } from '../screens/Home';
 import { Drill } from '../screens/Drill';
 import { api, type DrawSummary, type Home as HomeCounts } from '../api/client';
-import { todayIso } from '../api/day';
 
 vi.mock('better-react-mathjax', () => ({
   MathJax: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   MathJaxContext: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+/** `day` is always today's when a draw is present — design/api/API.md. */
 const draw = (over: Partial<DrawSummary> = {}): DrawSummary => ({
-  day: todayIso(),
+  day: '2026-09-05',
   drawn: 118,
   expected: 87.4,
   due: 34,
@@ -20,7 +20,7 @@ const draw = (over: Partial<DrawSummary> = {}): DrawSummary => ({
   ...over,
 });
 
-/** `expected` at the top level is set only when no draw has ever been built. */
+/** `expected` at the top level is set only while today has no draw. */
 const homeCounts = (d: DrawSummary | null): HomeCounts => ({
   ungrouped_notes: 0,
   placements_without_pairs: 0,
@@ -41,11 +41,18 @@ function drillWith(d: DrawSummary | null) {
 }
 
 describe('the draw on Home', () => {
-  it('offers Build only when today has no draw of its own', async () => {
-    // app/Home.md — Build is offered when the current draw is not today's
+  it('offers no Build once today has a draw', async () => {
+    // app/Home.md — the button is gone until tomorrow
     homeWith(draw());
     expect(await screen.findByText(/118 drawn/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Build/ })).not.toBeInTheDocument();
+  });
+
+  it('carries no date on any of its three states', async () => {
+    // app/Home.md — the line is always about today, so saying so would be noise
+    homeWith(draw());
+    expect(await screen.findByText(/118 drawn/)).toBeInTheDocument();
+    expect(screen.queryByText(/Sep/)).not.toBeInTheDocument();
   });
 
   it('reads a finished draw as built, not as unbuilt', async () => {
@@ -56,13 +63,9 @@ describe('the draw on Home', () => {
     expect(screen.queryByRole('button', { name: /Build/ })).not.toBeInTheDocument();
   });
 
-  it('shows a carried-over draw with its date and a Build button beside it', async () => {
-    homeWith(draw({ day: '2026-09-01' }));
-    expect(await screen.findByText(/1 Sep/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Build/ })).toBeInTheDocument();
-  });
-
-  it('says not built yet only when none has ever been built', async () => {
+  it('says not built yet whenever today has no draw', async () => {
+    // Whether none was ever built or the last one was yesterday — the leftovers
+    // are stranded and are not counted here.
     homeWith(null);
     expect(await screen.findByText('not built yet')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Build/ })).toBeInTheDocument();
@@ -78,11 +81,17 @@ describe('the drill fork', () => {
     expect(screen.queryByRole('button', { name: 'Work boards' })).not.toBeInTheDocument();
   });
 
-  it('keeps a Build button on a draw carried over from an earlier day', async () => {
-    drillWith(draw({ day: '2026-09-01' }));
-    expect(await screen.findByText(/1 Sep/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Work boards' })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /Build/ })).toBeInTheDocument();
+  it('shows the pre-build screen when today has no draw, whatever was built before', async () => {
+    // app/Drilling.md — an earlier draw's leftovers appear in neither state
+    drillWith(null);
+    expect(await screen.findByRole('button', { name: /Build/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Work boards' })).not.toBeInTheDocument();
+  });
+
+  it('carries no date on the built state', async () => {
+    drillWith(draw());
+    expect(await screen.findByText(/118 drawn/)).toBeInTheDocument();
+    expect(screen.queryByText(/Sep/)).not.toBeInTheDocument();
   });
 });
 
@@ -93,7 +102,7 @@ describe('the corpus and the expectation', () => {
     expect(await screen.findByText(/~87 expected/)).toBeInTheDocument();
   });
 
-  it('predicts the build about to happen when none has ever been built', async () => {
+  it('predicts the build about to happen while today has no draw', async () => {
     homeWith(null);
     expect(await screen.findByText(/not built yet/)).toBeInTheDocument();
     expect(screen.getByText(/~87 expected/)).toBeInTheDocument();
@@ -104,7 +113,7 @@ describe('the corpus and the expectation', () => {
     expect(await screen.findByText('1,204 pairs')).toBeInTheDocument();
   });
 
-  it('is not a blank fork before the first build', async () => {
+  it('is not a blank fork before the day is built', async () => {
     // app/Drilling.md#decisions — the pre-build screen is not blank
     drillWith(null);
     expect(await screen.findByText(/1,204 pairs · ~87 expected/)).toBeInTheDocument();

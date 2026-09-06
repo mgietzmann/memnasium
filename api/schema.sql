@@ -53,12 +53,17 @@ CREATE TABLE IF NOT EXISTS draw_day (
     expected REAL NOT NULL       -- how many were expected to, computed at build
 );
 
--- Today's due pairs. One row per pair that flipped heads; deleted when drilled.
+-- Due pairs. One row per pair that flipped heads; deleted when drilled.
+-- The pair is the key, not (day, recall_pair_id): `confirm` looks a pair up by id
+-- alone to learn which draw it belongs to, so a second row would silently
+-- mis-date a miss.
 CREATE TABLE IF NOT EXISTS draw (
-    day            TEXT NOT NULL,       -- ISO date
-    recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
-    PRIMARY KEY (day, recall_pair_id)
+    recall_pair_id INTEGER PRIMARY KEY REFERENCES recall_pair(id),
+    day            TEXT NOT NULL        -- ISO date
 );
+
+-- Every read but `confirm`'s is "what is due today".
+CREATE INDEX IF NOT EXISTS draw_day_idx ON draw (day);
 
 -- One missed drill. Contested grades write nothing.
 CREATE TABLE IF NOT EXISTS miss (

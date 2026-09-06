@@ -566,35 +566,23 @@ def write_pairs(
 # --------------------------------------------------------------------------- #
 
 
-def current_day(conn: sqlite3.Connection) -> str | None:
-    """The current draw's day: the one most recently built.
-
-    Nothing expires at midnight — what ends a draw is the next one being built,
-    so this is what every read and every write works against. See
-    design/Data.md#the-draw.
-
-    Returns:
-        The greatest `draw_day`, or `None` if none has ever been built.
-    """
-    row = conn.execute("SELECT day FROM draw_day ORDER BY day DESC LIMIT 1").fetchone()
-    return str(row["day"]) if row is not None else None
-
-
 def draw_summary(conn: sqlite3.Connection, day: str | None = None) -> models.DrawSummary | None:
-    """The current draw's numbers, or a named day's.
+    """The day's draw as numbers — today's unless another date is named.
+
+    A day with no marker has no draw, however recently the last one was built:
+    the draw is today's, and an earlier one is never presented as the day's work.
+    See design/Data.md#the-draw.
 
     Args:
         conn: The connection.
-        day: A specific date. Defaults to the current draw.
+        day: A specific date. Defaults to today.
 
     Returns:
         The numbers, or `None` if that day was never built. A day worked to the
         end returns its `drawn` with zeros beside it, never `None` — otherwise a
         finished morning reads as an unbuilt one and offers to draw itself again.
     """
-    target = day or current_day(conn)
-    if target is None:
-        return None
+    target = day or today()
     marker = conn.execute(
         "SELECT drawn, expected FROM draw_day WHERE day = ?", (target,)
     ).fetchone()
@@ -630,14 +618,14 @@ def build_draw(
     """Build a date's draw, once for that date.
 
     Every live pair flips its own coin at `e^(-alpha * sessions_correct)`. There
-    is no cap. The rows of every earlier draw are deleted first: an undrilled
-    pair had no session, so nothing is owed to it. The marker records what the
-    draw was expected to come out at alongside what it did.
+    is no cap. The stranded rows of every earlier draw are swept first: an
+    undrilled pair had no session, so nothing is owed to it and it flips again at
+    exactly the same odds. The marker records what the draw was expected to come
+    out at alongside what it did.
 
     Args:
         conn: The connection.
-        day: The date to build. Defaults to today — the only place in the drill
-            loop that reads the calendar.
+        day: The date to build. Defaults to today.
         rng: A source of uniform randomness in [0, 1). Injectable for tests.
 
     Returns:
@@ -660,8 +648,8 @@ def build_draw(
             for pair in pairs:
                 if rng() < draw_probability(pair["sessions_correct"]):
                     conn.execute(
-                        "INSERT INTO draw (day, recall_pair_id) VALUES (?, ?)",
-                        (target, pair["id"]),
+                        "INSERT INTO draw (recall_pair_id, day) VALUES (?, ?)",
+                        (pair["id"], target),
                     )
                     drawn += 1
             conn.execute(
@@ -675,14 +663,12 @@ def build_draw(
 
 
 def boards(conn: sqlite3.Connection, n: int) -> list[models.Board]:
-    """The next `n` boards of the current draw.
+    """The next `n` boards of today's draw.
 
-    A group, its due pairs, and its context pairs. Empty when nothing has ever
-    been built.
+    A group, its due pairs, and its context pairs. Empty when today has no draw
+    — an earlier draw's rows are stranded and never handed out.
     """
-    day = current_day(conn)
-    if day is None:
-        return []
+    day = today()
     group_rows = conn.execute(
         """
         SELECT DISTINCT p.group_id AS group_id
@@ -741,10 +727,8 @@ def boards(conn: sqlite3.Connection, n: int) -> list[models.Board]:
 
 
 def roll_batch(conn: sqlite3.Connection, n: int) -> models.RollBatch:
-    """`n` due roll pairs of the current draw. A board without context."""
-    day = current_day(conn)
-    if day is None:
-        return models.RollBatch(due=[])
+    """`n` due roll pairs of today's draw. A board without context."""
+    day = today()
     rows = conn.execute(
         """
         SELECT r.id, r.question FROM draw d
@@ -784,32 +768,35 @@ def grade_inputs(
 
 
 def confirm(conn: sqlite3.Connection, results: Sequence[models.ConfirmResult]) -> None:
-    """Commit a board or roll batch against the current draw, in one transaction.
+    """Commit a board or roll batch, in one transaction.
+
+    The one operation that does not ask what day it is. Each pair's own `draw`
+    row says which draw it belongs to, so a board started at 23:58 and answered
+    at 00:01 writes against the evening's date: its rows are **stranded** — no
+    longer offered anywhere, still writable — and that is the whole of what
+    surviving midnight needs. The row is an unambiguous answer because
+    `recall_pair_id` is the table's key.
 
     A correct or contested pair advances by one; a missed pair resets to zero and
-    writes a miss row dated by **the draw's day, not the wall clock** — one
+    writes a miss row dated by **that row's day, not the wall clock** — one
     clock, so a Tuesday board confirmed on Wednesday records Tuesday. Every
     pair's draw row is deleted — see design/flows/Drilling.md#writes.
 
     Raises:
-        RefusedError: If nothing has been built, or any pair is no longer in the
-            current draw. That means the board was already confirmed, or a newer
-            draw has since replaced it.
+        RefusedError: If any pair has no `draw` row. That means the board was
+            already confirmed, or a build has since swept it.
     """
-    day = current_day(conn)
-    if day is None:
-        raise RefusedError("no draw has been built, so there is nothing to confirm")
+    days: dict[int, str] = {}
     for result in results:
-        drawn = conn.execute(
-            "SELECT 1 FROM draw WHERE day = ? AND recall_pair_id = ?",
-            (day, result.recall_pair_id),
+        row = conn.execute(
+            "SELECT day FROM draw WHERE recall_pair_id = ?", (result.recall_pair_id,)
         ).fetchone()
-        if drawn is None:
+        if row is None:
             raise RefusedError(
-                f"pair {result.recall_pair_id} is not in the current draw ({day}); this "
-                "board was already confirmed, or a newer draw has replaced it "
-                "— design/api/API.md#errors"
+                f"pair {result.recall_pair_id} has no draw row; this board was already "
+                "confirmed, or a build has since swept it — design/api/API.md#errors"
             )
+        days[result.recall_pair_id] = str(row["day"])
     with transaction(conn):
         for result in results:
             if result.correct:
@@ -827,12 +814,14 @@ def confirm(conn: sqlite3.Connection, results: Sequence[models.ConfirmResult]) -
                     INSERT INTO miss (recall_pair_id, day, user_answer, user_source)
                     VALUES (?, ?, ?, ?)
                     """,
-                    (result.recall_pair_id, day, result.user_answer, result.user_source),
+                    (
+                        result.recall_pair_id,
+                        days[result.recall_pair_id],
+                        result.user_answer,
+                        result.user_source,
+                    ),
                 )
-            conn.execute(
-                "DELETE FROM draw WHERE day = ? AND recall_pair_id = ?",
-                (day, result.recall_pair_id),
-            )
+            conn.execute("DELETE FROM draw WHERE recall_pair_id = ?", (result.recall_pair_id,))
 
 
 # --------------------------------------------------------------------------- #
@@ -890,7 +879,7 @@ def list_misses(
 
 
 def home(conn: sqlite3.Connection) -> models.Home:
-    """The three backlog counts, the live corpus, and the current draw."""
+    """The three backlog counts, the live corpus, and today's draw."""
     ungrouped = int(
         conn.execute(
             "SELECT COUNT(*) AS c FROM note n"
@@ -913,8 +902,9 @@ def home(conn: sqlite3.Connection) -> models.Home:
         placements_without_pairs=pairless,
         placements_stale=stale,
         pairs=pairs,
-        # Only a prediction of the build about to happen. Once there is a draw
-        # the number that matters is its own, frozen — design/api/API.md.
+        # Only a prediction of the build about to happen, and it moves as pairs
+        # are written. Once today is built the number that matters is that
+        # draw's own, frozen — design/api/API.md.
         expected=None if draw is not None else expected,
         draw=draw,
     )

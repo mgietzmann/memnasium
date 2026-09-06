@@ -1,22 +1,84 @@
 /* design/standards/Style.md is the specification for everything in this file. */
 
+/*
+ * Nine tokens, two sets of values — design/standards/Style.md#palette. Nothing
+ * outside this block names a colour, and each hex is written exactly once: the
+ * palettes are named first, and the tokens are aliases onto one of them. A
+ * theme is nine values, so changing one is one edit.
+ *
+ * Dark is the base and light is the query, so a machine with no stated
+ * preference lands on dark — the default. `data-theme` overrides in both
+ * directions, or the toggle could only ever move a viewer away from what the OS
+ * said and never back. See design/standards/Style.md#choosing-a-theme.
+ */
 :root {
-  --bg: #111417;
-  --surface: #191d22;
-  --raised: #22272e;
-  --line: #30363d;
+  --dark-bg: #111417;
+  --dark-surface: #191d22;
+  --dark-raised: #22272e;
+  --dark-line: #30363d;
+  --dark-text: #e6edf3;
+  --dark-muted: #8b949e;
+  --dark-accent: #58a6ff;
+  --dark-danger: #ff7b72;
+
+  --light-bg: #ffffff;
+  --light-surface: #f6f8fa;
+  --light-raised: #eaeef2;
+  --light-line: #d0d7de;
+  --light-text: #1f2328;
+  --light-muted: #59636e;
+  --light-accent: #0860c4;
+  --light-danger: #c01c28;
+
+  /* The one token that does not move: a mid grey clears 3:1 on both grounds,
+     and a second value would be two things to keep true for no gain. */
   --outline: #6e7681;
-  --text: #e6edf3;
-  --muted: #8b949e;
-  --accent: #58a6ff;
-  --danger: #ff7b72;
 
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', Consolas, monospace;
 
   /* Base unit 8px; every gap and padding is a multiple. */
   --u: 8px;
+}
+
+/* The alias list repeats — CSS has no way around that — but the values do not. */
+:root,
+:root[data-theme='dark'] {
+  --bg: var(--dark-bg);
+  --surface: var(--dark-surface);
+  --raised: var(--dark-raised);
+  --line: var(--dark-line);
+  --text: var(--dark-text);
+  --muted: var(--dark-muted);
+  --accent: var(--dark-accent);
+  --danger: var(--dark-danger);
   color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: var(--light-bg);
+    --surface: var(--light-surface);
+    --raised: var(--light-raised);
+    --line: var(--light-line);
+    --text: var(--light-text);
+    --muted: var(--light-muted);
+    --accent: var(--light-accent);
+    --danger: var(--light-danger);
+    color-scheme: light;
+  }
+}
+
+:root[data-theme='light'] {
+  --bg: var(--light-bg);
+  --surface: var(--light-surface);
+  --raised: var(--light-raised);
+  --line: var(--light-line);
+  --text: var(--light-text);
+  --muted: var(--light-muted);
+  --accent: var(--light-accent);
+  --danger: var(--light-danger);
+  color-scheme: light;
 }
 
 * {
@@ -68,6 +130,26 @@ body {
   border-bottom: 1px solid var(--line);
   padding-bottom: var(--u);
   margin-bottom: calc(var(--u) * 3);
+}
+
+/* The screen's name and the toggle beyond it, at the far right. */
+.topbar .right {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--u) * 2);
+}
+
+button.theme {
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+}
+
+button.theme:hover:not(:disabled) {
+  color: var(--text);
 }
 
 h1 {

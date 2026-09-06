@@ -15,6 +15,7 @@
     - [After submit](#after-submit)
     - [A roll batch](#a-roll-batch)
     - [Between boards](#between-boards)
+    - [A refused confirm](#a-refused-confirm)
 
 ## Purpose
 
@@ -37,11 +38,15 @@ Does **not** cover the loop's rules, grading, or what gets written (see
   independently.
 - **One screen, three states.** Answering, graded, confirmed. A board does not
   navigate anywhere to show its results.
-- **The Build button appears only when today has no draw of its own.** Not "only
-  while pairs remain" — a morning worked to the end must not offer to draw itself
-  again — and not "only today", because the screen keeps serving the current draw
-  after midnight so a sitting is never ended by the clock. See
-  [Data.md](../Data.md#the-draw).
+- **The Build button appears exactly when today has no draw.** Not "only while
+  pairs remain" — a morning worked to the end must not offer to draw itself again.
+  A day with no marker shows the pre-build screen whatever was built yesterday.
+  See [Data.md](../Data.md#the-draw).
+- **A board already on screen outlives the date; nothing else does.** The fork
+  stops offering an earlier draw's boards the moment the day turns, but the board
+  in hand still submits, grades and confirms — its rows are
+  [stranded](../Project.md#glossary), not dead. A sitting is ended by finishing
+  it, never by the clock.
 - **The pre-build screen is not blank.** Before any draw has ever been built the
   fork used to be one button with nothing to weigh it against; it now carries the
   corpus size and the [expectation](../Data.md#the-expectation), which is the
@@ -55,15 +60,14 @@ Does **not** cover the loop's rules, grading, or what gets written (see
 
 ### Drill home
 
-Before any draw has ever been built, this screen is the corpus, the expectation
-and a button. Afterwards it shows the current draw, and offers Build only when
-that draw is not today's.
+Until today's draw is built, this screen is the corpus, the expectation and a
+button. Afterwards it shows today's draw, and the button is gone until tomorrow.
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  ← Home                                            Drill   │
+│  ← Home                                        Drill   ☀  │
 ├────────────────────────────────────────────────────────────┤
-│                                                            │      never built
+│                                                            │      not built
 │    1,204 pairs · ~87 expected                              │
 │                                                            │
 │                 [  Build today's draw  ]                   │
@@ -71,10 +75,10 @@ that draw is not today's.
 └────────────────────────────────────────────────────────────┘
 
 ┌────────────────────────────────────────────────────────────┐
-│  ← Home                                            Drill   │
+│  ← Home                                        Drill   ☀  │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │      built
-│    The draw — 3 Sep · 118 drawn · ~87 expected              │
+│    The draw — 118 drawn · ~87 expected                     │
 │                                                            │
 │       34  due pairs                                        │
 │        6  boards            [ 3 ]  [  Work boards  ]       │
@@ -91,9 +95,9 @@ arrive together, which is why there is no separate route for the draw
 
 `drawn` and `~87 expected` sit together because they are the same draw's
 prediction and outcome — the expectation is the one frozen at that build, not a
-fresh sum, so the comparison holds all morning. The pre-build screen has no
-marker to read and sums it live instead. See
-[Data.md](../Data.md#the-expectation).
+fresh sum, so the comparison holds all morning. The pre-build screen has no marker
+to read and sums it live instead, which is what makes it worth looking at after a
+day of wordsmithing. See [Data.md](../Data.md#the-expectation).
 
 `1,204 pairs` is the live corpus, across groups and the roll, and does not move
 during a morning.
@@ -102,8 +106,13 @@ The three numbers fall as the morning is worked; `drawn` and `expected` do not.
 `[ 3 ]` and `[ 10 ]` hold the last values used. A mode with nothing left in it has
 its row and control disabled, and a draw worked to the end leaves the screen
 reading `118 drawn · ~87 expected · none left` with no way to draw again until
-tomorrow. A draw whose
-date is not today keeps its `[ Build today's draw ]` button, which replaces it.
+tomorrow.
+
+Neither state carries a date. The built one is today's by definition, and the
+pre-build one is not about a day at all. An earlier draw's leftovers are
+[stranded](../Project.md#glossary) and appear in neither — the fork will not hand
+them out, so the only route to one is a board that was already open when the date
+turned.
 
 ### A board
 
@@ -178,5 +187,23 @@ grading, contest, confirm — is identical.
 
 ### Between boards
 
-Confirming goes straight to the next board of the run. After the last one the run
-ends at [Drill home](#drill-home), numbers updated, and the user picks again.
+A run is one `GET /draw/boards?n=` — all `N` boards arrive together and are held
+on the client. Confirming goes straight to the next of them without a refetch, so
+a run is worked to its end whatever happens to the date meanwhile
+([../flows/Drilling.md](../flows/Drilling.md#stopping-early)). After the last one
+the run ends at [Drill home](#drill-home), which reloads `/home` — and that is the
+moment a turned date shows up, as `not built yet`.
+
+### A refused confirm
+
+`POST /confirm` refuses a pair with no `draw` row: the board was already
+confirmed, or a build has swept it — see
+[api/API.md](../api/API.md#errors). In practice that is a run left open across a
+build, which needs a night and a morning to reach.
+
+The board stays exactly as it is, verdicts and all, above a line saying the draw
+it belonged to is gone and nothing was written. There is no retry — the row it
+would write against no longer exists — so the only control is back to
+[Drill home](#drill-home). Nothing is lost but the typing: the pairs were never
+sessions, so they flip again in the draw that swept them, at exactly the same
+odds.

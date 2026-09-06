@@ -50,9 +50,16 @@ the screen's layout (see [app/Drilling.md](../app/Drilling.md)), the wording of 
   How big a morning is going to be is the one thing worth knowing before
   committing to it, and how big it turned out against that prediction is worth
   knowing after. See [Data.md](../Data.md#the-expectation).
-- **The clock never ends a board.** A board started before midnight and answered
-  after it is the same board: the current draw is the one most recently built, not
-  the one matching today's date. See [Data.md](../Data.md#the-draw).
+- **The draw is today's, and the clock ends everything except a board in hand.**
+  A board started before midnight and answered after it is the same board — its
+  rows are [stranded](../Project.md#glossary) and `confirm` still takes them. But
+  the fork stops offering that draw the moment the date turns, because a morning
+  that opens on yesterday's numbers is being told about work it can no longer
+  start. See [Data.md](../Data.md#the-draw).
+- **`confirm` asks the pair, not the calendar.** Each pair's `draw` row carries
+  the day it belongs to, and sweeping at build leaves at most one such row per
+  pair. So there is nothing to reconcile: the row is the answer, and it is what
+  dates the miss.
 - **Built once a day, and the day remembers it.** Drilling consumes draw rows, so
   a morning worked to the end empties them — and if "built" meant "has rows", the
   button would come back and draw the same day again, drilling pairs twice. A
@@ -109,10 +116,10 @@ rest of the day, whether or not any of it is left. Building first deletes the ro
 of every earlier draw — an undrilled pair had no session, its counter is untouched,
 and it has already flipped again on equal terms.
 
-Until that next build, the previous draw is still **the current draw** and is
-still workable. That is what makes a sitting survive midnight, and it is why a
-morning after several days away shows the remains of the last draw with the Build
-button beside it.
+Before that build, an earlier draw's undrilled rows are
+[stranded](../Project.md#glossary). Nothing offers them: the fork shows
+`not built yet` and the corpus, whether the last draw was yesterday or in March.
+They exist only so a board already on screen can still be confirmed.
 
 ### The fork
 
@@ -189,7 +196,24 @@ Stopping is walking away. Pairs still holding `draw` rows were never sessions:
 their `sessions_correct` is untouched, no miss is recorded, and the next build
 sweeps the rows and flips them again at exactly the same odds.
 
-Nothing expires at midnight. What ends a draw is the next one being built.
+Midnight ends the draw. What it does not end is the run in hand.
+
+A run of `N` is fetched in one call, so all `N` boards are already on the client
+when the first is worked. Nothing watches the clock; the date is noticed only when
+the app next asks the server, which is the fork at the end of the run:
+
+```
+23:52  ask for 3 boards   ─▶ all three fetched
+23:58  board 2 confirmed  ─▶ writes, dated the 23rd
+00:01  board 3 confirmed  ─▶ writes, dated the 23rd — its rows are stranded,
+                              and stranded rows confirm
+       run ends, fork reloads
+                          ─▶ "not built yet · ~87 expected"  [ Build today's draw ]
+```
+
+So a sitting is never truncated mid-run. What the date does end is asking for
+more: the fork will not hand out a fourth board, because there is no draw for
+today until one is built.
 
 ### Writes
 

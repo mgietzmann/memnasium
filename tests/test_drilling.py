@@ -2,14 +2,17 @@
 
 import math
 import sqlite3
+from pathlib import Path
 
 import pytest
 
 from api import models, store
 from api.config import ALPHA
-from tests.conftest import Corpus, draw_all
+from api.db import connect, create_schema
+from tests.conftest import Corpus, days_ago, draw_all
 
-DAY = "2026-09-03"
+#: Everything but `confirm` reads today, so the dates here move with the clock.
+DAY = store.today()
 
 
 def test_a_new_pair_is_certain_to_be_drawn(db: sqlite3.Connection, corpus: Corpus) -> None:
@@ -42,7 +45,7 @@ def test_building_the_draw_is_idempotent(db: sqlite3.Connection, corpus: Corpus)
 
 def test_undrilled_draw_rows_are_swept_not_carried(db: sqlite3.Connection, corpus: Corpus) -> None:
     # Data.md#decisions — they were never sessions, so nothing is owed to them
-    draw_all(db, "2026-09-02")
+    draw_all(db, days_ago(1))
     store.build_draw(db, DAY, rng=lambda: 1.0)
     left = db.execute("SELECT COUNT(*) AS c FROM draw").fetchone()["c"]
     assert left == 0
@@ -58,7 +61,7 @@ def test_a_board_holds_every_pair_of_its_group_exactly_once(
     # flows/Drilling.md#a-board — partitioned into due and context
     db.execute("DELETE FROM draw")
     db.execute("INSERT INTO draw_day (day, drawn, expected) VALUES (?, 1, 1.0)", (DAY,))
-    db.execute("INSERT INTO draw (day, recall_pair_id) VALUES (?, ?)", (DAY, corpus.pair_b))
+    db.execute("INSERT INTO draw (recall_pair_id, day) VALUES (?, ?)", (corpus.pair_b, DAY))
     (board,) = store.boards(db, 5)
     assert board.group_id == corpus.piscivory
     assert [p.id for p in board.due] == [corpus.pair_b]
@@ -193,7 +196,7 @@ def test_stopping_early_leaves_the_draw_rows_untouched(
 def test_sessions_correct_rises_by_at_most_one_per_confirm(
     db: sqlite3.Connection, corpus: Corpus
 ) -> None:
-    for expected, day in enumerate(("2026-09-03", "2026-09-04", "2026-09-05"), start=1):
+    for expected, day in enumerate((days_ago(2), days_ago(1), DAY), start=1):
         draw_all(db, day)
         store.confirm(
             db,
@@ -223,7 +226,7 @@ def test_home_counts_are_the_three_backlogs(db: sqlite3.Connection, corpus: Corp
     assert home.placements_without_pairs == 0
     assert home.placements_stale == 0
     assert home.draw is None
-    draw_all(db, DAY)
+    draw_all(db)
     assert store.home(db).draw == models.DrawSummary(
         day=DAY, drawn=6, expected=6.0, due=6, boards=2, roll=1
     )
@@ -275,22 +278,24 @@ def test_building_after_finishing_the_same_day_moves_no_counter(
     assert row["sessions_correct"] == 1
 
 
-def test_the_current_draw_is_the_latest_built_not_todays(
+def test_an_earlier_draw_is_never_offered_as_the_days_work(
     db: sqlite3.Connection, corpus: Corpus
 ) -> None:
-    """Data.md#the-draw — nothing expires at midnight."""
-    draw_all(db, "2026-09-01")
-    assert store.current_day(db) == "2026-09-01"
-    summary = store.draw_summary(db)
-    assert summary is not None and summary.day == "2026-09-01"
-    assert store.boards(db, 5)
+    """Data.md#the-draw — the draw is today's, however recent the last one was."""
+    draw_all(db, days_ago(1))
+    assert store.draw_summary(db) is None
+    assert store.boards(db, 5) == []
+    assert store.roll_batch(db, 10).due == []
+    home = store.home(db)
+    assert home.draw is None
+    # The prediction is back, and it is the live sum over the whole corpus.
+    assert home.expected == 6.0
 
 
-def test_a_board_from_an_earlier_draw_still_confirms(
-    db: sqlite3.Connection, corpus: Corpus
-) -> None:
+def test_a_stranded_row_is_confirmable(db: sqlite3.Connection, corpus: Corpus) -> None:
     """flows/Drilling.md — the 23:58 board answered at 00:01 commits normally."""
-    draw_all(db, "2026-09-01")
+    yesterday = days_ago(1)
+    draw_all(db, yesterday)
     store.confirm(
         db,
         [
@@ -300,24 +305,59 @@ def test_a_board_from_an_earlier_draw_still_confirms(
         ],
     )
     (miss,) = store.list_misses(db)
-    # One clock: the miss is dated by its draw, not by the wall.
-    assert miss.day == "2026-09-01"
+    # One clock: the miss is dated by its own draw row, not by the wall.
+    assert miss.day == yesterday
+    row = db.execute(
+        "SELECT sessions_correct FROM recall_pair WHERE id = ?", (corpus.pair_a,)
+    ).fetchone()
+    assert row["sessions_correct"] == 0
 
 
-def test_building_replaces_the_current_draw_and_sweeps_the_old_rows(
-    db: sqlite3.Connection, corpus: Corpus
-) -> None:
-    """Data.md#the-draw — what ends a draw is the next one being built."""
-    draw_all(db, "2026-09-01")
+def test_confirm_dates_each_pair_by_its_own_row(db: sqlite3.Connection, corpus: Corpus) -> None:
+    """Data.md#decisions — the row is the answer, not a global notion of currency."""
+    yesterday = days_ago(1)
+    db.execute("INSERT INTO draw_day (day, drawn, expected) VALUES (?, 1, 1.0)", (yesterday,))
+    db.execute("INSERT INTO draw (recall_pair_id, day) VALUES (?, ?)", (corpus.pair_a, yesterday))
+    db.execute("INSERT INTO draw_day (day, drawn, expected) VALUES (?, 1, 1.0)", (DAY,))
+    db.execute("INSERT INTO draw (recall_pair_id, day) VALUES (?, ?)", (corpus.pair_b, DAY))
+    store.confirm(
+        db,
+        [
+            models.ConfirmResult(
+                recall_pair_id=pid, correct=False, user_answer="x", user_source="y"
+            )
+            for pid in (corpus.pair_a, corpus.pair_b)
+        ],
+    )
+    dated = {m.recall_pair_id: m.day for m in store.list_misses(db)}
+    assert dated == {corpus.pair_a: yesterday, corpus.pair_b: DAY}
+
+
+def test_a_pair_never_holds_two_draw_rows(db: sqlite3.Connection, corpus: Corpus) -> None:
+    """Data.md#decisions — the key makes a second row impossible, not a procedure."""
+    draw_all(db, days_ago(1))
+    draw_all(db)
+    rows = db.execute("SELECT recall_pair_id FROM draw").fetchall()
+    assert len(rows) == len({r["recall_pair_id"] for r in rows})
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            "INSERT INTO draw (recall_pair_id, day) VALUES (?, ?)", (corpus.pair_a, days_ago(2))
+        )
+
+
+def test_building_sweeps_the_stranded_rows(db: sqlite3.Connection, corpus: Corpus) -> None:
+    """Data.md#the-draw — the next build is what deletes them."""
+    draw_all(db, days_ago(1))
     store.build_draw(db, DAY, rng=lambda: 1.0)
-    assert store.current_day(db) == DAY
     left = db.execute("SELECT COUNT(*) AS c FROM draw").fetchone()["c"]
     assert left == 0
     summary = store.draw_summary(db)
     assert summary is not None and (summary.day, summary.drawn) == (DAY, 0)
 
 
-def test_confirming_with_no_draw_is_refused(db: sqlite3.Connection, corpus: Corpus) -> None:
+def test_confirming_a_pair_with_no_draw_row_is_refused(
+    db: sqlite3.Connection, corpus: Corpus
+) -> None:
     with pytest.raises(store.RefusedError):
         store.confirm(
             db,
@@ -365,7 +405,7 @@ def test_the_expectation_is_frozen_on_the_marker(db: sqlite3.Connection, corpus:
     assert store.draw_summary(db).expected == 6.0  # type: ignore[union-attr]
 
 
-def test_home_predicts_only_until_the_first_draw(db: sqlite3.Connection, corpus: Corpus) -> None:
+def test_home_predicts_until_today_is_built(db: sqlite3.Connection, corpus: Corpus) -> None:
     """api/API.md#the-drill-loop — two fields, two different claims."""
     before = store.home(db)
     assert (before.pairs, before.expected, before.draw) == (6, 6.0, None)
@@ -374,3 +414,18 @@ def test_home_predicts_only_until_the_first_draw(db: sqlite3.Connection, corpus:
     assert after.pairs == 6
     assert after.expected is None
     assert after.draw is not None and after.draw.expected == 6.0
+
+
+def test_an_old_draw_table_is_rekeyed_on_the_pair(tmp_path: Path) -> None:
+    """Data.md#the-expectation — dropped and recreated, not migrated."""
+    conn = connect(tmp_path / "old.db")
+    conn.execute(
+        "CREATE TABLE draw (day TEXT NOT NULL, recall_pair_id INTEGER NOT NULL,"
+        " PRIMARY KEY (day, recall_pair_id))"
+    )
+    conn.execute("INSERT INTO draw (day, recall_pair_id) VALUES ('2026-09-01', 1)")
+    create_schema(conn)
+    sql = conn.execute("SELECT sql FROM sqlite_master WHERE name = 'draw'").fetchone()["sql"]
+    assert "recall_pair_id INTEGER PRIMARY KEY" in sql
+    assert conn.execute("SELECT COUNT(*) AS c FROM draw").fetchone()["c"] == 0
+    conn.close()
