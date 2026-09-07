@@ -3,12 +3,34 @@ CREATE TABLE draw (
     recall_pair_id INTEGER PRIMARY KEY REFERENCES recall_pair(id),
     day            TEXT NOT NULL        -- ISO date
 );
+INSERT INTO "draw" VALUES(15,'2026-09-05');
+INSERT INTO "draw" VALUES(33,'2026-09-05');
+INSERT INTO "draw" VALUES(34,'2026-09-05');
+INSERT INTO "draw" VALUES(114,'2026-09-05');
+INSERT INTO "draw" VALUES(144,'2026-09-05');
+INSERT INTO "draw" VALUES(183,'2026-09-05');
+INSERT INTO "draw" VALUES(184,'2026-09-05');
+INSERT INTO "draw" VALUES(187,'2026-09-05');
+INSERT INTO "draw" VALUES(196,'2026-09-05');
+INSERT INTO "draw" VALUES(201,'2026-09-05');
+INSERT INTO "draw" VALUES(237,'2026-09-05');
+INSERT INTO "draw" VALUES(240,'2026-09-05');
+INSERT INTO "draw" VALUES(245,'2026-09-05');
+INSERT INTO "draw" VALUES(251,'2026-09-05');
+INSERT INTO "draw" VALUES(256,'2026-09-05');
+INSERT INTO "draw" VALUES(260,'2026-09-05');
+INSERT INTO "draw" VALUES(273,'2026-09-05');
+INSERT INTO "draw" VALUES(335,'2026-09-05');
+INSERT INTO "draw" VALUES(340,'2026-09-05');
+INSERT INTO "draw" VALUES(341,'2026-09-05');
+INSERT INTO "draw" VALUES(366,'2026-09-05');
 CREATE TABLE draw_day (
     day      TEXT PRIMARY KEY,   -- ISO date
     drawn    INTEGER NOT NULL,   -- how many pairs came out, for the day's record
     expected REAL NOT NULL       -- how many were expected to, computed at build
 );
 INSERT INTO "draw_day" VALUES('2026-09-04',5,3.948787087978882226e+00);
+INSERT INTO "draw_day" VALUES('2026-09-05',21,2.128702872989276428e+01);
 CREATE TABLE groups (
     id          INTEGER PRIMARY KEY,
     name        TEXT NOT NULL,
@@ -36,6 +58,8 @@ INSERT INTO "groups" VALUES(24,'The coastal upwelling machinery','How coastal up
 INSERT INTO "groups" VALUES(25,'Upwelling ecosystems','What coastal upwelling feeds — the clupeid dominance common to all the major systems, zooplankton decoupled from primary production by their slower life cycles and the lack of food limitation that follows, the cross-shelf zonation of a maturing bloom, and where sardine and anchovy spawn given that upwelled water is bad for larvae.');
 INSERT INTO "groups" VALUES(26,'Estuaries','Semi-enclosed coastal water where the sea is measurably diluted — the definition, buoyancy-driven estuarine circulation and how the outflowing layer thickens seaward, the salt wedge and its deposition zone, tidally mixed estuaries with no circulation at all, fjords and their sills, and the currents animals ride within them.');
 INSERT INTO "groups" VALUES(27,'Coastal mixing and plumes','The contest between tidal mixing and stratification on the shelf, and what fresh water does when it gets out — the Richardson number, the transition zone that switches with the lunar cycle, year-round production over shallow mixed banks, slower zooplankton growth where warming is suppressed, and river versus estuarine plumes, their nutrients and their wandering.');
+INSERT INTO "groups" VALUES(28,'Eulachon','Eulachon from egg to run — the adhesive double-membraned egg, larvae carried straight downstream to rear in estuaries, low-light outmigration, young fish schooling with anchovy and herring, and the predators that mark the spawning run: sturgeon, harbor seals and Steller sea lions.');
+INSERT INTO "groups" VALUES(29,'Cephalopod diversity and distribution','What the cephalopods are and where they are — exclusively marine but across virtually every marine habitat, the orders Teuthida and Octopodida, pelagic octopus families, the detachable hectocotylus, and how thin the record still is: over half the FAO catch unresolved to species and new species turning up on single expeditions.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -275,6 +299,20 @@ INSERT INTO "note" VALUES(221,9,'ENSO moves the california current around and af
 INSERT INTO "note" VALUES(222,9,'In years where the california current is weaker and upwelling is as well, some stocks of fish such as mackerel and hake actually have better recruitment. this is believed to be because fewer larva and juvenile fish get advected offshore. Herring off southeast alaska also tend to have better years in El Nino years likely because it forces water levels up and towards the shore providing better retention as well.','2026-09-05');
 INSERT INTO "note" VALUES(223,9,'Salmon may have their migration routes also shifted by El Nino conditions. This can either be because more rain means more runoff and high coastal currents and/or because the odd conditions create energetic eddies the fish have to swim around. The research here has been focused on fish migrating through SEAK and around Vancouver island.','2026-09-05');
 INSERT INTO "note" VALUES(224,9,'El Nino conditions also bring cold water to Japan meaning several species (including walruses) that normally stay north of Japan will come down south to it during these years.','2026-09-05');
+INSERT INTO "note" VALUES(225,10,'Eulachon eggs have a double membrane and the outer one breaks open thereby allowing the eggs to adhere to things.','2026-09-07');
+INSERT INTO "note" VALUES(226,10,'Eulachon larvae are immediately carried downstream and may rear in estuaries.','2026-09-07');
+INSERT INTO "note" VALUES(227,10,'Eulachon larval outmigration is thought to occur at low light levels.','2026-09-07');
+INSERT INTO "note" VALUES(228,10,'Young Eulachon can be found in mixed species schools with anchovy and herring.','2026-09-07');
+INSERT INTO "note" VALUES(229,10,'Some sturgeon migrations are thought to be linked to the abundance of Eulachon - their prey','2026-09-07');
+INSERT INTO "note" VALUES(230,10,'Some folks identify Eulachon migrations by conspicuous aggregations of their predators.','2026-09-07');
+INSERT INTO "note" VALUES(231,10,'Eulachon are important prey for harbor seals and stellar sea lions who will show up to the migrations to feed.','2026-09-07');
+INSERT INTO "note" VALUES(232,11,'Over 50% of the global cephalopod catch reported by the FAO is not segregated into single species categories.','2026-09-07');
+INSERT INTO "note" VALUES(233,11,'A single expedition to the Antarctic caught at least seven new species of cephalopod to science - there is much left to learn.','2026-09-07');
+INSERT INTO "note" VALUES(234,11,'Teuthida are the "true" squids and the most diverse order of the cephalopods. ','2026-09-07');
+INSERT INTO "note" VALUES(235,11,'Octopodida is the order containing all of the octopus species. ','2026-09-07');
+INSERT INTO "note" VALUES(236,11,'There are pelagic octopi families (clades).','2026-09-07');
+INSERT INTO "note" VALUES(237,11,'Some octopi have a detachable hectocotylus - a sperm delivery arm - so the arm is put in the female mantle and left there to fertilize. ','2026-09-07');
+INSERT INTO "note" VALUES(238,11,'Cephalopods are exclusively marine but occur in virtually all habitats within the marine environment. ','2026-09-07');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -508,6 +546,20 @@ INSERT INTO "placement" VALUES(223,223,7,0);
 INSERT INTO "placement" VALUES(224,217,NULL,0);
 INSERT INTO "placement" VALUES(225,218,NULL,0);
 INSERT INTO "placement" VALUES(226,219,NULL,0);
+INSERT INTO "placement" VALUES(227,225,28,0);
+INSERT INTO "placement" VALUES(228,226,28,0);
+INSERT INTO "placement" VALUES(229,227,28,0);
+INSERT INTO "placement" VALUES(230,228,28,0);
+INSERT INTO "placement" VALUES(231,229,28,0);
+INSERT INTO "placement" VALUES(232,230,28,0);
+INSERT INTO "placement" VALUES(233,231,28,0);
+INSERT INTO "placement" VALUES(234,232,29,0);
+INSERT INTO "placement" VALUES(235,233,29,0);
+INSERT INTO "placement" VALUES(236,234,29,0);
+INSERT INTO "placement" VALUES(237,235,29,0);
+INSERT INTO "placement" VALUES(238,236,29,0);
+INSERT INTO "placement" VALUES(239,237,29,0);
+INSERT INTO "placement" VALUES(240,238,29,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -882,6 +934,23 @@ INSERT INTO "recall_pair" VALUES(363,205,'What is the alternative to retention a
 INSERT INTO "recall_pair" VALUES(364,206,'In one experiment, how much material did internal-wave slicks bring inshore from offshore?','90% of it',5,0);
 INSERT INTO "recall_pair" VALUES(365,206,'How do megalops larvae appear to use internal-wave slicks?','They swim to the surface and let the slicks carry them inshore',5,0);
 INSERT INTO "recall_pair" VALUES(366,207,'What can islands do when they interact with tidal currents?','Create internal waves that may boost primary productivity',6,0);
+INSERT INTO "recall_pair" VALUES(367,227,'How do Eulachon eggs become adhesive?','The outer of their two membranes ruptures, sticking the egg to the substrate.',0,0);
+INSERT INTO "recall_pair" VALUES(368,228,'Where do Eulachon larvae go on hatching, and where may they rear?','Straight downstream; they may rear in estuaries.',0,0);
+INSERT INTO "recall_pair" VALUES(369,229,'Eulachon larval outmigration is thought to occur under what light conditions?','Low light.',0,0);
+INSERT INTO "recall_pair" VALUES(370,230,'Young Eulachon can be found schooling with which other species?','Anchovy and herring.',0,0);
+INSERT INTO "recall_pair" VALUES(371,231,'Eulachon abundance is thought to drive the migrations of which fish?','Sturgeon.',0,0);
+INSERT INTO "recall_pair" VALUES(372,232,'Some people locate Eulachon migrations by what sign?','Conspicuous aggregations of their predators.',0,0);
+INSERT INTO "recall_pair" VALUES(373,233,'Which two marine mammals turn up to feed on Eulachon runs?','Harbor seals and Steller sea lions.',0,0);
+INSERT INTO "recall_pair" VALUES(374,234,'What share of the global cephalopod catch reported by FAO is not resolved to single species?','Over 50%.',0,0);
+INSERT INTO "recall_pair" VALUES(375,235,'One Antarctic expedition turned up how many cephalopod species new to science?','At least seven.',0,0);
+INSERT INTO "recall_pair" VALUES(376,236,'Which cephalopod order holds the "true" squids?','Teuthida.',0,0);
+INSERT INTO "recall_pair" VALUES(377,236,'Among cephalopod orders, how do the Teuthida rank in diversity?','Most diverse.',0,0);
+INSERT INTO "recall_pair" VALUES(378,237,'Which order contains all the octopus species?','Octopodida.',0,0);
+INSERT INTO "recall_pair" VALUES(379,238,'Octopus are not all benthic — what other habitat do some families occupy?','Pelagic, the open water.',0,0);
+INSERT INTO "recall_pair" VALUES(380,239,'The hectocotylus is what?','A cephalopod''s sperm-delivery arm.',0,0);
+INSERT INTO "recall_pair" VALUES(381,239,'In what strange way do some octopus use the hectocotylus?','It detaches — left inside the female''s mantle to fertilize.',0,0);
+INSERT INTO "recall_pair" VALUES(382,240,'Do cephalopods occur in non-marine waters?','No — they are exclusively marine.',0,0);
+INSERT INTO "recall_pair" VALUES(383,240,'What kinds of habitats do cephalopods occupy?','Virtually all marine habitats.',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -897,6 +966,8 @@ INSERT INTO "source" VALUES(6,'Mann',1991,'Dynamics of Marine Ecosystems - Front
 INSERT INTO "source" VALUES(7,'Mann',1991,'Dynamics of Marine Ecosystems - Tides, Tidal Mixing and Internal Waves');
 INSERT INTO "source" VALUES(8,'Mann',1991,'Dynamics of Marine Ecosystems - Ocean Basin Circulation');
 INSERT INTO "source" VALUES(9,'Mann',1991,'Dynamics of Marine Ecosystems - Variability in Ocean Circulation');
+INSERT INTO "source" VALUES(10,'NOAA',2006,'Eulachon: A Review of Biology and an Annotated Bibliography');
+INSERT INTO "source" VALUES(11,'Boyle',2005,'Cephalopods - Biodiversity and zoogeography');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
