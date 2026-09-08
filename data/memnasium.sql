@@ -76,6 +76,7 @@ INSERT INTO "groups" VALUES(42,'Sand lance','Pacific sand lance — the range, n
 INSERT INTO "groups" VALUES(43,'Herring','Pacific herring — the range, schools segregated by size, age and maturity, size at age and the northwest size cline that tracks vertebral count as a population marker, with more within-region variance than chance allows. And the spawning year: autumn schooling inshore into inlets and lagoons where they can strand, adhesive spawn laid thickly on eel grass and seaweed between the tide lines and never deep, one season per locality between December and June and later the further northwest, ripe eggs turning translucent, the female on her side with the male trailing, maturity at 3–5 and life to 12.');
 INSERT INTO "groups" VALUES(44,'Capelin and walleye pollock','The two Gulf of Alaska forage fish set side by side — capelin 33% denser in energy but short-lived and spawning at age 2–3, pollock living to 22 and spawning from age 4, its largest aggregation in Shelikof Strait and its first year in coastal pelagic nurseries. Both take calanoid copepods and euphausiids and shift further onto euphausiids as they grow, pollock with the broader diet, capelin feeding at twilight where age-0 pollock feed at night, and between them able to take 30% of an area''s standing euphausiid stock in a single night.');
 INSERT INTO "groups" VALUES(45,'Capelin','Capelin in Alaska — spawning all around the state and notably at eastern Kodiak and in the eastern Bering Sea, at night from mid-May to late July and only ever on shallow beaches, unlike the North Atlantic. Plus summer distribution tracking shelf width, abundance in the upper 100 m, the June–July prespawning aggregations in Prince William Sound, and bays and fjords as nurseries and overwintering ground.');
+INSERT INTO "groups" VALUES(46,'Cephalopod life cycle','Lifespan, semelparity, and what a one-shot life does to a population — the 1–2 year pattern and its longer exceptions, terminal breeding rather than a single event, and how a single spawning season is stretched or split.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -630,6 +631,13 @@ INSERT INTO "note" VALUES(535,10,'Eulachon run timing seems to be synchronized w
 INSERT INTO "note" VALUES(536,10,'There seems to be a temperature dependence in run timing but the exact relationship is unclear. Some believe the differential between ocean and water temperatures is what matters.','2026-08-31');
 INSERT INTO "note" VALUES(537,10,'Eulachon runs can occur between January and July with specific areas only having a few consecutive months where runs occur.','2026-08-31');
 INSERT INTO "note" VALUES(538,10,'Most rivers that harbor a euchalon run harbor one or two Euchalon runs per year. However the timing of these runs within the available window can be very sporadic.','2026-08-31');
+INSERT INTO "note" VALUES(539,33,'There seems to be a general pattern in cephalopods of a single breeding season (semelparous) and a short lifespan.','2026-09-08');
+INSERT INTO "note" VALUES(540,33,'Semelparity for cephalopods refers to a terminal breeding state, not a single breeding event. Animals don''t go between spawning and post spawning but can have extended spawning periods. ','2026-09-08');
+INSERT INTO "note" VALUES(541,33,'Aging studies of the commonly known cephalopods suggests a maximum lifespan of 1-2 years!','2026-09-08');
+INSERT INTO "note" VALUES(542,33,'Most species of cephalopod that we about die after spawning. ','2026-09-08');
+INSERT INTO "note" VALUES(543,33,'Larger cephalopod species and those from colder environments may have lifecycles of a few to several years. ','2026-09-08');
+INSERT INTO "note" VALUES(544,33,'A consequence of the short lifecycles of cephalopods is little overlap in generations and the potential for extreme variability in population size.','2026-09-08');
+INSERT INTO "note" VALUES(545,33,'Cephalopods mitigate issues with single spawning seasons by - extending the breeding season, having single or multiple spawns, episodic spawning, having two spawning populations, and alternating life cycle length. ','2026-09-08');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -1177,6 +1185,13 @@ INSERT INTO "placement" VALUES(537,535,28,0);
 INSERT INTO "placement" VALUES(538,536,28,0);
 INSERT INTO "placement" VALUES(539,537,28,0);
 INSERT INTO "placement" VALUES(540,538,28,0);
+INSERT INTO "placement" VALUES(541,539,46,0);
+INSERT INTO "placement" VALUES(542,540,46,0);
+INSERT INTO "placement" VALUES(543,541,46,0);
+INSERT INTO "placement" VALUES(544,542,46,0);
+INSERT INTO "placement" VALUES(545,543,46,0);
+INSERT INTO "placement" VALUES(546,544,46,0);
+INSERT INTO "placement" VALUES(547,545,46,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -2125,6 +2140,14 @@ INSERT INTO "recall_pair" VALUES(937,519,'What share of salmon in one Bering Sea
 INSERT INTO "recall_pair" VALUES(938,519,'When Bering Sea salmon had eaten northern lampfish, how many were usually in the stomach?','One',0,0);
 INSERT INTO "recall_pair" VALUES(939,520,'How abundant is the northern lampfish in the Bering Sea?','One of the most common fishes there',0,0);
 INSERT INTO "recall_pair" VALUES(940,413,'Anchovy compare to sardine how in prey size, body size, and migration?','Larger particles, smaller bodies, less migration',5,0);
+INSERT INTO "recall_pair" VALUES(941,541,'The general cephalopod life-history pattern combines which two traits?','A single breeding season (semelparity) and a short lifespan.',0,0);
+INSERT INTO "recall_pair" VALUES(942,543,'Aging studies put the maximum lifespan of the commonly known cephalopods at what?','1–2 years.',0,0);
+INSERT INTO "recall_pair" VALUES(943,544,'What becomes of most known cephalopod species after they spawn?','They die.',0,0);
+INSERT INTO "recall_pair" VALUES(944,545,'Which cephalopods may run life cycles of a few to several years?','Larger species, and those from colder environments.',0,0);
+INSERT INTO "recall_pair" VALUES(945,547,'Cephalopods mitigate the constraints of a single spawning season by which five means?','Extending the breeding season; single or multiple spawns; episodic spawning; two spawning populations; alternating life cycle length.',0,0);
+INSERT INTO "recall_pair" VALUES(946,542,'How does cephalopod semelparity differ from semelparity as normally meant?','It''s a terminal breeding state, not a single breeding event — spawning can be extended.',0,0);
+INSERT INTO "recall_pair" VALUES(947,546,'Short cephalopod life cycles leave successive generations in what relation to each other?','Barely overlapping.',0,0);
+INSERT INTO "recall_pair" VALUES(948,546,'What do short cephalopod life cycles do to population size?','Open it up to extreme variability.',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -2163,6 +2186,7 @@ INSERT INTO "source" VALUES(29,'Seitz',2005,'Identifying spawning behavior in Pa
 INSERT INTO "source" VALUES(30,'Wilson',2006,'Comparative analysis of the feeding ecology of two pelagic forage fishes: capelin and walleye pollock');
 INSERT INTO "source" VALUES(31,'Brown',2002,'Life history, distribution, and size structure of Pacific capelin in Prince William Sound and the northern Gulf of Alaska');
 INSERT INTO "source" VALUES(32,'Nagasawa',1997,'Myctophids in the Bering Sea: Distribution, Abundance, and Significance as Food for Salmonids');
+INSERT INTO "source" VALUES(33,'Boyle',2005,'Cephalopods - Life Cycle');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
