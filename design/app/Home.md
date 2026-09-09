@@ -1,6 +1,6 @@
 # Home
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -17,15 +17,16 @@
 ## Purpose
 
 The app's front page: what is waiting on the user, whether today's draw exists,
-and the two doors into the app.
+and the three doors into the app.
 
 ## Scope
 
 Covers the home screen and how the app is navigated.
 
 Does **not** cover the screens it leads to (see [Entry.md](Entry.md),
-[Drilling.md](Drilling.md)), what the counts mean (see [Data.md](../Data.md)), or
-the skills that drain them (see [../flows/](../flows)).
+[Drilling.md](Drilling.md), [Review.md](Review.md)), what the counts mean (see
+[Data.md](../Data.md)), or the skills that drain them (see
+[../flows/](../flows)).
 
 ## Decisions
 
@@ -55,7 +56,13 @@ the skills that drain them (see [../flows/](../flows)).
 - **Nothing on Home links to a skill.** The counts say there is work; doing it
   means opening a Claude Code session. The seam is accepted rather than papered over with a
   button that cannot do anything.
-- **Two doors only.** Entry and Drill. There is no third thing the app does.
+- **Three doors, and the third one writes nothing.** Entry and Drill are the
+  app; [Review](Review.md) is reading back what the last drill recorded. It was
+  added rather than left to a skill because misses are the one part of the record
+  worth looking at without opening a Claude Code session.
+- **Review carries no count.** The backlog counts are work owed, drained by doing
+  something. Misses are not owed and nothing drains them, so a number beside the
+  button would be a score rather than a queue.
 
 ## Design
 
@@ -76,7 +83,7 @@ the skills that drain them (see [../flows/](../flows)).
 │    6  placements with no pairs                             │
 │    3  placements with stale pairs                          │
 │                                                            │
-│        [  Enter a note  ]        [  Drill  ]               │
+│    [  Enter a note  ]    [  Drill  ]    [  Review  ]       │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
 ```
@@ -128,7 +135,7 @@ A count of zero is shown as zero, not hidden. The absence of work is information
 
 ### Navigation
 
-Three screens, no deeper. The top bar is the same on all three: `← Home` on the
+Four screens, no deeper. The top bar is the same on all four: `← Home` on the
 left — `memnasium` on Home itself, which has nowhere to go back to — the screen's
 name on the right, and the theme toggle beyond it at the far right. There is no
 other way back and nothing nests.
@@ -143,5 +150,6 @@ made of, and where the choice is kept, is
 
 ```
 Home ──┬── Entry
-       └── Drill ── a board / a roll batch ── back to Drill
+       ├── Drill ── a board / a roll batch ── back to Drill
+       └── Review
 ```

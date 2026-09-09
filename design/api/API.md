@@ -1,6 +1,6 @@
 # API
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -15,6 +15,7 @@
     - [Entry and lookup](#entry-and-lookup)
     - [Reshaping](#reshaping)
     - [Writing a pair set](#writing-a-pair-set)
+    - [The record](#the-record)
     - [The MCP tools](#the-mcp-tools)
     - [Errors](#errors)
 
@@ -57,6 +58,13 @@ payload field-by-field detail, which is generated from the models — see
 - **A pair set is written whole.** One route expresses first write, reword, split
   and combine, so the inheritance rule lives in the API and not in three callers.
   See [Writing a pair set](#writing-a-pair-set).
+- **The record has one route, read by both.** [Review](../app/Review.md) wants
+  the last drill's misses and [Regrouping](../flows/Regrouping.md) wants the
+  whole record; those are two windows on one query, not two routes. `since`
+  carries the difference.
+- **An omitted `since` still means everything.** A default of "the last drill"
+  would read better for the app and would quietly change what `list_misses`
+  returns to a skill that asks for the record. The app names its window.
 - **No auth.** Single user, loopback, one process. A token would protect nothing
   from anyone.
 - **Authoring needs the app running.** The MCP server fronts this API, so
@@ -68,10 +76,11 @@ payload field-by-field detail, which is generated from the models — see
 
 | Reader | Wants | Gets |
 |---|---|---|
-| the app | fine-grained routes matching screens | the drill loop, entry, lookup |
-| a skill | coarse, intention-shaped calls | batch placement, whole pair sets, search |
+| the app | fine-grained routes matching screens | the drill loop, entry, lookup, the record |
+| a skill | coarse, intention-shaped calls | batch placement, whole pair sets, search, the record |
 
-Most routes serve exactly one of them. The overlap is entry and lookup.
+Most routes serve exactly one of them. The overlap is entry, lookup and
+[the record](#the-record).
 
 ### The drill loop
 
@@ -157,7 +166,6 @@ Skills only.
 | `PATCH /placements/{id}` | move to another group. Sets `pairs_stale`; deletes a group the move empties |
 | `GET /placements?pending` | the wordsmithing queue |
 | `PUT /placements/{id}/pairs` | write the pair set; clears `pairs_stale` |
-| `GET /misses` | the drill record, filtered by `group_id`, `placement_id` or `since`, newest first |
 
 `GET /placements?pending` returns placements with no pairs or with
 `pairs_stale = 1`, each carrying everything
@@ -190,8 +198,46 @@ here rather than remembered by every caller. The call clears `pairs_stale`.
 A combine is therefore a new pair with two `inherit_from` ids, and the two
 originals falling out of the set and retiring. Nothing is deleted: `miss` rows
 point at pairs forever, so a pair that has been drilled can never go away — see
-[Data.md](../Data.md#decisions). Retired pairs are absent from every read: boards,
-context, group pair counts, `GET /placements?pending`.
+[Data.md](../Data.md#decisions). Retired pairs are absent from
+every read but [the record](#the-record): boards, context, group pair counts,
+`GET /placements?pending`.
+
+### The record
+
+Called by both.
+
+| Route | Does |
+|---|---|
+| `GET /misses` | the drill record, filtered by `group_id`, `placement_id` or `since`, newest first |
+
+**Newest first is `day` descending, then `id` descending.** `miss` records the
+day and nothing finer — see [Data.md](../Data.md#misses) — so `id` is the only
+thing that orders a day's misses, and it orders them by when they were written,
+which is the order they were missed. That is a guarantee rather than an accident
+of insertion: [Review](../app/Review.md#order) reads a single day and re-sorts it
+`id` ascending to walk a sitting forwards.
+
+A miss row carries everything either reader needs without a second call: the
+`day`, the pair's `question`, `answer` and source, the `user_answer` and
+`user_source` that were typed, and the group — `id` and name, or null for
+[the roll](../Project.md#glossary). The pair is read as it stands now; a
+[retired](../Project.md#glossary) pair's misses are still returned, because the
+record is of what was drilled and retiring is not a deletion — see
+[Writing a pair set](#writing-a-pair-set).
+
+`since` takes an ISO date, or the literal `last-drill`:
+
+| `since` | Window |
+|---|---|
+| omitted | the whole record |
+| an ISO date | that day onward, inclusive |
+| `last-drill` | the most recent `draw_day` row, whether or not it was worked to the end |
+
+`last-drill` is resolved in the store, not by the caller: it is the day
+[Review](../app/Review.md#which-misses) is about, and a client computing it would
+be a second place that decides what "the last drill" means. It is the one value
+that resolves to a day rather than naming one, which is why it is a `since` value
+and not a route of its own.
 
 ### The MCP tools
 

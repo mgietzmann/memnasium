@@ -1,6 +1,6 @@
 # memnasium
 
-**Status:** implemented
+**Status:** changed
 
 ## Table of Contents
 
@@ -44,6 +44,11 @@ practice, which is [CLAUDE.md](../CLAUDE.md).
 - **Chose to author through Claude Code rather than build screens for it.**
   Grouping and wordsmithing are judgement and craft, done in conversation. Only
   the two acts that are neither — typing a note in, and being tested — got a UI.
+- **Chose to put [review](app/Review.md) in the app rather than in a skill.**
+  Reading back what was blown is not judgement and needs no conversation; it is
+  the record, laid out. A skill could print it, but only if the app were up and a
+  Claude Code session were open, which is two doors too many for a page you read
+  over coffee.
 
 ## Design
 
@@ -95,6 +100,11 @@ Steps 2–4 are how the corpus is kept in shape, and the counts on
 [Home](app/Home.md#the-counts) are the only thing that will remind you they are
 owed.
 
+[Review](app/Review.md) is not a sixth step. Every step in the loop writes
+something — a note, a placement, a pair set, a graded drill — and review writes
+nothing; it reads back what step 5 recorded. It is a screen the loop leaves
+behind, not a stage in it.
+
 ### The documents
 
 Start at [the loop](#the-loop) and follow the act you care about.
@@ -106,7 +116,7 @@ Start at [the loop](#the-loop) and follow the act you care about.
 | [Claude.md](Claude.md) | the one API call: grading a board |
 | [api/API.md](api/API.md) | the routes, and the MCP tools over them |
 | [flows/](flows) | the five acts — what each is, and why |
-| [app/](app) | the three screens — [Home](app/Home.md), [Entry](app/Entry.md), [Drilling](app/Drilling.md) |
+| [app/](app) | the four screens — [Home](app/Home.md), [Entry](app/Entry.md), [Drilling](app/Drilling.md), [Review](app/Review.md) |
 | [standards/Design-docs.md](standards/Design-docs.md) | how these documents are written |
 | [standards/Code.md](standards/Code.md) | linting, types, docstrings, the gate |
 | [standards/Tests.md](standards/Tests.md) | what is tested and how |
@@ -191,6 +201,7 @@ Coined terms are defined here once and used identically everywhere. No synonyms.
 | **run** | the *n* boards or roll pairs asked for in one go. A drilling word only — grouping and wordsmithing work in **passes** |
 | **contest** | overriding a verdict to correct when the grading was wrong |
 | **miss** | a failed drill, and the row recording what was typed |
+| **review** | reading back the misses of the last drill — the truth beside what was typed, by group. Writes nothing |
 | **confirm** | the moment a board is written. Nothing before it counts |
 
 **Doing the work**
