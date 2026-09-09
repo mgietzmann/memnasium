@@ -185,6 +185,10 @@ export interface paths {
         /**
          * Read Misses
          * @description The drill record, newest first.
+         *
+         *     `since` takes an ISO date, or the literal `last-drill` — the day
+         *     [Review](../design/app/Review.md) is about, resolved in the store. Omitted
+         *     means the whole record.
          */
         get: operations["read_misses_api_misses_get"];
         put?: never;
@@ -527,6 +531,10 @@ export interface components {
         /**
          * Miss
          * @description One missed drill, with what it was a miss of.
+         *
+         *     Everything either reader needs without a second call — see
+         *     design/api/API.md#the-record. The pair is read as it stands now, not as it
+         *     was worded on the day.
          */
         Miss: {
             /** Answer */
@@ -543,6 +551,7 @@ export interface components {
             question: string;
             /** Recall Pair Id */
             recall_pair_id: number;
+            source: components["schemas"]["Source"];
             /** User Answer */
             user_answer: string;
             /** User Source */

@@ -355,3 +355,46 @@ textarea {
   font-family: var(--mono);
   margin-right: var(--u);
 }
+
+/* Review ----------------------------------------------------------------- */
+
+/* One column, full width, scrolled. A count and the day it belongs to. */
+.missed-on {
+  margin: 0 0 calc(var(--u) * 3);
+}
+
+/* Group names are rules, not panels — design/app/Review.md#layout. */
+.rule {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--u);
+  margin: calc(var(--u) * 4) 0 calc(var(--u) * 2);
+}
+
+/* The truth left, what was typed right, split by the same rule a board's
+   columns use: 24px and a line, so the split is structural. */
+.miss {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: calc(var(--u) * 3);
+  row-gap: calc(var(--u) / 2);
+  margin-bottom: calc(var(--u) * 3);
+}
+
+.miss .question {
+  grid-column: 1 / -1;
+  margin-bottom: var(--u);
+}
+
+.miss .answer {
+  text-align: right;
+}
+
+.miss .typed {
+  border-left: 1px solid var(--line);
+  padding-left: calc(var(--u) * 3);
+}

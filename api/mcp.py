@@ -140,6 +140,10 @@ def write_pairs(placement_id: int, pairs: list[models.PairWrite]) -> list[models
 def list_misses(
     group_id: int | None = None, placement_id: int | None = None, since: str | None = None
 ) -> list[models.Miss]:
-    """The drill record, newest first. Reads it; cannot touch it."""
+    """The drill record, newest first. Reads it; cannot touch it.
+
+    `since` takes an ISO date — that day onward — or `last-drill`, the most
+    recent draw built. Omitted means the whole record.
+    """
     with _conn() as conn:
         return store.list_misses(conn, group_id=group_id, placement_id=placement_id, since=since)
