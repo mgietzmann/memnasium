@@ -829,6 +829,20 @@ def confirm(conn: sqlite3.Connection, results: Sequence[models.ConfirmResult]) -
 # --------------------------------------------------------------------------- #
 
 
+LAST_DRILL = "last-drill"
+"""The `since` value that names no day but resolves to one — the last draw built."""
+
+
+def last_drill_day(conn: sqlite3.Connection) -> str | None:
+    """The day of the most recent draw **built**, worked to the end or not.
+
+    Returns:
+        The ISO day, or `None` where nothing has ever been drawn.
+    """
+    row = conn.execute("SELECT day FROM draw_day ORDER BY day DESC LIMIT 1").fetchone()
+    return str(row["day"]) if row is not None else None
+
+
 def list_misses(
     conn: sqlite3.Connection,
     *,
@@ -836,7 +850,24 @@ def list_misses(
     placement_id: int | None = None,
     since: str | None = None,
 ) -> list[models.Miss]:
-    """The drill record, newest first."""
+    """The drill record, newest first — `day` descending, then `id` descending.
+
+    Ordering is a guarantee rather than an accident of insertion: `miss` records
+    a day and nothing finer, so `id` is the only thing that orders a sitting, and
+    it orders it by when the boards were worked. See design/api/API.md#the-record.
+
+    Args:
+        conn: The store.
+        group_id: Only misses of pairs placed in that group.
+        placement_id: Only misses of pairs on that placement.
+        since: An ISO date, that day onward inclusive; or `last-drill`, the most
+            recent `draw_day` row, resolved here rather than by the caller.
+            Omitted means the whole record.
+
+    Returns:
+        Every matching miss, retired pairs included — the record is of what was
+        drilled, and retiring is not a deletion.
+    """
     clauses: list[str] = []
     args: list[object] = []
     if group_id is not None:
@@ -846,16 +877,23 @@ def list_misses(
         clauses.append("p.id = ?")
         args.append(placement_id)
     if since is not None:
+        day = last_drill_day(conn) if since == LAST_DRILL else since
+        # Nothing has ever been drawn, so there is no last drill to be since.
+        if day is None:
+            return []
         clauses.append("m.day >= ?")
-        args.append(since)
+        args.append(day)
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     rows = conn.execute(
         f"""
         SELECT m.id, m.recall_pair_id, m.day, m.user_answer, m.user_source,
-               r.question, r.answer, p.group_id, g.name AS group_name
+               r.question, r.answer, p.group_id, g.name AS group_name,
+               s.id AS source_id, s.author, s.year, s.publication
         FROM miss m
         JOIN recall_pair r ON r.id = m.recall_pair_id
         JOIN placement p ON p.id = r.placement_id
+        JOIN note n ON n.id = p.note_id
+        JOIN source s ON s.id = n.source_id
         LEFT JOIN groups g ON g.id = p.group_id
         {where}
         ORDER BY m.day DESC, m.id DESC
@@ -871,6 +909,7 @@ def list_misses(
             user_source=r["user_source"],
             question=r["question"],
             answer=r["answer"],
+            source=_source(r),
             group_id=r["group_id"],
             group_name=r["group_name"],
         )

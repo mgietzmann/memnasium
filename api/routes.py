@@ -197,5 +197,10 @@ def read_misses(
     placement_id: int | None = None,
     since: str | None = None,
 ) -> list[models.Miss]:
-    """The drill record, newest first."""
+    """The drill record, newest first.
+
+    `since` takes an ISO date, or the literal `last-drill` — the day
+    [Review](../design/app/Review.md) is about, resolved in the store. Omitted
+    means the whole record.
+    """
     return store.list_misses(conn, group_id=group_id, placement_id=placement_id, since=since)

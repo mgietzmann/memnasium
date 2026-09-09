@@ -16,3 +16,17 @@ export function pairs(n: number): string {
 export function expected(n: number): string {
   return `~${Math.round(n).toLocaleString('en-US')} expected`;
 }
+
+/**
+ * A day written out, as Review's header line prints it: `8 September`.
+ *
+ * Parsed as a local date rather than through `new Date(iso)`, which reads a bare
+ * ISO date as UTC and prints the day before it west of Greenwich.
+ */
+export function day(iso: string): string {
+  const [year, month, date] = iso.split('-').map(Number);
+  return new Date(year, month - 1, date).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+  });
+}

@@ -281,7 +281,12 @@ class ConfirmRequest(BaseModel):
 
 
 class Miss(BaseModel):
-    """One missed drill, with what it was a miss of."""
+    """One missed drill, with what it was a miss of.
+
+    Everything either reader needs without a second call — see
+    design/api/API.md#the-record. The pair is read as it stands now, not as it
+    was worded on the day.
+    """
 
     id: int
     recall_pair_id: int
@@ -290,5 +295,6 @@ class Miss(BaseModel):
     user_source: str
     question: str
     answer: str
+    source: Source
     group_id: int | None
     group_name: str | None

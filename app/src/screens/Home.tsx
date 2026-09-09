@@ -4,7 +4,7 @@ import { expected, pairs } from '../format';
 import { TopBar, type Screen } from '../App';
 
 /**
- * The front page: what is waiting, whether today's draw exists, and the two
+ * The front page: what is waiting, whether today's draw exists, and the three
  * doors — design/app/Home.md. Nothing here links to a skill.
  */
 export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
@@ -94,6 +94,9 @@ export function Home({ onGo }: { onGo: (screen: Screen) => void }) {
       <div className="doors">
         <button onClick={() => onGo('entry')}>Enter a note</button>
         <button onClick={() => onGo('drill')}>Drill</button>
+        {/* The third door writes nothing, and carries no count: misses are not
+            work owed, so a number beside it would be a score, not a queue. */}
+        <button onClick={() => onGo('review')}>Review</button>
       </div>
     </div>
   );

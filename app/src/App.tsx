@@ -2,20 +2,22 @@ import { useState } from 'react';
 import { Home } from './screens/Home';
 import { Entry } from './screens/Entry';
 import { Drill } from './screens/Drill';
+import { Review } from './screens/Review';
 import { choose, ground, type Ground } from './theme';
 
-/** Three screens, no deeper. Every screen carries a `← Home`. */
-export type Screen = 'home' | 'entry' | 'drill';
+/** Four screens, no deeper. Every screen carries a `← Home`. */
+export type Screen = 'home' | 'entry' | 'drill' | 'review';
 
 export function App() {
   const [screen, setScreen] = useState<Screen>('home');
   if (screen === 'entry') return <Entry onHome={() => setScreen('home')} />;
   if (screen === 'drill') return <Drill onHome={() => setScreen('home')} />;
+  if (screen === 'review') return <Review onHome={() => setScreen('home')} />;
   return <Home onGo={setScreen} />;
 }
 
 /**
- * The same on all three screens: `← Home` on the left — `memnasium` on Home
+ * The same on all four screens: `← Home` on the left — `memnasium` on Home
  * itself, which has nowhere to go back to — the screen's name on the right, and
  * the toggle beyond it. See design/app/Home.md#navigation.
  */

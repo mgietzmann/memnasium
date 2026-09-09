@@ -20,6 +20,7 @@ export type ContextPair = Schemas['ContextPair'];
 export type Verdict = Schemas['Verdict'];
 export type Answer = Schemas['Answer'];
 export type ConfirmResult = Schemas['ConfirmResult'];
+export type Miss = Schemas['Miss'];
 
 /** A refusal from the store, carrying the reason it gave. */
 export class ApiError extends Error {
@@ -71,4 +72,8 @@ export const api = {
   notes: (id: number) => request<Note[]>(`/notes?q=&source_id=${id}`),
 
   groups: () => request<Group[]>('/groups'),
+
+  // `last-drill` is resolved in the store: the app never works out which day
+  // the last drill was — design/api/API.md#the-record.
+  lastDrillMisses: () => request<Miss[]>('/misses?since=last-drill'),
 };
