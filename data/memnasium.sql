@@ -58,10 +58,11 @@ INSERT INTO "groups" VALUES(43,'Herring','Pacific herring the animal, apart from
 INSERT INTO "groups" VALUES(44,'Capelin and walleye pollock','The two Gulf of Alaska forage fish set side by side — capelin 33% denser in energy but short-lived and spawning at age 2–3, pollock living to 22 and spawning from age 4, its largest aggregation in Shelikof Strait and its first year in coastal pelagic nurseries. Both take calanoid copepods and euphausiids and shift further onto euphausiids as they grow, pollock with the broader diet, capelin feeding at twilight where age-0 pollock feed at night, and between them able to take 30% of an area''s standing euphausiid stock in a single night.');
 INSERT INTO "groups" VALUES(45,'Capelin distribution','Where capelin are in Alaska outside the spawning season — the summer distribution of adults relative to shore tracking the width of the continental shelf off Alaska and northeastern Russia, abundance concentrated in the upper 100 m, and Gulf of Alaska bays and fjords as nurseries and overwintering ground for immature fish.');
 INSERT INTO "groups" VALUES(46,'Cephalopod life cycle','Lifespan, semelparity, and what a one-shot life does to a population — the 1–2 year pattern and its longer exceptions, terminal breeding rather than a single event, and how a single spawning season is stretched or split.');
-INSERT INTO "groups" VALUES(47,'Cephalopods as prey','What a cephalopod is worth to whatever eats it, and when it can be got — almost nothing indigestible but the beak, rich in protein with lipids in the large-digestive-gland species, the Illex argentinus figures, and less energy than krill. Defence that is all behaviour, jets, ink and camouflage with no armour and almost no poison. And availability rather than value: grow-fast-die-fast making them a seasonal food source, decadal swings that are plagues and famines for their predators, and sperm whales working Norwegian Sea spawning aggregations.');
+INSERT INTO "groups" VALUES(47,'Cephalopods as prey','What a cephalopod is worth to whatever eats it, who eats it, and when it can be got — almost nothing indigestible but the beak, rich in protein with lipids in the large-digestive-gland species, the Illex argentinus figures, and less energy than krill. Defence that is all behaviour, jets, ink and camouflage with no armour and almost no poison. The predators themselves: cephalopods the main food in 28 toothed whale species, a sperm whale catch that may exceed twice the biomass humans take globally, albatross plunging and swimming to 10 m, and toothed whales vomiting at the surface to the benefit of birds. And availability rather than value: grow-fast-die-fast making them a seasonal food source, decadal swings that are plagues and famines for their predators, and sperm whales working Norwegian Sea spawning aggregations.');
 INSERT INTO "groups" VALUES(48,'Forage fish size in the subarctic Pacific','How big the Gulf of Alaska and Bering Sea forage fishes get, set side by side. Herring at 60-70 mm by age 1 and 120-140 mm by age 2, sand lance to 200 mm in the Gulf and 270 mm in the Bering Sea, eulachon to 225 mm fork length and 100-200 mm by age 2 with fork length differing river to river. And the cline both herring and eulachon share: larger toward the northwest, herring''s tracking vertebral count as a population marker.');
 INSERT INTO "groups" VALUES(49,'Forage fish spawning timing','When the subarctic Pacific forage fishes spawn, and what sets the date. Herring December to June according to locality with one season per area, and later the further northwest. Sand lance in late September as summer temperatures drop, incubating 13-62 days. Capelin at night from mid-May to late July, with June-July school peaks in Prince William Sound as prespawning aggregations. The eulachon run between January and July, only a few consecutive months in any one area, one or two runs a year but sporadic within the window, synchronized with higher tides and with some unclear temperature differential; eulachon spawn from age 2 but mostly at 3-4. And the largest Gulf of Alaska pollock aggregation spawning in Shelikof Strait in early spring.');
 INSERT INTO "groups" VALUES(50,'Forage fish spawning habits','Where the subarctic Pacific forage fishes spawn and how they go about it. Herring coming ashore at least once a year and not to the same locality twice, schooling into inlets and lagoons from autumn until just after spawning where crowding can strand them, laying adhesive spawn thickly on eel grass and seaweed from the high tide line to just below low tide and never in deep water, the female on her side extruding with the male trailing behind covering the eggs with milt. Capelin spawning all around Alaska and notably at eastern Kodiak and in the eastern Bering Sea, on shallow beaches only - no evidence of the deep spawning seen in the North Atlantic. And the eulachon run into mainland rivers from California to Alaska, not the same rivers every year, males outnumbering females up to 26:1, teeth absorbed beforehand, the male''s lateral ridge for pressing females to the substrate, the double-membraned egg whose outer membrane breaks to make it adhere, and semelparity with occasional repeat spawners.');
+INSERT INTO "groups" VALUES(51,'Cephalopods as predators','How a cephalopod catches and handles what it eats — tentacles forming a mouth with a far wider gape and more control than a fish of the same size, suckers smooth or armed with teeth, hooks or chitinous rings for handling, the beak breaking prey apart before ingestion, and a vibration-sensing system similar to the lateral line in fish.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -679,6 +680,14 @@ INSERT INTO "note" VALUES(551,34,'Cephalopods tend to grow and die quickly meani
 INSERT INTO "note" VALUES(552,34,'Cephalopods generally seem to have low mortality as eggs and young. ','2026-09-09');
 INSERT INTO "note" VALUES(553,34,'Sperm whales seem to target spawning aggregations of squid in the Norwegian sea and some believe these aggregations explain the whales movements at these times. ','2026-09-09');
 INSERT INTO "note" VALUES(554,34,'Large decadal variation in cephalopod populations have been likened to plagues and famines for the species that feed on them. ','2026-09-09');
+INSERT INTO "note" VALUES(555,34,'Some albatross are able to plunge and swim to depths of 10m!','2026-09-11');
+INSERT INTO "note" VALUES(556,34,'Toothed whales are known to vomit at the surface, providing a potential source of food to birds.','2026-09-11');
+INSERT INTO "note" VALUES(557,34,'In 28 species of toothed whale, cephalopods comprise the main food source.','2026-09-11');
+INSERT INTO "note" VALUES(558,34,'By some estimates, the total catch of squid by sperm whales may exceed twice the biomass of the global catch taken by humans. ','2026-09-11');
+INSERT INTO "note" VALUES(559,35,'Tentacles in cephalopods effectively form a mouth with a much wider "gape" and more control than fish of the same size. ','2026-09-11');
+INSERT INTO "note" VALUES(560,35,'Suckers in cephalopods can be smooth or possess teeth or hooks or chitinous rings to help with handling.','2026-09-11');
+INSERT INTO "note" VALUES(561,35,'The beak of a cephalopod is used to break apart prey before ingestion. ','2026-09-11');
+INSERT INTO "note" VALUES(562,35,'Cephalopods have a vibration sensing system similar to the lateral line in fish.','2026-09-11');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -1242,6 +1251,14 @@ INSERT INTO "placement" VALUES(553,551,47,0);
 INSERT INTO "placement" VALUES(554,553,47,0);
 INSERT INTO "placement" VALUES(555,554,47,0);
 INSERT INTO "placement" VALUES(556,552,46,0);
+INSERT INTO "placement" VALUES(557,555,47,0);
+INSERT INTO "placement" VALUES(558,556,47,0);
+INSERT INTO "placement" VALUES(559,557,47,0);
+INSERT INTO "placement" VALUES(560,558,47,0);
+INSERT INTO "placement" VALUES(561,559,51,0);
+INSERT INTO "placement" VALUES(562,560,51,0);
+INSERT INTO "placement" VALUES(563,561,51,0);
+INSERT INTO "placement" VALUES(564,562,51,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -2210,6 +2227,14 @@ INSERT INTO "recall_pair" VALUES(957,553,'Growing and dying quickly makes cephal
 INSERT INTO "recall_pair" VALUES(958,554,'Sperm whale movements in the Norwegian Sea seem to be directed by what?','Squid spawning aggregations.',1,0);
 INSERT INTO "recall_pair" VALUES(959,555,'Large decadal swings in cephalopod populations have been likened to what, for the species feeding on them?','Plagues and famines.',1,0);
 INSERT INTO "recall_pair" VALUES(960,556,'Cephalopod mortality as eggs and young is generally what?','Low.',1,0);
+INSERT INTO "recall_pair" VALUES(961,557,'Some albatross can plunge and swim to what depth?','10 m.',0,0);
+INSERT INTO "recall_pair" VALUES(962,558,'Toothed whales vomiting at the surface feeds what?','Birds.',0,0);
+INSERT INTO "recall_pair" VALUES(963,559,'Cephalopods are the main food source in how many toothed whale species?','28.',0,0);
+INSERT INTO "recall_pair" VALUES(964,560,'The total squid catch by sperm whales is estimated to exceed what?','Twice the biomass humans take globally.',0,0);
+INSERT INTO "recall_pair" VALUES(965,561,'Cephalopod tentacles form a mouth with what two advantages over a fish of the same size?','A much wider gape, and more control.',0,0);
+INSERT INTO "recall_pair" VALUES(966,562,'Cephalopod suckers are either smooth or bear what, for handling?','Teeth, hooks, or chitinous rings.',0,0);
+INSERT INTO "recall_pair" VALUES(967,563,'The cephalopod beak does what to prey?','Breaks it apart before ingestion.',0,0);
+INSERT INTO "recall_pair" VALUES(968,564,'Cephalopods sense vibration with a system similar to what in fish?','The lateral line.',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -2250,6 +2275,7 @@ INSERT INTO "source" VALUES(31,'Brown',2002,'Life history, distribution, and siz
 INSERT INTO "source" VALUES(32,'Nagasawa',1997,'Myctophids in the Bering Sea: Distribution, Abundance, and Significance as Food for Salmonids');
 INSERT INTO "source" VALUES(33,'Boyle',2005,'Cephalopods - Life Cycle');
 INSERT INTO "source" VALUES(34,'Boyle',2005,'Cephalopods - As Prey');
+INSERT INTO "source" VALUES(35,'Boyle',2005,'Cephalopods - As Predators');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
