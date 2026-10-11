@@ -96,6 +96,8 @@ INSERT INTO "groups" VALUES(62,'Pacific Decadal Oscillation','What the PDO does 
 INSERT INTO "groups" VALUES(63,'Copepods','Copepods as animals: how abundant they are, how they sense the world, and how they deal with their prey and predators. Abundance: 80% of the mesozooplankton in the oceans. Sensing: no functional vision, like most planktonic invertebrates; setae that work as mechanoreceptors and detect velocity gradients along themselves rather than the bulk flow; responses to deformation but not to acceleration or vorticity. Predators and prey: larval fish approaching in an attack S-shape just below the velocity that would trigger a copepod''s response, and copepods clipping the spines off diatoms before eating them. Anything about copepod sensing, behaviour or ecology belongs here. The fluid dynamics of feeding at low Reynolds number stays in The diffusion limitation and life at low Reynolds number.');
 INSERT INTO "groups" VALUES(64,'Copepod life history','How copepods develop and reproduce: egg to nauplius to copepodite to adult; sac spawners carrying eggs for survival against free spawners whose eggs hatch in a third of the time but whose hatchlings can''t feed at once. Sensing, behaviour and predators stay in Copepods.');
 INSERT INTO "groups" VALUES(65,'Plankton population dynamics','How density regulates a plankton population. Caps: coagulation, rising with density squared to give logistic growth and predicting bloom steady state in a Danish fjord, and self-shading pulling growth down to mortality. Floors: the Allee effect and minimum viable densities matching copepod minimum standing stocks. Bookkeeping: the life table. Seasonal timing of blooms stays in The seasonal production cycle.');
+INSERT INTO "groups" VALUES(66,'Shark reproduction','How sharks and rays mate and produce young: multiple paternity, sperm storage separating mating from fertilization, a two-year reproductive cycle, egg cases taking 3–12 months and anchoring themselves (horn shark screw ridges, other species'' horns), and live bearers feeding embryos by yolk, uterine diffusion or placenta. Feeding and digestion belong in Shark feeding and digestion.');
+INSERT INTO "groups" VALUES(67,'Shark feeding and digestion','How sharks and rays eat, digest and grow: short feeding bouts followed by a week or more of digestion, slow digestion and so slow growth, limited intestines possibly leaving room for embryos, and sexes segregating onto different feeding grounds. Mating, eggs and embryos belong in Shark reproduction.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -984,6 +986,17 @@ INSERT INTO "note" VALUES(703,46,'Copepods lay eggs which hatch into nauplii whi
 INSERT INTO "note" VALUES(704,46,'Some species of copepod carry their eggs with them until hatching. Thereby increasing survival of the eggs dramatically as opposed to freely suspended eggs.','2026-10-09');
 INSERT INTO "note" VALUES(705,46,'Egg hatching times in free release copepod spawners is typically 1/3 that of sac spawners.','2026-10-09');
 INSERT INTO "note" VALUES(706,46,'Copepod eggs that hatch freely suspended are usually not able to feed upon hatching due to the short development time as compared to hatchlings of sac spawners that can feed straight away.','2026-10-09');
+INSERT INTO "note" VALUES(707,46,'The case of Newfoundland cod is an example where higher mortality has induced earlier maturation times. ','2026-10-11');
+INSERT INTO "note" VALUES(708,47,'In may cartilaginous fishes the sexes segregate and use different feeding grounds. ','2026-10-11');
+INSERT INTO "note" VALUES(709,47,'Large sharks are thought to have quick feeding bouts (less than a day) where they find and eat food and then long periods (week -> weeks) where they digest the food and only eat again when they evacuate their digestive tract. ','2026-10-11');
+INSERT INTO "note" VALUES(710,47,'Many cartilaginous fishes have limited intestines. And perhaps one reason is to leave lots of space for developing embryos.','2026-10-11');
+INSERT INTO "note" VALUES(711,47,'Due to their slow digestion, cartilaginous fishes tend to grow rather slowly.','2026-10-11');
+INSERT INTO "note" VALUES(712,47,'Horn shark egg cases have a screw like ridge that allows them to move their eggs each week and literally screw them into place. The horns on other species'' egg  cases enable them to get locked onto objects as well.','2026-10-11');
+INSERT INTO "note" VALUES(713,47,'Depending on the species of cartilaginous fish development in egg cases takes 3 - 12 months','2026-10-11');
+INSERT INTO "note" VALUES(714,47,'Feeding embryos of viviparous cartilaginous species of fish can range from yolk feeding to nutrient diffusion from the uterine wall to full on placental development. ','2026-10-11');
+INSERT INTO "note" VALUES(715,47,'Most cartilaginous fishes take 2 whole years to complete their reproductive cycle. ','2026-10-11');
+INSERT INTO "note" VALUES(716,47,'Sperm storage in cartilaginous fishes allows for separation of mating events from the best times to fertilize and thus begin embryonic development. ','2026-10-11');
+INSERT INTO "note" VALUES(717,47,'At least some species of cartilaginous fish exhibit multiple paternity. ','2026-10-11');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -1699,6 +1712,17 @@ INSERT INTO "placement" VALUES(705,699,65,0);
 INSERT INTO "placement" VALUES(706,700,65,0);
 INSERT INTO "placement" VALUES(707,701,65,0);
 INSERT INTO "placement" VALUES(708,702,65,0);
+INSERT INTO "placement" VALUES(709,707,NULL,0);
+INSERT INTO "placement" VALUES(710,712,66,0);
+INSERT INTO "placement" VALUES(711,713,66,0);
+INSERT INTO "placement" VALUES(712,714,66,0);
+INSERT INTO "placement" VALUES(713,715,66,0);
+INSERT INTO "placement" VALUES(714,716,66,0);
+INSERT INTO "placement" VALUES(715,717,66,0);
+INSERT INTO "placement" VALUES(716,708,67,0);
+INSERT INTO "placement" VALUES(717,709,67,0);
+INSERT INTO "placement" VALUES(718,710,67,0);
+INSERT INTO "placement" VALUES(719,711,67,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -2889,6 +2913,20 @@ INSERT INTO "recall_pair" VALUES(1179,705,'Self-shading limits a phytoplankton b
 INSERT INTO "recall_pair" VALUES(1180,706,'A life table is what?','An actuarial booking of the individuals in a cohort',2,0);
 INSERT INTO "recall_pair" VALUES(1181,707,'The Allee effect is what?','Higher density means more encounters, so more reproduction; productivity depends on density',2,0);
 INSERT INTO "recall_pair" VALUES(1182,708,'Predicted minimum densities for maintaining a population match what in copepods?','Their minimum standing density',3,0);
+INSERT INTO "recall_pair" VALUES(1183,709,'Higher mortality inducing earlier maturation: the classic fisheries example?','Newfoundland cod',0,0);
+INSERT INTO "recall_pair" VALUES(1184,710,'Horn shark egg cases are fixed in place how?','Screwed in by a spiral ridge, and moved weekly',0,0);
+INSERT INTO "recall_pair" VALUES(1185,710,'Horns on other cartilaginous fishes'' egg cases do what?','Lock the case onto objects',0,0);
+INSERT INTO "recall_pair" VALUES(1186,711,'Cartilaginous fish development inside egg cases takes how long?','3–12 months, depending on species',0,0);
+INSERT INTO "recall_pair" VALUES(1187,712,'Viviparous cartilaginous fishes feed their embryos by what range of means?','Yolk, nutrient diffusion from the uterine wall, up to a full placenta',0,0);
+INSERT INTO "recall_pair" VALUES(1188,713,'Most cartilaginous fishes complete one reproductive cycle in how long?','2 years',0,0);
+INSERT INTO "recall_pair" VALUES(1189,714,'Sperm storage lets cartilaginous fishes do what?','Separate mating from the best time to fertilize and start development',0,0);
+INSERT INTO "recall_pair" VALUES(1190,715,'Cartilaginous fishes show what paternity pattern in at least some species?','Multiple paternity',0,0);
+INSERT INTO "recall_pair" VALUES(1191,716,'Male and female cartilaginous fishes, in many species, feed where?','On separate feeding grounds; the sexes segregate',0,0);
+INSERT INTO "recall_pair" VALUES(1192,717,'Large sharks'' feeding bouts last how long?','Under a day',0,0);
+INSERT INTO "recall_pair" VALUES(1193,717,'Large sharks digest a meal over how long?','A week to weeks',0,0);
+INSERT INTO "recall_pair" VALUES(1194,717,'Large sharks start eating again when?','Once they have emptied their digestive tract',0,0);
+INSERT INTO "recall_pair" VALUES(1195,718,'Many cartilaginous fishes have limited intestines, possibly to make room for what?','Developing embryos',0,0);
+INSERT INTO "recall_pair" VALUES(1196,719,'Cartilaginous fishes grow slowly, put down to what?','Slow digestion',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -2941,6 +2979,7 @@ INSERT INTO "source" VALUES(43,'Irvine',2019,'Scales of Blue and Fin Whale Feedi
 INSERT INTO "source" VALUES(44,'Pinchuk',2007,'Seasonal variations in the growth rates of euphausiids  (Thysanoessa inermis, T. spinifera, and Euphausia pacifica) from the northern Gulf of Alaska');
 INSERT INTO "source" VALUES(45,'Pinchuk',2008,'Climate-related variability in abundance and reproduction of euphausiids in the northern Gulf of Alaska in 1998–2003');
 INSERT INTO "source" VALUES(46,'Kiorboe',2008,'A Mechanistic Approach to Plankton Ecology');
+INSERT INTO "source" VALUES(47,'Klimley',2013,'The Biology of Sharks and Rays');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
