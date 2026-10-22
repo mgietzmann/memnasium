@@ -109,8 +109,9 @@ INSERT INTO "groups" VALUES(68,'Warm-bodied sharks','How some sharks and rays ke
 INSERT INTO "groups" VALUES(69,'Where sharks go and why','Shark and ray movement, range, habitat use and diving. Foraging grounds such as seal colonies and frontal zones; central-place systems with a daytime roost apart from night foraging; long-range seasonal movement and temperature range from tagging; dives for magnetic cues or into anoxic water after prey. Eating and digestion stay in Shark feeding and digestion, body warming in Warm-bodied sharks.');
 INSERT INTO "groups" VALUES(70,'Shark hunting','How sharks and rays find, approach and take prey. The search: speculative feeding, sharks "speculating" for patches of higher prey density. The approach: white sharks using countershading to hide below prey and strike upward from depth, and torpedo rays jumping onto prey, wrapping it in their pectoral fins and discharging their electric organs. The kill: white sharks bleeding prey out before letting go, and sea lions often escaping the first bite only to be hit again. The apparatus: a lower jaw that moves separately from the upper to saw off tissue, teeth shed every few weeks, and the whale shark''s feeding mouth pushing a bow wave that forces more water in, with a "cough" to expel material. Digestion and growth stay in Shark feeding and digestion; where they travel to forage stays in Where sharks go and why.');
 INSERT INTO "groups" VALUES(71,'Copepods through lean times','How copepods outlast long stretches without food. Storing up: lipid reserves built to carry them through winter. Slowing down: fasting metabolism dropping to about a quarter of active metabolism, so they can go months without eating. Waiting it out: eggs that survive decades or even centuries before hatching. Anything about how a copepod survives a lean season belongs here; development and reproduction stay in Copepod life history.');
-INSERT INTO "groups" VALUES(72,'Killer whales','Killer whale ecotypes, what each eats, and where they are: the North Pacific residents, transients and offshores, fish- and mammal-eating types elsewhere, and how density varies with latitude and current. Killer whales as a cause of Chinook mortality stay in Predators of Chinook salmon.');
+INSERT INTO "groups" VALUES(72,'Killer whales','Killer whale ecotypes, what each eats, and where they are: the North Pacific residents, transients and offshores, fish- and mammal-eating types elsewhere, and how density varies with latitude and current. Killer whales as a cause of Chinook mortality stay in Predators of Chinook salmon; how they hunt, move and interact stays in Killer whale behaviour.');
 INSERT INTO "groups" VALUES(73,'Bering Sea marine mammals','The Bering Sea''s marine mammals as a community: how many species, whose biomass dominates, who is there and when. One species'' behaviour elsewhere stays in that species'' group.');
+INSERT INTO "groups" VALUES(74,'Killer whale behaviour','How killer whales hunt, move and deal with each other. Hunting: pack hunting is almost universal, with the exception of North Pacific residents, who hunt together without cooperating. Opportunism: taking prey off longlines as they are hauled, which gets them prey they can''t normally reach. Movement: almost entirely prey tracking. Social: antagonistic interactions between killer whales are more common in the Atlantic and New Zealand. Anything about how a killer whale behaves belongs here; ecotypes, diet, range and abundance stay in Killer whales.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -1070,6 +1071,18 @@ INSERT INTO "note" VALUES(756,48,'Coastal fish eating killer whales in the Atlan
 INSERT INTO "note" VALUES(757,48,'Offshore killer whales are poorly understood but have been seen in Alaska.','2026-10-21');
 INSERT INTO "note" VALUES(758,48,'Killer whale densities increase by 1-2 orders of magnitude from the tropics to the highest sampled latitudes of the Arctic and Antarctic. ','2026-10-21');
 INSERT INTO "note" VALUES(759,48,'Killer whales tend to be less abundant in the western boundary currents than in the eastern ones.','2026-10-21');
+INSERT INTO "note" VALUES(760,48,'Killer whales range from the Beaufort and Chukchi seas all the way down to oregon and occasionally california. ','2026-10-22');
+INSERT INTO "note" VALUES(761,48,'Killer whales are rare in the South Pacific and the Indian oceans.','2026-10-22');
+INSERT INTO "note" VALUES(762,48,'Killer whales are quite abundant in high northern atlantic waters. Especially on the eastern side.','2026-10-22');
+INSERT INTO "note" VALUES(763,48,'Killer whales are quite abundant in the southern ocean.','2026-10-22');
+INSERT INTO "note" VALUES(764,48,'There are probably only 50,000 killer whales across the whole globe.','2026-10-22');
+INSERT INTO "note" VALUES(765,48,'Killer whale movements are almost entirely prey tracing.','2026-10-22');
+INSERT INTO "note" VALUES(766,48,'Antagonistic interactions between killer whales are more common in the atlantic and new zealand killer whales. ','2026-10-22');
+INSERT INTO "note" VALUES(767,48,'Southern resident killer whales range from northern washington to southern BC in the summer and go south during the winter. They have about 90 members. Northern residents range from southern BC to SEAK and have around 200 members. Alaskan go from SEAK to the aleutians and have 360 members','2026-10-22');
+INSERT INTO "note" VALUES(768,48,'For transient killer whales, the west coast population extends from california up to 56N and has 220 members. The gulf of alaska population ranges up to kodiak and has around 50 members.','2026-10-22');
+INSERT INTO "note" VALUES(769,48,'Killer whales rely almost entirely on pack dynamics to do their hunting with the exception being north eastern pacific residents who hunt together but don''t seem to cooperate while hunting.','2026-10-22');
+INSERT INTO "note" VALUES(770,48,'Killer whales will often go after longlines as they are being raised. It''s believed this gives them access to prey they don''t normally have access to.','2026-10-22');
+INSERT INTO "note" VALUES(771,48,'Killer whales in the North pacific don''t typically go after herring even when they are in great abundance. ','2026-10-22');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -1838,6 +1851,18 @@ INSERT INTO "placement" VALUES(758,746,73,0);
 INSERT INTO "placement" VALUES(759,747,73,0);
 INSERT INTO "placement" VALUES(760,748,73,0);
 INSERT INTO "placement" VALUES(761,749,73,0);
+INSERT INTO "placement" VALUES(762,765,74,0);
+INSERT INTO "placement" VALUES(763,766,74,0);
+INSERT INTO "placement" VALUES(764,769,74,0);
+INSERT INTO "placement" VALUES(765,770,74,0);
+INSERT INTO "placement" VALUES(766,760,72,0);
+INSERT INTO "placement" VALUES(767,761,72,0);
+INSERT INTO "placement" VALUES(768,762,72,0);
+INSERT INTO "placement" VALUES(769,763,72,0);
+INSERT INTO "placement" VALUES(770,764,72,0);
+INSERT INTO "placement" VALUES(771,767,72,0);
+INSERT INTO "placement" VALUES(772,768,72,0);
+INSERT INTO "placement" VALUES(773,771,72,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -3093,6 +3118,29 @@ INSERT INTO "recall_pair" VALUES(1244,758,'Which two marine mammals move into th
 INSERT INTO "recall_pair" VALUES(1245,759,'Which sperm whales reach the Bering Sea, and where do the rest stay?','Only adult males; the rest stay south of the Aleutians',2,0);
 INSERT INTO "recall_pair" VALUES(1246,760,'Bering Sea marine mammal biomass is dominated by what?','Large whales',2,0);
 INSERT INTO "recall_pair" VALUES(1247,761,'Which marine mammal has the most biomass in the Bering Sea?','Sperm whales',2,0);
+INSERT INTO "recall_pair" VALUES(1248,762,'Killer whale movements are driven almost entirely by what?','Tracking prey',0,0);
+INSERT INTO "recall_pair" VALUES(1249,763,'Antagonistic interactions between killer whales are more common in which populations?','Atlantic and New Zealand',0,0);
+INSERT INTO "recall_pair" VALUES(1250,764,'Killer whales rely almost entirely on what to hunt?','Pack dynamics',0,0);
+INSERT INTO "recall_pair" VALUES(1251,764,'Northeast Pacific resident killer whales hunt how, unlike other killer whales?','Together, but without cooperating',0,0);
+INSERT INTO "recall_pair" VALUES(1252,765,'Killer whales go after longlines at what moment?','As they''re being hauled up',0,0);
+INSERT INTO "recall_pair" VALUES(1253,765,'Killer whales raiding longlines are thought to gain what?','Access to prey they can''t normally reach',0,0);
+INSERT INTO "recall_pair" VALUES(1254,766,'North Pacific killer whales range from where to where?','Beaufort/Chukchi seas to Oregon, occasionally California',0,0);
+INSERT INTO "recall_pair" VALUES(1255,767,'Killer whales are rare in which two oceans?','South Pacific and Indian',0,0);
+INSERT INTO "recall_pair" VALUES(1256,768,'Killer whales are abundant in the high North Atlantic, especially on which side?','The east',0,0);
+INSERT INTO "recall_pair" VALUES(1257,769,'Killer whales are abundant in which southern-hemisphere ocean?','Southern Ocean',0,0);
+INSERT INTO "recall_pair" VALUES(1258,770,'Killer whales number roughly how many worldwide?','~50,000',0,0);
+INSERT INTO "recall_pair" VALUES(1259,771,'Southern resident killer whales range where in summer?','Northern Washington to southern BC',0,0);
+INSERT INTO "recall_pair" VALUES(1260,771,'Southern resident killer whales go which way in winter?','South',0,0);
+INSERT INTO "recall_pair" VALUES(1261,771,'Southern resident killer whales number about how many?','~90',0,0);
+INSERT INTO "recall_pair" VALUES(1262,771,'Northern resident killer whales range from where to where?','Southern BC to SEAK',0,0);
+INSERT INTO "recall_pair" VALUES(1263,771,'Northern resident killer whales number about how many?','~200',0,0);
+INSERT INTO "recall_pair" VALUES(1264,771,'Gulf of Alaska resident killer whales range from where to where?','SEAK to the Aleutians',0,0);
+INSERT INTO "recall_pair" VALUES(1265,771,'Gulf of Alaska resident killer whales number about how many?','~360',0,0);
+INSERT INTO "recall_pair" VALUES(1266,772,'West Coast transient killer whales range from where to where?','California to 56°N',0,0);
+INSERT INTO "recall_pair" VALUES(1267,772,'West Coast transient killer whales number about how many?','~220',0,0);
+INSERT INTO "recall_pair" VALUES(1268,772,'Gulf of Alaska transient killer whales range as far as where?','Kodiak',0,0);
+INSERT INTO "recall_pair" VALUES(1269,772,'Gulf of Alaska transient killer whales number about how many?','~50',0,0);
+INSERT INTO "recall_pair" VALUES(1270,773,'North Pacific killer whales mostly ignore which fish, even when it''s abundant?','Herring',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
