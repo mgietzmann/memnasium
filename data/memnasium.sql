@@ -122,6 +122,9 @@ INSERT INTO "groups" VALUES(75,'Defence against killer whales','How prey copes w
 INSERT INTO "groups" VALUES(76,'Marine mammal metabolism and consumption','How much energy marine mammals burn and how much food that takes, from one animal up to a whole ocean. The scaling: relative energy demand falls as body size rises, yet marine mammal basal metabolism runs 1.5–2.5× that of land animals the same size, and one estimate puts a blue whale at 43 kW. The individual bill: an adult killer whale needing 3–7 sea otters a day, or a Dall''s porpoise every other day, and only two kinds of marine mammal prey lasting a year if killer whales ate just one. The bill at ocean scale: whales consuming ~80,000 t a day in the North Pacific, about 19% of the Pacific''s daily biomass production. What killer whales eat stays in Killer whales; this group is about how much it takes.');
 INSERT INTO "groups" VALUES(77,'Gray whales','Gray whales as an animal, and the ocean that feeds them: what they eat, how they feed and where they go. Diet: amphipods on the broad Bering and Chukchi shelves, benthic feeding. Method: turning on one side (usually the right, going by barnacle patterns) and suction-feeding a pit as they swim, which makes distinctive mud plumes, and the sediment redistribution that follows. Movement: migration from the Bering Sea to Baja California. Setting: the far North Pacific''s currents fertilizing the area through nutrient-rich fronts. Anything about how a gray whale feeds or moves belongs here; how killer whales prey on them stays in Defence against killer whales, and baleen whales as a class stay in Baleen whales.');
 INSERT INTO "groups" VALUES(78,'Sperm whales','Sperm whales as an animal: body, feeding depth, social life and what kills them. Body: males up to 3× heavier than females. Feeding: mostly between 300 and 1200 m. Social: females helping raise each other''s calves. Mortality: orca attacks succeeding only 10% of the time would still account for 50% of overall mortality. Role: large marine mammals as indicators of productivity, because they have to be so efficient in their consumption. Anything about what a sperm whale is, where in the water column it feeds, how it lives with others or what takes it belongs here; the machinery of diving stays in Coping with the deep, sperm whales as cephalopod predators stay in Cephalopods as prey, and how prey defends against killer whales stays in Defence against killer whales.');
+INSERT INTO "groups" VALUES(79,'Deep coral biology and structure','What deep-sea corals are and how they live, apart from where they are. Habitat: waters from 50 m to over 3,000 m on shelves, slopes, canyons and seamounts, found in all the world''s oceans, and azooxanthellate, lacking the symbiotic algae of shallow corals. Diet: zooplankton and possibly other suspended organic matter. Structure: structure-forming corals as a functional group defined by complex branching and enough size to shelter fishes and invertebrates, not a taxonomic one; stony coral reefs against stylasterid, gorgonian and black coral thickets that don''t form reefs; dependence on exposed hard substrate (sea pens excepted); and the many other species they host. Where they are in Alaska, and how that is known, belongs in Alaska deep corals.');
+INSERT INTO "groups" VALUES(80,'Alaska deep corals','Deep corals in Alaska and the North Pacific: where they are, who is there, and how we know. Range: widespread from the Gulf of Alaska shelf and upper slope through the Aleutians and eastern Bering Sea to the Beaufort Sea. Community: gorgonians and black corals in the Gulf of Alaska, gorgonians and stylasterids in the Aleutians, true soft corals on the Bering shelf, the Aleutians holding the highest diversity in Alaska with possibly endemic species, and structurally complex ''coral gardens'' of gorgonians and other corals and sponges. Evidence: by-catch from NMFS research trawl surveys as the principal source. What deep corals are and how they live belongs in Deep coral biology and structure.');
+INSERT INTO "groups" VALUES(81,'Canopy kelp species','The three floating-canopy kelps of the North Pacific — dragon, bull and giant — how they differ in life span, habitat and range, and where each sits.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -1170,6 +1173,28 @@ INSERT INTO "note" VALUES(807,48,'Male Sperm whales can be 3x heaver than female
 INSERT INTO "note" VALUES(808,48,'Sperm whales feed mostly between 300 and 1200m','2026-11-03');
 INSERT INTO "note" VALUES(809,48,'Female sperm whales help raise each other''s calves.','2026-11-03');
 INSERT INTO "note" VALUES(810,48,'If orca only succeeded in their attacks on sperm whales 10% of the time that would represent 50% of the overall mortality.','2026-11-03');
+INSERT INTO "note" VALUES(811,49,'Deep sea corals are found in all the worlds oceans.','2026-11-05');
+INSERT INTO "note" VALUES(812,49,'Unlike the well-studied shallow-water tropical corals, these corals inhabit deeper waters on continental shelves, slopes, canyons, and seamounts in waters ranging from 50 m to over 3,000 m','2026-11-05');
+INSERT INTO "note" VALUES(813,49,'deep sea corals are azooxanthellate corals, meaning they lack the symbiotic algae (zooxanthellae) found in most shallow corals','2026-11-05');
+INSERT INTO "note" VALUES(814,49,'Structureforming deep corals are defined as those coral species with complex branching morphology and sufficient size to provide substrate or refuge for associated fishes and invertebrates. As such, they represent a functional group of conservation interest, rather than a taxonomic group, which Morgan et al. (2006) have likened to the diverse plants included under the descriptors “bushes” or “trees.','2026-11-05');
+INSERT INTO "note" VALUES(815,49,'Deep sea corals eat zooplankton and possibly other suspended organic matter.','2026-11-05');
+INSERT INTO "note" VALUES(816,49,'other deep coral taxa, such as stylasterids, gorgonians, and black corals do not form reefs, but often have complex, branching morphologies and may form dense groves or thickets','2026-11-05');
+INSERT INTO "note" VALUES(817,49,'The North Pacific, for example, is known to have extensive coral “gardens” composed of gorgonians and numerous other coral and sponge species.','2026-11-05');
+INSERT INTO "note" VALUES(818,49,'Stony coral “reefs” as well as thickets of gorgonian corals, black corals, and hydrocorals are often associated with a large number of other species.','2026-11-05');
+INSERT INTO "note" VALUES(819,49,'Gorgonian deep corals reach their highest diversity in the Aleutian Islands, often forming structurally complex “coral gardens','2026-11-05');
+INSERT INTO "note" VALUES(820,49,'With the exception of sea pens (pennatulaceans), the major structure-forming deep corals are dependent upon exposed hard substrata for attachment','2026-11-05');
+INSERT INTO "note" VALUES(821,49,'Alaska is the largest state in the U. S. and contains more than 70% of the nation’s continental shelf habitat.','2026-11-05');
+INSERT INTO "note" VALUES(822,49,'Deep corals are widespread throughout Alaska, including the continental shelf and upper slope of the Gulf of Alaska, the Aleutian Islands, the eastern Bering Sea, and extending as far north as the Beaufort Sea.','2026-11-05');
+INSERT INTO "note" VALUES(823,49,'Gorgonians and black corals are most common in the Gulf of Alaska while gorgonians and stylasterids are the most common corals in the Aleutian Islands. True soft corals are common on Bering Sea shelf habitats. Overall, the Aleutian Islands have the highest diversity of deep corals in Alaska, and possibly in the North Pacific Ocean, including representatives of six major taxonomic groups and at least 50 species or subspecies of deep corals that may be endemic to that region','2026-11-05');
+INSERT INTO "note" VALUES(824,49,'In the Aleutian Islands, corals form high density “coral gardens” that are similar in structural complexity to shallow tropical reefs','2026-11-05');
+INSERT INTO "note" VALUES(825,49,'The principal source of information on coral distribution is by-catch data collected during NMFS research trawl surveys','2026-11-05');
+INSERT INTO "note" VALUES(826,50,'Kelp have been an important navigational tool.','2026-11-05');
+INSERT INTO "note" VALUES(827,50,'the ShoreZone surveys that mapped 94% (>120 000 km) of the nearshore habitat in Alaska from 2001 to 2016','2026-11-05');
+INSERT INTO "note" VALUES(828,50,'the three kelp species in the North Pacific that form floating canopies: dragon kelp, bull kelp and giant kelp ','2026-11-05');
+INSERT INTO "note" VALUES(829,50,'Dragon and bull kelp are both annual whereas giant kelp are the only perennial canopy species in Alaska.','2026-11-05');
+INSERT INTO "note" VALUES(830,50,'Bull kelp is found in semi exposed to high current areas.','2026-11-05');
+INSERT INTO "note" VALUES(831,50,'Dragon kelp grows in semi-protected to exposed habitats','2026-11-05');
+INSERT INTO "note" VALUES(832,50,'Bull and dragon kelp are found from Southern California up to the Aleutian Islands. Giant kelp only extends as far as Kodiak.','2026-11-05');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -1989,6 +2014,28 @@ INSERT INTO "placement" VALUES(809,809,78,0);
 INSERT INTO "placement" VALUES(810,810,78,0);
 INSERT INTO "placement" VALUES(811,805,78,0);
 INSERT INTO "placement" VALUES(812,799,58,0);
+INSERT INTO "placement" VALUES(813,811,79,0);
+INSERT INTO "placement" VALUES(814,812,79,0);
+INSERT INTO "placement" VALUES(815,813,79,0);
+INSERT INTO "placement" VALUES(816,814,79,0);
+INSERT INTO "placement" VALUES(817,815,79,0);
+INSERT INTO "placement" VALUES(818,816,79,0);
+INSERT INTO "placement" VALUES(819,818,79,0);
+INSERT INTO "placement" VALUES(820,820,79,0);
+INSERT INTO "placement" VALUES(821,817,80,0);
+INSERT INTO "placement" VALUES(822,819,80,0);
+INSERT INTO "placement" VALUES(823,822,80,0);
+INSERT INTO "placement" VALUES(824,823,80,0);
+INSERT INTO "placement" VALUES(825,824,80,0);
+INSERT INTO "placement" VALUES(826,825,80,0);
+INSERT INTO "placement" VALUES(827,821,NULL,0);
+INSERT INTO "placement" VALUES(828,828,81,0);
+INSERT INTO "placement" VALUES(829,829,81,0);
+INSERT INTO "placement" VALUES(830,830,81,0);
+INSERT INTO "placement" VALUES(831,831,81,0);
+INSERT INTO "placement" VALUES(832,832,81,0);
+INSERT INTO "placement" VALUES(833,826,81,0);
+INSERT INTO "placement" VALUES(834,827,81,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -3312,6 +3359,36 @@ INSERT INTO "recall_pair" VALUES(1312,809,'Female sperm whales do what for each 
 INSERT INTO "recall_pair" VALUES(1313,810,'Orca attacks on sperm whales succeeding only 10% of the time would account for what share of mortality?','50%',2,0);
 INSERT INTO "recall_pair" VALUES(1314,811,'Why are large marine mammals good indicators of productivity?','They have to be so efficient in their consumption',1,0);
 INSERT INTO "recall_pair" VALUES(1315,812,'The Antarctic circumpolar current moving north does what for overwintering krill?','More sea ice and more protection (moving south, the opposite)',2,0);
+INSERT INTO "recall_pair" VALUES(1316,813,'Deep-sea corals are found in which oceans?','All of the world''s oceans',0,0);
+INSERT INTO "recall_pair" VALUES(1317,814,'Deep-sea corals live at what depths?','50 m to over 3,000 m',0,0);
+INSERT INTO "recall_pair" VALUES(1318,814,'Deep-sea corals inhabit which seafloor settings?','Continental shelves, slopes, canyons and seamounts',0,0);
+INSERT INTO "recall_pair" VALUES(1319,815,'Deep-sea corals are azooxanthellate, meaning they lack what?','Symbiotic algae (zooxanthellae)',0,0);
+INSERT INTO "recall_pair" VALUES(1320,816,'Structure-forming deep corals are a functional group defined by what?','Complex branching morphology and enough size to shelter fishes and invertebrates',0,0);
+INSERT INTO "recall_pair" VALUES(1321,817,'Deep-sea corals eat what?','Zooplankton and possibly other suspended organic matter',0,0);
+INSERT INTO "recall_pair" VALUES(1322,818,'Stylasterids, gorgonians and black corals don''t form reefs; what do they form?','Dense groves or thickets',0,0);
+INSERT INTO "recall_pair" VALUES(1323,819,'Deep stony coral reefs and coral thickets are often associated with what?','A large number of other species',0,0);
+INSERT INTO "recall_pair" VALUES(1324,820,'Structure-forming deep corals attach to what, sea pens excepted?','Exposed hard substrata',0,0);
+INSERT INTO "recall_pair" VALUES(1325,821,'North Pacific coral "gardens" are made of which animals?','Gorgonians plus numerous other corals and sponges',0,0);
+INSERT INTO "recall_pair" VALUES(1326,822,'Which deep coral group reaches its highest diversity in the Aleutian Islands?','Gorgonians',0,0);
+INSERT INTO "recall_pair" VALUES(1327,823,'Deep corals in Alaska extend as far north as where?','The Beaufort Sea',0,0);
+INSERT INTO "recall_pair" VALUES(1328,823,'Deep corals are widespread on the Gulf of Alaska shelf and upper slope and in which two other Alaskan regions?','The Aleutian Islands and the eastern Bering Sea',0,0);
+INSERT INTO "recall_pair" VALUES(1329,824,'Which deep corals are most common in the Gulf of Alaska?','Gorgonians and black corals',0,0);
+INSERT INTO "recall_pair" VALUES(1330,824,'Which deep corals are most common in the Aleutian Islands?','Gorgonians and stylasterids',0,0);
+INSERT INTO "recall_pair" VALUES(1331,824,'Which deep corals are common on Bering Sea shelf habitats?','True soft corals',0,0);
+INSERT INTO "recall_pair" VALUES(1332,824,'Which Alaskan region has the highest deep coral diversity?','The Aleutian Islands',0,0);
+INSERT INTO "recall_pair" VALUES(1333,824,'At least how many Aleutian deep coral species or subspecies may be endemic?','50',0,0);
+INSERT INTO "recall_pair" VALUES(1334,825,'Aleutian coral gardens match what in structural complexity?','Shallow tropical reefs',0,0);
+INSERT INTO "recall_pair" VALUES(1335,826,'The principal source of information on deep coral distribution is what?','By-catch data from NMFS research trawl surveys',0,0);
+INSERT INTO "recall_pair" VALUES(1336,828,'Which three North Pacific kelps form floating canopies?','Dragon kelp, bull kelp and giant kelp',0,0);
+INSERT INTO "recall_pair" VALUES(1337,829,'Which canopy kelp is the only perennial in Alaska?','Giant kelp',0,0);
+INSERT INTO "recall_pair" VALUES(1338,829,'Dragon kelp and bull kelp are what life-history type?','Annual',0,0);
+INSERT INTO "recall_pair" VALUES(1339,830,'Bull kelp is found in what kind of habitat?','Semi-exposed to high-current areas',0,0);
+INSERT INTO "recall_pair" VALUES(1340,831,'Dragon kelp grows in what kind of habitat?','Semi-protected to exposed',0,0);
+INSERT INTO "recall_pair" VALUES(1341,832,'Bull and dragon kelp range from Southern California to where?','The Aleutian Islands',0,0);
+INSERT INTO "recall_pair" VALUES(1342,832,'Giant kelp''s range extends north as far as where?','Kodiak',0,0);
+INSERT INTO "recall_pair" VALUES(1343,833,'Kelp has been an important tool for what?','Navigation',0,0);
+INSERT INTO "recall_pair" VALUES(1344,834,'ShoreZone surveys mapped what share of Alaska''s nearshore habitat?','94% (>120,000 km)',0,0);
+INSERT INTO "recall_pair" VALUES(1345,827,'Alaska holds more than what share of the United States'' continental shelf habitat?','70%',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -3366,6 +3443,8 @@ INSERT INTO "source" VALUES(45,'Pinchuk',2008,'Climate-related variability in ab
 INSERT INTO "source" VALUES(46,'Kiorboe',2008,'A Mechanistic Approach to Plankton Ecology');
 INSERT INTO "source" VALUES(47,'Klimley',2013,'The Biology of Sharks and Rays');
 INSERT INTO "source" VALUES(48,'Estes',2006,'Whales, Whaling, and Ocean Ecosystems');
+INSERT INTO "source" VALUES(49,'Lumsden',2007,'The State of Deep Coral Ecosystems of the United States');
+INSERT INTO "source" VALUES(50,'Hollarsmith',2024,'A century of canopy kelp persistence and recovery in the Gulf of Alaska');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
