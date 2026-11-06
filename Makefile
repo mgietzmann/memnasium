@@ -41,6 +41,9 @@ format: .venv app/node_modules
 ## dumps the database to data/memnasium.sql, ready to commit
 backup: .venv
 	$(UV) run python scripts/db.py backup
+	git add data/
+	git commit -m "backup"
+	git push origin main
 
 ## rebuilds data/memnasium.db from the dump
 restore: .venv
