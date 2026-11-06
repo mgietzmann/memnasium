@@ -43,7 +43,7 @@ backup: .venv
 	$(UV) run python scripts/db.py backup
 	git add data/
 	git commit -m "backup"
-	git push origin main
+	git push origin HEAD
 
 ## rebuilds data/memnasium.db from the dump
 restore: .venv
