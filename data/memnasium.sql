@@ -128,6 +128,9 @@ INSERT INTO "groups" VALUES(79,'Deep coral biology and structure','What deep-sea
 INSERT INTO "groups" VALUES(80,'Alaska deep corals','Deep corals in Alaska and the North Pacific: where they are, who is there, and how we know. Range: widespread from the Gulf of Alaska shelf and upper slope through the Aleutians and eastern Bering Sea to the Beaufort Sea. Community: gorgonians and black corals in the Gulf of Alaska, gorgonians and stylasterids in the Aleutians, true soft corals on the Bering shelf, the Aleutians holding the highest diversity in Alaska with possibly endemic species, and structurally complex ''coral gardens'' of gorgonians and other corals and sponges. Evidence: by-catch from NMFS research trawl surveys as the principal source. What deep corals are and how they live belongs in Deep coral biology and structure.');
 INSERT INTO "groups" VALUES(81,'Canopy kelp species','The three floating-canopy kelps of the North Pacific — dragon, bull and giant — how they differ in life span, habitat and range, and where each sits.');
 INSERT INTO "groups" VALUES(82,'Alaska physical setting','The physical stage of Alaska''s seas: the geology and sea floor (plate boundaries, shelf and slope shape, submarine canyons, sediment cover), tides, and the currents that run along the Aleutians and into the Bering Sea. Facts about the setting itself, whatever lives on it. What lives there stays in the taxon''s own group; Alaska''s corals stay in Alaska deep corals.');
+INSERT INTO "groups" VALUES(83,'Kelp reproduction and dispersal','How kelps make more kelp and spread. The life cycle: zoospores becoming male and female gametophytes, sperm and eggs, then sporophytes that grow into the adult, with photosynthetic spores cheap to produce, gametogenesis triggered by the environment, and gametophytes held dormant for years in the lab. Fertilization helped along by animals that hold sori like pollinators. Dispersal and recruitment: drifting kelp staying alive long enough to seed new areas, and recruitment that is highly episodic, sometimes once every few years. Anything about a kelp''s life cycle, fertilization, spread or recruitment belongs here; what sets where kelp can grow belongs in Kelp environmental controls.');
+INSERT INTO "groups" VALUES(84,'Kelp environmental controls','What sets where kelp grows and how it shapes up, factor by factor. The list: light, substrata, sedimentation, nutrients, water motion, salinity and temperature. Light: pigments adjusting with acclimation, saturation so more is not always better, and larger canopies using it more efficiently while shorter kelps survive more wave stress. Substrata: nearly all forests on hard bottom, recruits in sediment rarely becoming forests. Nutrients: kelp taking dissolved nutrients, so concentration and gradients in the water column matter. Salinity and temperature: kelp rare in estuaries but able to acclimatize, heat bringing distress and disease, and temperature probably mattering but tangled up with everything. Scale: patch dynamics biological when small and primarily physical when large. Anything about what limits or shapes kelp belongs here; reproduction belongs in Kelp reproduction and dispersal, and what forests do to the water belongs in Kelp forests and water motion.');
+INSERT INTO "groups" VALUES(85,'Kelp forests and water motion','What kelp forests do to the water, and what the water does to them. Large scale: forests changing the hydrology of an area by slowing currents. Drag: at Point Loma cutting current velocity by nearly a third and damping internal waves, water going largely around the stands. Fronts: slowed water making a front at the forest edge with its burst of biological activity. Form: patches developing different morphology depending on local hydrodynamics. Anything about the physical interplay between kelp and flow belongs here; kelp''s own tolerance of water motion as a factor stays in Kelp environmental controls, and the physics of drag in general stays in Flow, drag and boundary layers.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -1239,6 +1242,31 @@ INSERT INTO "note" VALUES(843,49,'P. pacifica is found throughout the subregion 
 INSERT INTO "note" VALUES(844,49,'Gorgonians are widely but patchily distributed on the shelf and slope of the western gulf of Alaska.','2026-11-06');
 INSERT INTO "note" VALUES(845,49,'The most ecologically important coral feature in this subregion of Alaska is the extensive pennatulacean groves in the submarine gullies south and east of Kodiak Island and in isolated locations in Prince William Sound','2026-11-06');
 INSERT INTO "note" VALUES(846,49,'A common discriminating factor seems to be sediment or bare rock for finding where corals of various species can and cannot be.','2026-11-06');
+INSERT INTO "note" VALUES(847,51,'Important environmental factors influencing kelp communities include light, substrata, sedimentation, nutrients, water motion, salinity, and temperature.','2026-11-08');
+INSERT INTO "note" VALUES(848,51,'With proper acclimation algae can adjust their pigments to better match light conditions around them.','2026-11-08');
+INSERT INTO "note" VALUES(849,51,'Almost all kelp forests occur on hard substrata.','2026-11-08');
+INSERT INTO "note" VALUES(850,51,'Recruitment can happen in sediment but kelp forests typically do not grow from such recruitment.','2026-11-08');
+INSERT INTO "note" VALUES(851,51,'Kelp eat dissolved nutrients out of the water and so nutrient concentration as well as nutrient gradients in the water column matter quite a lot.','2026-11-08');
+INSERT INTO "note" VALUES(852,51,'Kelps are not often found in estuaries and lowered salinity seems to have adverse effects.
+
+However they seem to be able to acclimatize as is evidenced by kelp distributions around Washington and Alaska.','2026-11-08');
+INSERT INTO "note" VALUES(853,51,'At very high temperatures kelp seem to become distressed and diseased.','2026-11-08');
+INSERT INTO "note" VALUES(854,51,'Temperature very likely matters to kelp but it’s correlated to everything and so very hard to disentangle.','2026-11-08');
+INSERT INTO "note" VALUES(855,51,'More light is not always better, there comes a point where vegetation is saturated by light levels.','2026-11-08');
+INSERT INTO "note" VALUES(856,51,'Some gametophytes have been maintained in laboratory settings for several years indicating that they can lie dormant for quite some time.','2026-11-08');
+INSERT INTO "note" VALUES(857,51,'Gametogenesis seems to be environmentally triggered in kelps.','2026-11-08');
+INSERT INTO "note" VALUES(858,51,'Recruitment of kelps is highly episodic. Sometimes it will only happen once every few years.','2026-11-08');
+INSERT INTO "note" VALUES(859,51,'Kelp produce zoospores that become male and female gametophytes which produce sperm and eggs that can be fertilized to produce sporophytes that become the adult kelp were','2026-11-08');
+INSERT INTO "note" VALUES(860,51,'Fertilization in kelps is aided by creatures in the environment that capture sori and hold em long enough to inundate the surrounding area. Kind of like pollinating bugs in the terrestrial world.','2026-11-08');
+INSERT INTO "note" VALUES(861,51,'Drifting kelp can stay alive for some time and thus distribute spores to new areas.','2026-11-08');
+INSERT INTO "note" VALUES(862,51,'Kelp “seeds” can themselves photo synthesize so the investment that has to be made into them is much lessened for kelps.','2026-11-08');
+INSERT INTO "note" VALUES(863,51,'Kelp patches develop differently and develop different morphology dependent on the hydrodynamics of where they are.','2026-11-08');
+INSERT INTO "note" VALUES(864,51,'Larger canopies use light more efficiently, but shorter kelps can withstand more wave stress.','2026-11-08');
+INSERT INTO "note" VALUES(865,51,'At a small scale kelp patch dynamics are driven by biology, but at a larger scale is seems to be primarily physical.','2026-11-08');
+INSERT INTO "note" VALUES(866,51,'At a very large scale kelp forests change the hydrology of an area - for example by slowing currents in the ocean.','2026-11-08');
+INSERT INTO "note" VALUES(867,51,'At Point Loma the drag induced by the kelp forest cuts current velocity by nearly a third and dampens internal waves as well.','2026-11-08');
+INSERT INTO "note" VALUES(868,51,'The drag induced by kelp forests will result in water going largely around the stands.','2026-11-08');
+INSERT INTO "note" VALUES(869,51,'Given the slowed water in kelp forests, we get a front at the edge of forests and this as always means there’s a lot of biological activity.','2026-11-08');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -2094,6 +2122,29 @@ INSERT INTO "placement" VALUES(845,834,82,0);
 INSERT INTO "placement" VALUES(846,835,82,0);
 INSERT INTO "placement" VALUES(847,836,82,0);
 INSERT INTO "placement" VALUES(848,837,82,0);
+INSERT INTO "placement" VALUES(849,856,83,0);
+INSERT INTO "placement" VALUES(850,857,83,0);
+INSERT INTO "placement" VALUES(851,858,83,0);
+INSERT INTO "placement" VALUES(852,859,83,0);
+INSERT INTO "placement" VALUES(853,860,83,0);
+INSERT INTO "placement" VALUES(854,861,83,0);
+INSERT INTO "placement" VALUES(855,862,83,0);
+INSERT INTO "placement" VALUES(856,847,84,0);
+INSERT INTO "placement" VALUES(857,848,84,0);
+INSERT INTO "placement" VALUES(858,849,84,0);
+INSERT INTO "placement" VALUES(859,850,84,0);
+INSERT INTO "placement" VALUES(860,851,84,0);
+INSERT INTO "placement" VALUES(861,852,84,0);
+INSERT INTO "placement" VALUES(862,853,84,0);
+INSERT INTO "placement" VALUES(863,854,84,0);
+INSERT INTO "placement" VALUES(864,855,84,0);
+INSERT INTO "placement" VALUES(865,864,84,0);
+INSERT INTO "placement" VALUES(866,865,84,0);
+INSERT INTO "placement" VALUES(867,863,85,0);
+INSERT INTO "placement" VALUES(868,866,85,0);
+INSERT INTO "placement" VALUES(869,867,85,0);
+INSERT INTO "placement" VALUES(870,868,85,0);
+INSERT INTO "placement" VALUES(871,869,85,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -3467,6 +3518,32 @@ INSERT INTO "recall_pair" VALUES(1362,845,'The Bering Sea hosts which two larges
 INSERT INTO "recall_pair" VALUES(1363,846,'Why is there little hard surface for coral on the Bering Sea continental shelf?','Loads of sediment',1,0);
 INSERT INTO "recall_pair" VALUES(1364,847,'Which Gulf of Alaska inlet has North America''s 2nd largest tidal amplitude?','Cook Inlet',1,0);
 INSERT INTO "recall_pair" VALUES(1365,848,'Where does the Aleutian North Slope Current flow?','Eastward along the north side of the Aleutians toward the Bering Sea inner shelf',1,0);
+INSERT INTO "recall_pair" VALUES(1366,856,'Kelp communities are influenced by which seven environmental factors?','light, substrata, sedimentation, nutrients, water motion, salinity, temperature',0,0);
+INSERT INTO "recall_pair" VALUES(1367,857,'Algae acclimated to local light adjust what to match it?','their pigments',0,0);
+INSERT INTO "recall_pair" VALUES(1368,858,'Almost all kelp forests occur on what kind of bottom?','hard substrata',0,0);
+INSERT INTO "recall_pair" VALUES(1369,859,'Kelp recruitment in sediment can happen, but typically does what?','doesn''t grow into kelp forests',0,0);
+INSERT INTO "recall_pair" VALUES(1370,860,'Kelp nutrition depends on which two properties of dissolved nutrients in the water?','concentration, and gradients through the water column',0,0);
+INSERT INTO "recall_pair" VALUES(1371,861,'Why are kelps not often found in estuaries?','lowered salinity seems to harm them',0,0);
+INSERT INTO "recall_pair" VALUES(1372,861,'What shows kelp can acclimatize to lowered salinity?','kelp distributions around Washington and Alaska',0,0);
+INSERT INTO "recall_pair" VALUES(1373,862,'Kelp at very high temperatures become what?','distressed and diseased',0,0);
+INSERT INTO "recall_pair" VALUES(1374,863,'Why is kelp''s response to temperature hard to establish?','it very likely matters, but is correlated with everything else',0,0);
+INSERT INTO "recall_pair" VALUES(1375,864,'Light beyond a point stops helping vegetation because of what?','saturation',0,0);
+INSERT INTO "recall_pair" VALUES(1376,865,'Larger kelp canopies beat shorter kelps at what?','using light more efficiently',0,0);
+INSERT INTO "recall_pair" VALUES(1377,865,'Shorter kelps beat larger canopies at what?','withstanding wave stress',0,0);
+INSERT INTO "recall_pair" VALUES(1378,866,'Kelp patch dynamics are driven by what at a small scale, and by what at a larger scale?','biology; primarily physical',0,0);
+INSERT INTO "recall_pair" VALUES(1379,849,'Kelp gametophytes kept in the lab for several years show they can do what?','lie dormant for quite some time',0,0);
+INSERT INTO "recall_pair" VALUES(1380,850,'Gametogenesis in kelps seems to be triggered by what?','the environment',0,0);
+INSERT INTO "recall_pair" VALUES(1381,851,'Kelp recruitment is how episodic?','highly: sometimes only once every few years',0,0);
+INSERT INTO "recall_pair" VALUES(1382,852,'What are the stages of the kelp life cycle, in order?','zoospores → male and female gametophytes → sperm and eggs → sporophytes → adult kelp',0,0);
+INSERT INTO "recall_pair" VALUES(1383,853,'What aids fertilization in kelps, and how?','creatures that capture sori and hold them long enough to inundate the surrounding area',0,0);
+INSERT INTO "recall_pair" VALUES(1384,854,'Drifting kelp spreads spores to new areas because it can do what?','stay alive for some time',0,0);
+INSERT INTO "recall_pair" VALUES(1385,855,'Why do kelps invest less in their "seeds" than other plants?','the seeds can photosynthesize themselves',0,0);
+INSERT INTO "recall_pair" VALUES(1386,867,'Kelp patch morphology depends on what?','the hydrodynamics of where the patch is',0,0);
+INSERT INTO "recall_pair" VALUES(1387,868,'At a very large scale, kelp forests change the hydrology of an area how?','by slowing currents in the ocean',0,0);
+INSERT INTO "recall_pair" VALUES(1388,869,'At Point Loma, kelp forest drag cuts current velocity by how much?','nearly a third',0,0);
+INSERT INTO "recall_pair" VALUES(1389,869,'At Point Loma, kelp forest drag dampens what besides current velocity?','internal waves',0,0);
+INSERT INTO "recall_pair" VALUES(1390,870,'Kelp forest drag sends water which way relative to the stands?','largely around them',0,0);
+INSERT INTO "recall_pair" VALUES(1391,871,'What forms at the edge of a kelp forest, and what does that bring?','a front, bringing a lot of biological activity',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -3523,6 +3600,7 @@ INSERT INTO "source" VALUES(47,'Klimley',2013,'The Biology of Sharks and Rays');
 INSERT INTO "source" VALUES(48,'Estes',2006,'Whales, Whaling, and Ocean Ecosystems');
 INSERT INTO "source" VALUES(49,'Lumsden',2007,'The State of Deep Coral Ecosystems of the United States');
 INSERT INTO "source" VALUES(50,'Hollarsmith',2024,'A century of canopy kelp persistence and recovery in the Gulf of Alaska');
+INSERT INTO "source" VALUES(51,'Dayton',1985,'Ecology of Kelp Communities');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
