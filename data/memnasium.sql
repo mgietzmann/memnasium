@@ -133,6 +133,8 @@ INSERT INTO "groups" VALUES(82,'Alaska physical setting','The physical stage of 
 INSERT INTO "groups" VALUES(83,'Kelp reproduction and dispersal','How kelps make more kelp and spread. The life cycle: zoospores becoming male and female gametophytes, sperm and eggs, then sporophytes that grow into the adult, with photosynthetic spores cheap to produce, gametogenesis triggered by the environment, and gametophytes held dormant for years in the lab. Fertilization helped along by animals that hold sori like pollinators. Dispersal and recruitment: drifting kelp staying alive long enough to seed new areas, and recruitment that is highly episodic, sometimes once every few years. Anything about a kelp''s life cycle, fertilization, spread or recruitment belongs here; what sets where kelp can grow belongs in Kelp environmental controls.');
 INSERT INTO "groups" VALUES(84,'Kelp environmental controls','What sets where kelp grows and how it shapes up, factor by factor. The list: light, substrata, sedimentation, nutrients, water motion, salinity and temperature. Light: pigments adjusting with acclimation, saturation so more is not always better, and larger canopies using it more efficiently while shorter kelps survive more wave stress. Substrata: nearly all forests on hard bottom, recruits in sediment rarely becoming forests. Nutrients: kelp taking dissolved nutrients, so concentration and gradients in the water column matter. Salinity and temperature: kelp rare in estuaries but able to acclimatize, heat bringing distress and disease, and temperature probably mattering but tangled up with everything. Scale: patch dynamics biological when small and primarily physical when large. Anything about what limits or shapes kelp belongs here; reproduction belongs in Kelp reproduction and dispersal, and what forests do to the water belongs in Kelp forests and water motion.');
 INSERT INTO "groups" VALUES(85,'Kelp forests and water motion','What kelp forests do to the water, and what the water does to them. Large scale: forests changing the hydrology of an area by slowing currents. Drag: at Point Loma cutting current velocity by nearly a third and damping internal waves, water going largely around the stands. Fronts: slowed water making a front at the forest edge with its burst of biological activity. Form: patches developing different morphology depending on local hydrodynamics. Anything about the physical interplay between kelp and flow belongs here; kelp''s own tolerance of water motion as a factor stays in Kelp environmental controls, and the physics of drag in general stays in Flow, drag and boundary layers.');
+INSERT INTO "groups" VALUES(86,'Sponge grounds','Sponge aggregations and the reefs they build: where they occur, what makes them form and persist, how big and old they get, and what they do to the habitat, the water and the animals around them. Anything about sponges belongs here; deep corals stay in their own groups even where they share the ground.');
+INSERT INTO "groups" VALUES(87,'Eelgrass','Eelgrass beds and the nearshore vegetated habitats they are compared with, especially understory kelp: where each grows, the conditions in them, and the fish that use them and how. Anything about eelgrass, or eelgrass set against kelp, belongs here; what limits kelp on its own stays in Kelp environmental controls, and canopy kelps stay in Canopy kelp species.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -1284,6 +1286,22 @@ INSERT INTO "note" VALUES(866,51,'At a very large scale kelp forests change the 
 INSERT INTO "note" VALUES(867,51,'At Point Loma the drag induced by the kelp forest cuts current velocity by nearly a third and dampens internal waves as well.','2026-11-08');
 INSERT INTO "note" VALUES(868,51,'The drag induced by kelp forests will result in water going largely around the stands.','2026-11-08');
 INSERT INTO "note" VALUES(869,51,'Given the slowed water in kelp forests, we get a front at the edge of forests and this as always means there’s a lot of biological activity.','2026-11-08');
+INSERT INTO "note" VALUES(870,52,'in Alaska, important commercial species found in eelgrass or kelp have included Pacific herring (Clupea pallasi), juvenile Pacific cod (Gadus macrocephalus), juvenile rockfish (Sebastes spp.), and juvenile salmon (Oncorhynchus spp.)','2026-11-10');
+INSERT INTO "note" VALUES(871,52,'Most eelgrass sites were located inside protected bays and inlets with freshwater influence, whereas most kelp sites were more oceanic and located in exposed locations at the mouths of bays.','2026-11-10');
+INSERT INTO "note" VALUES(872,52,'Relative to mean lower low water (MLLW), eelgrass occupies areas of the lower intertidal and subtidal zones from +1 m to -6 m, and understory kelp occupies subtidal areas to depths of about -30 m.','2026-11-10');
+INSERT INTO "note" VALUES(873,52,'Eelgrass usually grows in soft substrates of sand or mud. Understory kelp often grows as dense, low-lying mats on rocky substrates.','2026-11-10');
+INSERT INTO "note" VALUES(874,52,'Abundance of Pacific herring and sand lance, important forage species, was extremely variable with most fish only caught in a few seine hauls. For example, catch per haul of these species was greater than or equal to 2,500 fish at four sites (Bridget Cove-Site 1, Port Althorp-Site 5, Port Camden-Site 19, and Yakobi Island-Site 6; Fig. 1) and zero fish at 15 sites','2026-11-10');
+INSERT INTO "note" VALUES(875,52,'At the 15 sites where both habitat types were sampled, water temperatures were often higher (7 of 15 sites) and salinities lower (10 of 15 sites) in eelgrass than in kelp','2026-11-10');
+INSERT INTO "note" VALUES(876,52,'Because sand lance spawn on beaches of sand and gravel in fall, use of eelgrass and kelp is probably limited to summer rearing of juveniles.','2026-11-10');
+INSERT INTO "note" VALUES(877,53,'Sponge aggregations are known to occur at virtually all depths, from the intertidal to the abyssal zone','2026-11-10');
+INSERT INTO "note" VALUES(878,53,'whenever sponges aggregate, they do not only substantially increase the tridimensional structure of the benthic habitat and its associated biodiversity, but they also affect the hydrodynamics of the deep boundary layer, the circulation and recycling of crucial marine nutrients and, in general, the matter and energy transfer between the water column and the benthos.','2026-11-10');
+INSERT INTO "note" VALUES(879,53,'Biohermal sponge reefs were only known from the fossil record in mid-Jurassic to early-Cretaceous seas (Ghiold 1991; Wiedenmayer 1994), until to everyone’s surprise, analogous hexactinellid reefs were discovered alive  on the western Canadian continental shelf in the 1980s. In water depths from 90 to 240 m massive framework reefs are built by sponges','2026-11-10');
+INSERT INTO "note" VALUES(880,53,'Sponge reefs in the Strait of Georgia occur in clumps 35–70 m in diameter','2026-11-10');
+INSERT INTO "note" VALUES(881,53,'The grazing (filtration) rate of sponge reefs in the Strait of Georgia was estimated to be 85–198 m3 m 2 d 1, more than twice the rate of the next most intense suspension feeding community known, mussel beds in shallow bays. The sponges daily clear the equivalent of the entire water column above them (170 m) of all bacteria, while new bacteria are supplied by prevailing currents, but exactly what the source is (whether from sinking of marine snow or from deep water brought in onto the shelf) is still to be determined.','2026-11-10');
+INSERT INTO "note" VALUES(882,53,'Biohermal sponge reefs in Canada may be up to 25m in height and 9000 years old.','2026-11-10');
+INSERT INTO "note" VALUES(883,53,'It is thought that reefs develop in response to the ambient seabed currents and the availability of glacial substrate. Reefs may develop in areas of elevated suspended sediment concentration, such as at river deltas, but in all cases reef initiation requires a nondepositional seabed. This is somewhat contradictory and suggests a finely balanced system where sediment is required in order to provide the reef matrix, but too much sediment will smother the filter feeding sponges','2026-11-10');
+INSERT INTO "note" VALUES(884,53,'Other factors that correlate with dense aggregations of glass sponges in shallow waters are low temperatures (below 12 C), low light, and high food availability.','2026-11-10');
+INSERT INTO "note" VALUES(885,53,'Fish, crustaceans, nudibranchs, and infaunal polychaetes are all more abundant in reef habitats than in nonreef areas.','2026-11-10');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -2162,6 +2180,22 @@ INSERT INTO "placement" VALUES(868,866,85,0);
 INSERT INTO "placement" VALUES(869,867,85,0);
 INSERT INTO "placement" VALUES(870,868,85,0);
 INSERT INTO "placement" VALUES(871,869,85,0);
+INSERT INTO "placement" VALUES(872,877,86,0);
+INSERT INTO "placement" VALUES(873,878,86,0);
+INSERT INTO "placement" VALUES(874,879,86,0);
+INSERT INTO "placement" VALUES(875,880,86,0);
+INSERT INTO "placement" VALUES(876,881,86,0);
+INSERT INTO "placement" VALUES(877,882,86,0);
+INSERT INTO "placement" VALUES(878,883,86,0);
+INSERT INTO "placement" VALUES(879,884,86,0);
+INSERT INTO "placement" VALUES(880,885,86,0);
+INSERT INTO "placement" VALUES(881,870,87,0);
+INSERT INTO "placement" VALUES(882,871,87,0);
+INSERT INTO "placement" VALUES(883,872,87,0);
+INSERT INTO "placement" VALUES(884,873,87,0);
+INSERT INTO "placement" VALUES(885,874,87,0);
+INSERT INTO "placement" VALUES(886,875,87,0);
+INSERT INTO "placement" VALUES(887,876,87,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -3561,6 +3595,28 @@ INSERT INTO "recall_pair" VALUES(1388,869,'At Point Loma, kelp forest drag cuts 
 INSERT INTO "recall_pair" VALUES(1389,869,'At Point Loma, kelp forest drag dampens what besides current velocity?','internal waves',1,0);
 INSERT INTO "recall_pair" VALUES(1390,870,'Kelp forest drag sends water which way relative to the stands?','largely around them',2,0);
 INSERT INTO "recall_pair" VALUES(1391,871,'What forms at the edge of a kelp forest, and what does that bring?','a front, bringing a lot of biological activity',2,0);
+INSERT INTO "recall_pair" VALUES(1392,872,'Sponge aggregations occur over what depth range?','Virtually all depths, intertidal to abyssal',0,0);
+INSERT INTO "recall_pair" VALUES(1393,873,'Sponge aggregations change their surroundings in what ways?','Add 3-D structure and biodiversity; alter deep boundary-layer hydrodynamics, nutrient circulation and recycling, and matter and energy transfer between water column and benthos',0,0);
+INSERT INTO "recall_pair" VALUES(1394,874,'Biohermal sponge reefs were thought to exist only as what, until the 1980s?','Fossils, until living ones were found on the western Canadian continental shelf',0,0);
+INSERT INTO "recall_pair" VALUES(1395,874,'Western Canadian sponge reefs are built at what water depths?','90–240 m',0,0);
+INSERT INTO "recall_pair" VALUES(1396,874,'Western Canadian sponge reefs are built by what kind of sponge?','Hexactinellids',0,0);
+INSERT INTO "recall_pair" VALUES(1397,875,'Strait of Georgia sponge reefs occur in clumps of what diameter?','35–70 m',0,0);
+INSERT INTO "recall_pair" VALUES(1398,876,'Strait of Georgia sponge reef filtration is more than double that of what community, the next most intense suspension feeders known?','Mussel beds in shallow bays',0,0);
+INSERT INTO "recall_pair" VALUES(1399,876,'Strait of Georgia sponge reefs strip the bacteria from how much water daily?','The entire ~170 m water column above them',0,0);
+INSERT INTO "recall_pair" VALUES(1400,877,'Canadian biohermal sponge reefs reach what height?','Up to 25 m',0,0);
+INSERT INTO "recall_pair" VALUES(1401,877,'Canadian biohermal sponge reefs can be how old?','Up to 9,000 years',0,0);
+INSERT INTO "recall_pair" VALUES(1402,878,'Sponge reef development is thought to respond to what two conditions?','Ambient seabed currents and available glacial substrate',0,0);
+INSERT INTO "recall_pair" VALUES(1403,878,'Sponge reef initiation requires what kind of seabed, in all cases?','Nondepositional',0,0);
+INSERT INTO "recall_pair" VALUES(1404,878,'Sponge reefs both need and are threatened by sediment. How each way?','It provides the reef matrix; too much smothers the filter-feeding sponges',0,0);
+INSERT INTO "recall_pair" VALUES(1405,879,'Dense shallow-water glass sponge aggregations correlate with what three conditions?','Water below 12 °C, low light, high food availability',0,0);
+INSERT INTO "recall_pair" VALUES(1406,880,'What four animal groups are more abundant on sponge reefs than off them?','Fish, crustaceans, nudibranchs, infaunal polychaetes',0,0);
+INSERT INTO "recall_pair" VALUES(1407,881,'Commercially important species found in Alaskan eelgrass and kelp include which four?','Pacific herring, juvenile Pacific cod, juvenile rockfish, juvenile salmon',0,0);
+INSERT INTO "recall_pair" VALUES(1408,882,'Southeast Alaska eelgrass and kelp sites differ in setting how?','Eelgrass: protected bays and inlets with freshwater influence. Kelp: exposed, oceanic, at bay mouths',0,0);
+INSERT INTO "recall_pair" VALUES(1409,883,'Eelgrass and understory kelp occupy what tidal zones?','Eelgrass: intertidal into the shallow subtidal. Understory kelp: below it, in the subtidal',0,0);
+INSERT INTO "recall_pair" VALUES(1410,884,'Eelgrass and understory kelp grow on what substrates?','Eelgrass: soft sand or mud. Understory kelp: dense low-lying mats on rock',0,0);
+INSERT INTO "recall_pair" VALUES(1411,885,'Pacific herring and sand lance catches in Southeast Alaska eelgrass and kelp seines were distributed how?','Extremely patchy: huge catches at a few sites, none at many',0,0);
+INSERT INTO "recall_pair" VALUES(1412,886,'At Southeast Alaska sites with both habitats, eelgrass water compared with kelp water how?','Often warmer (7 of 15 sites) and less saline (10 of 15)',0,0);
+INSERT INTO "recall_pair" VALUES(1413,887,'Sand lance use of eelgrass and kelp is probably limited to what?','Summer rearing of juveniles',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -3618,6 +3674,8 @@ INSERT INTO "source" VALUES(48,'Estes',2006,'Whales, Whaling, and Ocean Ecosyste
 INSERT INTO "source" VALUES(49,'Lumsden',2007,'The State of Deep Coral Ecosystems of the United States');
 INSERT INTO "source" VALUES(50,'Hollarsmith',2024,'A century of canopy kelp persistence and recovery in the Gulf of Alaska');
 INSERT INTO "source" VALUES(51,'Dayton',1985,'Ecology of Kelp Communities');
+INSERT INTO "source" VALUES(52,'Johnson',2003,'A Survey of Fish Assemblages in Eelgrass and Kelp Habitats of Southeastern Alaska');
+INSERT INTO "source" VALUES(53,'Maldonado',2016,'Sponge Grounds as Key Marine Habitats: A Synthetic Review of Types, Structure, Functional Roles, and Conservation Concerns');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
