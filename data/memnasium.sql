@@ -136,6 +136,8 @@ INSERT INTO "groups" VALUES(84,'Kelp environmental controls','What sets where ke
 INSERT INTO "groups" VALUES(85,'Kelp forests and water motion','What kelp forests do to the water, and what the water does to them. Large scale: forests changing the hydrology of an area by slowing currents. Drag: at Point Loma cutting current velocity by nearly a third and damping internal waves, water going largely around the stands. Fronts: slowed water making a front at the forest edge with its burst of biological activity. Form: patches developing different morphology depending on local hydrodynamics. Anything about the physical interplay between kelp and flow belongs here; kelp''s own tolerance of water motion as a factor stays in Kelp environmental controls, and the physics of drag in general stays in Flow, drag and boundary layers.');
 INSERT INTO "groups" VALUES(86,'Sponge grounds','Sponge aggregations and the reefs they build: where they occur, what makes them form and persist, how big and old they get, and what they do to the habitat, the water and the animals around them. Anything about sponges belongs here; deep corals stay in their own groups even where they share the ground.');
 INSERT INTO "groups" VALUES(87,'Eelgrass','Eelgrass beds and the nearshore vegetated habitats they are compared with, especially understory kelp: where each grows, the conditions in them, and the fish that use them and how. Anything about eelgrass, or eelgrass set against kelp, belongs here; what limits kelp on its own stays in Kelp environmental controls, and canopy kelps stay in Canopy kelp species.');
+INSERT INTO "groups" VALUES(88,'Rockfish habitat','Where rockfish are and which seafloor features predict them. So far that means the habitat models from the BC longline surveys: slope, FBPI and distance to rock substrate are the important predictors across every model. Rockfish favour steep slopes, valleys over ridges, and short distances to rock. Anything about where rockfish live and what predicts it goes here. Definitions of the terrain metrics themselves go in Seafloor terrain metrics.');
+INSERT INTO "groups" VALUES(89,'Seafloor terrain metrics','The measures used to describe seafloor shape from bathymetry, defined independently of any species that uses them. Curvature is the rate of change of slope, and its sign separates convex, concave and flat. Rugosity is surface complexity: contoured distance divided by planar distance. The fine bathymetric position index (FBPI) is negative for valleys, positive for ridges and zero for flats or constant slopes. Anything about defining or computing a seafloor terrain measure goes here. What a measure predicts for a particular animal goes in that animal''s group.');
 CREATE TABLE miss (
     id             INTEGER PRIMARY KEY,
     recall_pair_id INTEGER NOT NULL REFERENCES recall_pair(id),
@@ -1313,6 +1315,13 @@ INSERT INTO "note" VALUES(882,53,'Biohermal sponge reefs in Canada may be up to 
 INSERT INTO "note" VALUES(883,53,'It is thought that reefs develop in response to the ambient seabed currents and the availability of glacial substrate. Reefs may develop in areas of elevated suspended sediment concentration, such as at river deltas, but in all cases reef initiation requires a nondepositional seabed. This is somewhat contradictory and suggests a finely balanced system where sediment is required in order to provide the reef matrix, but too much sediment will smother the filter feeding sponges','2026-11-10');
 INSERT INTO "note" VALUES(884,53,'Other factors that correlate with dense aggregations of glass sponges in shallow waters are low temperatures (below 12 C), low light, and high food availability.','2026-11-10');
 INSERT INTO "note" VALUES(885,53,'Fish, crustaceans, nudibranchs, and infaunal polychaetes are all more abundant in reef habitats than in nonreef areas.','2026-11-10');
+INSERT INTO "note" VALUES(886,54,'Curvature is defined as the rate of change of the bathymetric slope. Negative values indicate a convex surface at that pixel; a positive value indicates a concave surface at that pixel; and a 0 indicates a flat surface.','2026-11-11');
+INSERT INTO "note" VALUES(887,54,'Rugosity is an index of surface complexity calculated by dividing the contoured distance by the planar distance','2026-11-11');
+INSERT INTO "note" VALUES(888,54,'Negative values describe valleys, positive FBPI (fine bathymetric position index) values are ridges, while 0 values are either flat surfaces or constant slopes','2026-11-11');
+INSERT INTO "note" VALUES(889,54,'Rockfish presence and abundance was negatively related to FBPI indicating a preference for valleys over ridges.','2026-11-11');
+INSERT INTO "note" VALUES(890,54,'For the rockfish SDMs slope, FBPI, and distance to rock substrate were important across all models.','2026-11-11');
+INSERT INTO "note" VALUES(891,54,'Steeper slopes were associated with higher presence and abundance of rockfish.','2026-11-11');
+INSERT INTO "note" VALUES(892,54,'As distance to rock increases, abundance in rockfish decreases.','2026-11-11');
 CREATE TABLE placement (
     id          INTEGER PRIMARY KEY,
     note_id     INTEGER NOT NULL REFERENCES note(id),
@@ -2207,6 +2216,13 @@ INSERT INTO "placement" VALUES(884,873,87,0);
 INSERT INTO "placement" VALUES(885,874,87,0);
 INSERT INTO "placement" VALUES(886,875,87,0);
 INSERT INTO "placement" VALUES(887,876,87,0);
+INSERT INTO "placement" VALUES(888,889,88,0);
+INSERT INTO "placement" VALUES(889,890,88,0);
+INSERT INTO "placement" VALUES(890,891,88,0);
+INSERT INTO "placement" VALUES(891,892,88,0);
+INSERT INTO "placement" VALUES(892,886,89,0);
+INSERT INTO "placement" VALUES(893,887,89,0);
+INSERT INTO "placement" VALUES(894,888,89,0);
 CREATE TABLE recall_pair (
     id               INTEGER PRIMARY KEY,
     placement_id     INTEGER NOT NULL REFERENCES placement(id),
@@ -3628,6 +3644,16 @@ INSERT INTO "recall_pair" VALUES(1410,884,'Eelgrass and understory kelp grow on 
 INSERT INTO "recall_pair" VALUES(1411,885,'Pacific herring and sand lance catches in Southeast Alaska eelgrass and kelp seines were distributed how?','Extremely patchy: huge catches at a few sites, none at many',1,0);
 INSERT INTO "recall_pair" VALUES(1412,886,'At Southeast Alaska sites with both habitats, eelgrass water compared with kelp water how?','Often warmer (7 of 15 sites) and less saline (10 of 15)',1,0);
 INSERT INTO "recall_pair" VALUES(1413,887,'Sand lance use of eelgrass and kelp is probably limited to what?','Summer rearing of juveniles',1,0);
+INSERT INTO "recall_pair" VALUES(1414,888,'Rockfish presence and abundance relate to FBPI how, and what does that mean?','Negatively — a preference for valleys over ridges',0,0);
+INSERT INTO "recall_pair" VALUES(1415,889,'Rockfish SDMs: which predictors were important across all models?','Slope, FBPI and distance to rock substrate',0,0);
+INSERT INTO "recall_pair" VALUES(1416,890,'Rockfish presence and abundance change how as slope steepens?','Increase',0,0);
+INSERT INTO "recall_pair" VALUES(1417,891,'Rockfish abundance changes how as distance to rock increases?','Decreases',0,0);
+INSERT INTO "recall_pair" VALUES(1418,892,'Seafloor curvature is defined as what?','The rate of change of bathymetric slope',0,0);
+INSERT INTO "recall_pair" VALUES(1419,892,'Seafloor curvature: negative, positive and zero values mean what?','Negative convex, positive concave, 0 flat',0,0);
+INSERT INTO "recall_pair" VALUES(1420,893,'Rugosity is an index of what?','Surface complexity',0,0);
+INSERT INTO "recall_pair" VALUES(1421,893,'Rugosity is calculated how?','Contoured distance ÷ planar distance',0,0);
+INSERT INTO "recall_pair" VALUES(1422,894,'FBPI stands for what?','Fine bathymetric position index',0,0);
+INSERT INTO "recall_pair" VALUES(1423,894,'FBPI: negative, positive and zero values mean what?','Negative valleys, positive ridges, 0 flat or constant slope',0,0);
 CREATE TABLE source (
     id          INTEGER PRIMARY KEY,
     author      TEXT NOT NULL,          -- primary author
@@ -3687,6 +3713,7 @@ INSERT INTO "source" VALUES(50,'Hollarsmith',2024,'A century of canopy kelp pers
 INSERT INTO "source" VALUES(51,'Dayton',1985,'Ecology of Kelp Communities');
 INSERT INTO "source" VALUES(52,'Johnson',2003,'A Survey of Fish Assemblages in Eelgrass and Kelp Habitats of Southeastern Alaska');
 INSERT INTO "source" VALUES(53,'Maldonado',2016,'Sponge Grounds as Key Marine Habitats: A Synthetic Review of Types, Structure, Functional Roles, and Conservation Concerns');
+INSERT INTO "source" VALUES(54,'Carrasquilla-Henao',2019,'Predicting important rockfish (Sebastes spp.) habitat from large-scale longline surveys for southern British Columbia, Canada');
 CREATE UNIQUE INDEX placement_roll ON placement (note_id) WHERE group_id IS NULL;
 CREATE INDEX draw_day_idx ON draw (day);
 COMMIT;
